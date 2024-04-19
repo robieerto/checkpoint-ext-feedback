@@ -1,20 +1,10 @@
 <script setup lang="ts">
-import MainSwiper from './components/MainSwiper.vue'
+import MainCarousel from './components/MainCarousel.vue'
+import FooterComp from './components/FooterComp.vue'
 import messages from '@/messages'
 </script>
 
 <template>
-  <main>
-    <MainSwiper :msg="messages.uklidPokoje" />
-  </main>
+  <MainCarousel :msg="messages.uklidPokoje" />
+  <FooterComp />
 </template>
-
-<style scoped>
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-}
-</style>
