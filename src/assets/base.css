@@ -53,11 +53,6 @@ h6 {
   font-weight: bold !important;
 }
 
-.checkpoint-button {
-  background-color: #705d0d !important;
-  color: white !important;
-  border-radius: 100px !important;
-  height: 40px !important;
-  padding: 0 20px 0 !important;
-  text-transform: none !important;
+a {
+  color: var(--color-text) !important;
 }
