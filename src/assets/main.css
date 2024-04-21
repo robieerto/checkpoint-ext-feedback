@@ -24,6 +24,7 @@ body {
   height: 40px !important;
   padding: 0 20px 0 !important;
   text-transform: none !important;
+  pointer-events: initial;
 }
 
 .opacity-text {

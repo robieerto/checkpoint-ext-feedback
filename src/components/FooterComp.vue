@@ -20,7 +20,6 @@ watch(
       <p class="opacity-text mb-0">powered by</p>
       <a href="https://www.ofrules.com" rel="noopener noreferrer">www.ofrules.com</a>
       <br />
-      <br />
     </div>
   </footer>
 </template>
