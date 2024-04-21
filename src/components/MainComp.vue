@@ -35,6 +35,10 @@ watch(
   (query) => Object.keys(query).length && getData(query),
   { immediate: true }
 )
+
+setTimeout(() => {
+  if (!Object.keys(route.query).length) state.loading = false
+}, 1000)
 </script>
 
 <template>

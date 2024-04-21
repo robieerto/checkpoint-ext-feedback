@@ -1,0 +1,7 @@
+{
+  "hosting": {
+    "site": "checkpoint-ext-feedback",
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  }
+}
