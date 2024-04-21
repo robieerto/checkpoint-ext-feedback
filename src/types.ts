@@ -12,10 +12,12 @@ export interface ActionTextsEntity {
 }
 export interface Texts {
   title: string
-  buttokOk: string
+  buttonOk: string
   buttonBack: string
   successTitle: string
   successText: string
+  cancelTitle: string
+  cancelText: string
   text: string
   buttonCTA: string
 }

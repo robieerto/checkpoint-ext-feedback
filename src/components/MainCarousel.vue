@@ -13,9 +13,8 @@ const props = defineProps<{
 
 const state = reactive({
   activeActionText: props.data?.actionTexts[0].texts,
-  numOfLangs: 1,
-  chosenLang: 0,
   activeItem: 0,
+  successPage: false,
   loadingBtn: false
 })
 
@@ -27,6 +26,7 @@ const pushData = () => {
     .post(endpointUrl, props.query)
     .then(function (response) {
       store.extFeedbackActionId = response.data
+      state.successPage = true
       state.activeItem = 1
     })
     .catch(function (error) {
@@ -35,6 +35,11 @@ const pushData = () => {
     .finally(() => {
       state.loadingBtn = false
     })
+}
+
+const cancel = () => {
+  state.successPage = false
+  state.activeItem = 1
 }
 
 const goToPage = (url: string) => {
@@ -48,25 +53,46 @@ const goToPage = (url: string) => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="230px"
+    height="280px"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
       <h1 class="pb-5">{{ state.activeActionText.title }}</h1>
       <p class="pb-1">
         {{ state.activeActionText.text }}
       </p>
-      <div class="text-center">
-        <v-btn class="checkpoint-button" :loading="state.loadingBtn" @click="pushData">
-          {{ state.activeActionText.buttokOk }}
+      <div class="text-end">
+        <v-btn
+          variant="text"
+          class="checkpoint-secondary-button"
+          @click="cancel"
+          :disabled="state.loadingBtn"
+        >
+          {{ state.activeActionText.buttonBack }}
+        </v-btn>
+        <v-btn
+          variant="flat"
+          class="checkpoint-button"
+          :loading="state.loadingBtn"
+          @click="pushData"
+        >
+          {{ state.activeActionText.buttonOk }}
         </v-btn>
       </div>
     </v-carousel-item>
 
     <v-carousel-item :value="1" :disabled="!state.activeItem">
-      <h1 class="pb-5">{{ state.activeActionText.successTitle }}</h1>
-      <p>
-        {{ state.activeActionText.successText }}
-      </p>
+      <div v-if="state.successPage">
+        <h1 class="pb-5">{{ state.activeActionText.successTitle }}</h1>
+        <p>
+          {{ state.activeActionText.successText }}
+        </p>
+      </div>
+      <div v-else>
+        <h1 class="pb-1">{{ state.activeActionText.cancelTitle }}</h1>
+        <p>
+          {{ state.activeActionText.cancelText }}
+        </p>
+      </div>
       <div class="text-center">
         <v-btn class="checkpoint-button" @click="() => goToPage(props.data.building.website)">
           {{ state.activeActionText.buttonCTA }}
