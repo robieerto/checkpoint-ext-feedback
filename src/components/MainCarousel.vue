@@ -50,7 +50,7 @@ const goToPage = (url: string) => {
     color="#705D0D"
     height="230px"
   >
-    <v-carousel-item :value="0">
+    <v-carousel-item :value="0" :disabled="!!state.activeItem">
       <h1 class="pb-5">{{ state.activeActionText.title }}</h1>
       <p class="pb-1">
         {{ state.activeActionText.text }}
@@ -62,7 +62,7 @@ const goToPage = (url: string) => {
       </div>
     </v-carousel-item>
 
-    <v-carousel-item :value="1">
+    <v-carousel-item :value="1" :disabled="!state.activeItem">
       <h1 class="pb-5">{{ state.activeActionText.successTitle }}</h1>
       <p>
         {{ state.activeActionText.successText }}
@@ -77,10 +77,6 @@ const goToPage = (url: string) => {
 </template>
 
 <style lang="scss">
-.v-carousel {
-  pointer-events: none;
-}
-
 .v-btn--icon {
   width: initial !important;
   height: initial !important;

@@ -16,7 +16,7 @@ watch(
 <template>
   <footer>
     <div class="footer">
-      <p v-if="extFeedbackActionId" class="opacity-text">#{{ extFeedbackActionId }}</p>
+      <p v-if="extFeedbackActionId" class="opacity-text mb-1">{{ extFeedbackActionId }}</p>
       <p class="opacity-text mb-0">powered by</p>
       <a href="https://www.ofrules.com" rel="noopener noreferrer">www.ofrules.com</a>
       <br />
