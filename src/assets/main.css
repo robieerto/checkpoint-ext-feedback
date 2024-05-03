@@ -6,7 +6,7 @@ body {
 }
 
 #app {
-  max-width: 1280px;
+  width: 380px;
   margin: 0 auto;
   padding: 0 2rem;
   font-weight: normal;
@@ -32,6 +32,20 @@ body {
 }
 
 .checkpoint-secondary-button > .v-btn__content {
+  font-weight: bold;
+}
+
+.checkpoint-lang-button {
+  background-color: #efe2bb !important;
+  color: var(--color-button) !important;
+  border-radius: 100px !important;
+  border-radius: 100%;
+  height: 48px !important;
+  width: 48px !important;
+  min-width: 0 !important;
+}
+
+.checkpoint-lang-button > .v-btn__content {
   font-weight: bold;
 }
 

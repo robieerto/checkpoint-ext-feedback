@@ -1,7 +1,8 @@
 import { reactive } from 'vue'
 
 const store = reactive({
-  extFeedbackActionId: null
+  extFeedbackActionId: null,
+  chosenLang: ''
 })
 
 export default store

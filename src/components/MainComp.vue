@@ -2,11 +2,13 @@
 import { reactive, watch } from 'vue'
 import { useRoute, type LocationQuery } from 'vue-router'
 import axios from 'axios'
+import store from '@/store'
 
 const route = useRoute()
 
 const state = reactive({
   data: null,
+  langsData: null,
   query: null,
   loading: true
 })
@@ -20,6 +22,8 @@ const getData = (query: LocationQuery) => {
     })
     .then((response) => {
       state.data = response.data
+      store.chosenLang = response.data?.building?.language
+      state.langsData = response.data?.actionTexts
     })
     .catch(function (error) {
       // handle error
@@ -43,7 +47,10 @@ setTimeout(() => {
 
 <template>
   <main>
-    <v-progress-circular v-if="state.loading" indeterminate />
+    <div class="text-center">
+      <v-progress-circular v-if="state.loading" indeterminate />
+    </div>
     <MainCarousel v-if="state.data && route.query" :data="state.data" :query="route.query" />
+    <LangChooser v-if="state.langsData && route.query" :actionTexts="state.langsData" />
   </main>
 </template>

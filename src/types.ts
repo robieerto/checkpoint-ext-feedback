@@ -24,4 +24,5 @@ export interface Texts {
 export interface Building {
   name: string
   website: string
+  language: string
 }

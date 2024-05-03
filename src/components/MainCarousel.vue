@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import axios from 'axios'
 import { type LocationQuery } from 'vue-router'
 
@@ -11,12 +11,22 @@ const props = defineProps<{
   query: LocationQuery
 }>()
 
+const getActualActionText = () =>
+  props.data.actionTexts.find((at) => at.lang == store.chosenLang)?.texts
+
 const state = reactive({
-  activeActionText: props.data?.actionTexts[0].texts,
+  activeActionText: getActualActionText(),
   activeItem: 0,
   successPage: false,
   loadingBtn: false
 })
+
+watch(
+  () => store.chosenLang,
+  () => {
+    state.activeActionText = getActualActionText()
+  }
+)
 
 const endpointUrl = `${__API_URL__}/createOccurrenceExt`
 
@@ -56,9 +66,9 @@ const goToPage = (url: string) => {
     height="280px"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
-      <h1 class="pb-5">{{ state.activeActionText.title }}</h1>
+      <h1 class="pb-5">{{ state.activeActionText?.title }}</h1>
       <p class="pb-1">
-        {{ state.activeActionText.text }}
+        {{ state.activeActionText?.text }}
       </p>
       <div class="text-end">
         <v-btn
@@ -67,7 +77,7 @@ const goToPage = (url: string) => {
           @click="cancel"
           :disabled="state.loadingBtn"
         >
-          {{ state.activeActionText.buttonBack }}
+          {{ state.activeActionText?.buttonBack }}
         </v-btn>
         <v-btn
           variant="flat"
@@ -75,27 +85,27 @@ const goToPage = (url: string) => {
           :loading="state.loadingBtn"
           @click="pushData"
         >
-          {{ state.activeActionText.buttonOk }}
+          {{ state.activeActionText?.buttonOk }}
         </v-btn>
       </div>
     </v-carousel-item>
 
     <v-carousel-item :value="1" :disabled="!state.activeItem">
       <div v-if="state.successPage">
-        <h1 class="pb-5">{{ state.activeActionText.successTitle }}</h1>
+        <h1 class="pb-5">{{ state.activeActionText?.successTitle }}</h1>
         <p>
-          {{ state.activeActionText.successText }}
+          {{ state.activeActionText?.successText }}
         </p>
       </div>
       <div v-else>
-        <h1 class="pb-1">{{ state.activeActionText.cancelTitle }}</h1>
+        <h1 class="pb-1">{{ state.activeActionText?.cancelTitle }}</h1>
         <p>
-          {{ state.activeActionText.cancelText }}
+          {{ state.activeActionText?.cancelText }}
         </p>
       </div>
       <div class="text-center">
         <v-btn class="checkpoint-button" @click="() => goToPage(props.data.building.website)">
-          {{ state.activeActionText.buttonCTA }}
+          {{ state.activeActionText?.buttonCTA }}
         </v-btn>
       </div>
     </v-carousel-item>
