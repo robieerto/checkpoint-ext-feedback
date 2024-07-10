@@ -76,6 +76,7 @@ const selectAction = (extActionId: any, type: any) => {
   </div>
   <div v-if="!store.selectedActionId && allDataLoaded">
     <h1 class="pb-5">Dobrý deň, o čo máte záujem?</h1>
+    <h4 class="pb-1">{{ props.data.checkpointName }}:</h4>
     <div class="py-4" v-for="(action, index) in props.data.actionDataList" :key="index">
       <v-btn
         variant="flat"

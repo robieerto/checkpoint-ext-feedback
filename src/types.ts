@@ -4,6 +4,7 @@ export interface AssociativeArray {
 
 export interface ExtFeedbackAction {
   building: Building
+  checkpointName: string
   actionDataList: any[]
   actionType: string
 }

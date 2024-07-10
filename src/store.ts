@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 const store = reactive({
   extFeedbackActionId: null,
   chosenLang: '',
-  compoundAction: false,
+  isCompoundAction: false,
   selectedActionId: null,
   selectedActionType: null
 })

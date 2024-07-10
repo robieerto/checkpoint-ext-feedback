@@ -11,7 +11,7 @@ const props = defineProps<{
   query: LocationQuery
 }>()
 
-const isScoreFilled = computed(() => state.inputScore !== null && state.inputScore > 0)
+const isScoreFilled = computed(() => state.inputScore > 0)
 
 const getActualActionText = () =>
   props.data.actionDataList.find((at) => at.lang == store.chosenLang)?.texts
@@ -21,7 +21,7 @@ const state = reactive({
   activeItem: 0,
   successPage: false,
   loadingBtn: false,
-  inputScore: null,
+  inputScore: 0,
   inputNote: '',
   error: '',
   showError: false,
@@ -52,7 +52,7 @@ const pushData = () => {
     })
     .then(function (response) {
       store.extFeedbackActionId = response.data
-      if (state.inputScore! < 4) {
+      if (state.inputScore < 4) {
         state.successPage = false
       } else {
         state.successPage = true
@@ -92,7 +92,7 @@ const goToPage = (url: string | undefined) => {
 }
 
 const ctaClick = () => {
-  if (store.compoundAction) {
+  if (store.isCompoundAction) {
     goToPage(props.data.building?.googleUrl)
   } else {
     goToPage(props.data.building?.website)

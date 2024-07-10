@@ -18,7 +18,6 @@ const endpointUrl = `${__API_URL__}/extFeedbackActionData`
 
 const areDataReady = computed(() => state.data && route.query)
 const areLangsDataReady = computed(() => state.langsData && route.query)
-const isCompoundAction = computed(() => state.actionType === 'compound')
 
 const getData = (query: LocationQuery) => {
   axios
@@ -29,7 +28,8 @@ const getData = (query: LocationQuery) => {
       store.chosenLang = response.data?.building?.language ?? 'cz'
       state.data = response.data
       state.actionType = response.data?.actionType
-      if (isCompoundAction.value) {
+      store.isCompoundAction = state.actionType === 'compound'
+      if (store.isCompoundAction) {
         // state.langsData = Object.keys(response.data?.actionDataList).filter(
         //   (propName) => propName !== 'extAction'
         // ) as any
@@ -65,12 +65,12 @@ setTimeout(() => {
       <v-progress-circular v-if="state.loading" indeterminate />
     </div>
     <CompoundAction
-      v-if="areDataReady && isCompoundAction"
+      v-if="areDataReady && store.isCompoundAction"
       :data="state.data"
       :query="route.query"
     />
     <OccurrenceCarousel
-      v-if="areDataReady && !isCompoundAction"
+      v-if="areDataReady && !store.isCompoundAction"
       :data="state.data"
       :query="route.query"
     />

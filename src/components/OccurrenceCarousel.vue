@@ -55,7 +55,7 @@ const pushData = () => {
 }
 
 const cancel = () => {
-  if (store.compoundAction) {
+  if (store.isCompoundAction) {
     state.activeItem = 0
     store.selectedActionId = null
     store.selectedActionType = 'compound' as any
@@ -70,7 +70,7 @@ const goToPage = (url: string | undefined) => {
 }
 
 const ctaClick = () => {
-  if (store.compoundAction) {
+  if (store.isCompoundAction) {
     store.selectedActionType = 'review' as any
   } else {
     if (props.data.building?.website) {
