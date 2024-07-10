@@ -70,7 +70,7 @@ const goToPage = (url: string | undefined) => {
 
 const ctaClick = () => {
   if (store.compoundAction) {
-    // go to review page
+    store.selectedActionType = 'review' as any
   } else {
     goToPage(props.data.building?.website)
   }
