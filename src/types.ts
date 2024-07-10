@@ -89,6 +89,7 @@ export interface ReviewAction {
   buttonCTA: string
   buttonOk: string
   cancelText: string
+  cancelTitle: string
   inputText: string
   successText: string
   successTitle: string

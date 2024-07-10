@@ -52,7 +52,11 @@ const pushData = () => {
     })
     .then(function (response) {
       store.extFeedbackActionId = response.data
-      state.successPage = true
+      if (state.inputScore! < 4) {
+        state.successPage = false
+      } else {
+        state.successPage = true
+      }
       state.activeItem = 1
     })
     .catch(function (error) {
@@ -102,14 +106,14 @@ const ctaClick = () => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="550px"
+    height="500px"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
       <h1 class="pb-5">{{ state.activeActionText?.title }}</h1>
       <p class="pb-1">
         {{ state.activeActionText?.text }}
       </p>
-      <div class="text-center py-3">
+      <div class="text-center py-2">
         <v-rating v-model="state.inputScore" density="default" hover></v-rating>
       </div>
       <span v-if="state.inputScoreError" class="error"
@@ -146,21 +150,21 @@ const ctaClick = () => {
 
     <v-carousel-item :value="1" :disabled="!state.activeItem">
       <div v-if="state.successPage">
-        <h1 class="pb-5">{{ state.activeActionText?.successTitle }}</h1>
+        <h1 class="py-10">{{ state.activeActionText?.successTitle }}</h1>
         <p class="pb-10">
           {{ state.activeActionText?.successText }}
         </p>
+        <div class="text-center">
+          <v-btn class="checkpoint-button" @click="ctaClick">
+            {{ state.activeActionText?.buttonCTA }}
+          </v-btn>
+        </div>
       </div>
-      <!-- <div v-else>
-        <h1 class="pb-1">{{ state.activeActionText?.cancelTitle }}</h1>
+      <div v-else>
+        <h1 class="py-10">{{ state.activeActionText?.cancelTitle }}</h1>
         <p>
           {{ state.activeActionText?.cancelText }}
         </p>
-      </div> -->
-      <div class="text-center">
-        <v-btn class="checkpoint-button" @click="ctaClick">
-          {{ state.activeActionText?.buttonCTA }}
-        </v-btn>
       </div>
     </v-carousel-item>
   </v-carousel>

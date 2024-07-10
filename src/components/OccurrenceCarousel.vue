@@ -73,7 +73,9 @@ const ctaClick = () => {
   if (store.compoundAction) {
     store.selectedActionType = 'review' as any
   } else {
-    goToPage(props.data.building?.website)
+    if (props.data.building?.website) {
+      goToPage(props.data.building?.website)
+    }
   }
 }
 </script>

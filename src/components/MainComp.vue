@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { reactive, watch, computed } from 'vue'
 import { useRoute, type LocationQuery } from 'vue-router'
 import axios from 'axios'
 import store from '@/store'
@@ -16,23 +16,27 @@ const state = reactive({
 
 const endpointUrl = `${__API_URL__}/extFeedbackActionData`
 
+const areDataReady = computed(() => state.data && route.query)
+const areLangsDataReady = computed(() => state.langsData && route.query)
+const isCompoundAction = computed(() => state.actionType === 'compound')
+
 const getData = (query: LocationQuery) => {
   axios
     .get(endpointUrl, {
       params: query
     })
     .then((response) => {
-      store.chosenLang = response.data?.building?.language
+      store.chosenLang = response.data?.building?.language ?? 'cz'
       state.data = response.data
       state.actionType = response.data?.actionType
-      store.compoundAction = state.actionType === 'compound'
-      if (store.compoundAction) {
+      if (isCompoundAction.value) {
         // state.langsData = Object.keys(response.data?.actionDataList).filter(
         //   (propName) => propName !== 'extAction'
         // ) as any
       } else {
         store.selectedActionId = query.extActionId as any
         state.langsData = response.data?.actionDataList
+        console.log('state.langsData', state.langsData)
       }
     })
     .catch(function (error) {
@@ -61,16 +65,16 @@ setTimeout(() => {
       <v-progress-circular v-if="state.loading" indeterminate />
     </div>
     <CompoundAction
-      v-if="state.data && route.query && store.compoundAction"
+      v-if="areDataReady && isCompoundAction"
       :data="state.data"
       :query="route.query"
     />
     <OccurrenceCarousel
-      v-if="state.data && route.query && !store.compoundAction"
+      v-if="areDataReady && !isCompoundAction"
       :data="state.data"
       :query="route.query"
     />
-    <LangChooser v-if="state.langsData && route.query" :actionTexts="state.langsData" />
+    <LangChooser v-if="areLangsDataReady && route.query" :actionTexts="state.langsData" />
   </main>
 </template>
 
