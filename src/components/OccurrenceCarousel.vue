@@ -12,13 +12,15 @@ const props = defineProps<{
 }>()
 
 const getActualActionText = () =>
-  props.data.actionTexts.find((at) => at.lang == store.chosenLang)?.texts
+  props.data.actionDataList.find((at) => at.lang == store.chosenLang)?.texts
 
 const state = reactive({
   activeActionText: getActualActionText(),
   activeItem: 0,
   successPage: false,
-  loadingBtn: false
+  loadingBtn: false,
+  error: '',
+  showError: false
 })
 
 watch(
@@ -33,13 +35,18 @@ const endpointUrl = `${__API_URL__}/createOccurrenceExt`
 const pushData = () => {
   state.loadingBtn = true
   axios
-    .post(endpointUrl, props.query)
+    .post(endpointUrl, {
+      ...props.query,
+      extActionId: store.selectedActionId
+    })
     .then(function (response) {
       store.extFeedbackActionId = response.data
       state.successPage = true
       state.activeItem = 1
     })
     .catch(function (error) {
+      state.error = error.response.data
+      state.showError = true
       console.log(error)
     })
     .finally(() => {
@@ -48,12 +55,26 @@ const pushData = () => {
 }
 
 const cancel = () => {
-  state.successPage = false
-  state.activeItem = 1
+  if (store.compoundAction) {
+    state.activeItem = 0
+    store.selectedActionId = null
+    store.selectedActionType = 'compound' as any
+  } else {
+    state.successPage = false
+    state.activeItem = 1
+  }
 }
 
-const goToPage = (url: string) => {
-  window.location.href = url
+const goToPage = (url: string | undefined) => {
+  window.location.href = url ?? '/'
+}
+
+const ctaClick = () => {
+  if (store.compoundAction) {
+    // go to review page
+  } else {
+    goToPage(props.data.building?.website)
+  }
 }
 </script>
 
@@ -63,7 +84,7 @@ const goToPage = (url: string) => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="280px"
+    height="400px"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
       <h1 class="pb-5">{{ state.activeActionText?.title }}</h1>
@@ -96,6 +117,9 @@ const goToPage = (url: string) => {
         <p>
           {{ state.activeActionText?.successText }}
         </p>
+        <p class="pb-5">
+          {{ state.activeActionText?.successText2 }}
+        </p>
       </div>
       <div v-else>
         <h1 class="pb-1">{{ state.activeActionText?.cancelTitle }}</h1>
@@ -104,25 +128,11 @@ const goToPage = (url: string) => {
         </p>
       </div>
       <div class="text-center">
-        <v-btn class="checkpoint-button" @click="() => goToPage(props.data.building.website)">
+        <v-btn class="checkpoint-button" @click="ctaClick">
           {{ state.activeActionText?.buttonCTA }}
         </v-btn>
       </div>
     </v-carousel-item>
   </v-carousel>
+  <v-snackbar v-model="state.showError" rounded="pill">{{ state.error }}</v-snackbar>
 </template>
-
-<style lang="scss">
-.v-btn--icon {
-  width: initial !important;
-  height: initial !important;
-}
-
-.v-btn--active > .v-btn__overlay {
-  opacity: 0 !important;
-}
-
-.v-btn--active.v-carousel__controls__item .v-icon {
-  opacity: 1 !important;
-}
-</style>

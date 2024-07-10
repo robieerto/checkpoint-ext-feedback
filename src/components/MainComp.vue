@@ -9,6 +9,7 @@ const route = useRoute()
 const state = reactive({
   data: null,
   langsData: null,
+  actionType: null,
   query: null,
   loading: true
 })
@@ -21,9 +22,18 @@ const getData = (query: LocationQuery) => {
       params: query
     })
     .then((response) => {
-      state.data = response.data
       store.chosenLang = response.data?.building?.language
-      state.langsData = response.data?.actionTexts
+      state.data = response.data
+      state.actionType = response.data?.actionType
+      store.compoundAction = state.actionType === 'compound'
+      if (store.compoundAction) {
+        // state.langsData = Object.keys(response.data?.actionDataList).filter(
+        //   (propName) => propName !== 'extAction'
+        // ) as any
+      } else {
+        store.selectedActionId = query.extActionId as any
+        state.langsData = response.data?.actionDataList
+      }
     })
     .catch(function (error) {
       // handle error
@@ -50,7 +60,35 @@ setTimeout(() => {
     <div class="text-center">
       <v-progress-circular v-if="state.loading" indeterminate />
     </div>
-    <MainCarousel v-if="state.data && route.query" :data="state.data" :query="route.query" />
+    <CompoundAction
+      v-if="state.data && route.query && store.compoundAction"
+      :data="state.data"
+      :query="route.query"
+    />
+    <OccurrenceCarousel
+      v-if="state.data && route.query && !store.compoundAction"
+      :data="state.data"
+      :query="route.query"
+    />
     <LangChooser v-if="state.langsData && route.query" :actionTexts="state.langsData" />
   </main>
 </template>
+
+<style lang="scss">
+.v-btn--icon {
+  width: initial !important;
+  height: initial !important;
+}
+
+.v-btn--active > .v-btn__overlay {
+  opacity: 0 !important;
+}
+
+.v-btn--active.v-carousel__controls__item .v-icon {
+  opacity: 1 !important;
+}
+
+.error {
+  color: #66380d;
+}
+</style>

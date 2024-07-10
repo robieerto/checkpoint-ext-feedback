@@ -7,10 +7,15 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    CompoundAction: typeof import('./src/components/CompoundAction.vue')['default']
+    copy: typeof import('./src/components/OrderCarousel copy.vue')['default']
     FooterComp: typeof import('./src/components/FooterComp.vue')['default']
     LangChooser: typeof import('./src/components/LangChooser.vue')['default']
-    MainCarousel: typeof import('./src/components/MainCarousel.vue')['default']
     MainComp: typeof import('./src/components/MainComp.vue')['default']
+    OccurrenceCarousel: typeof import('./src/components/OccurrenceCarousel.vue')['default']
+    OrderCarousel: typeof import('./src/components/OrderCarousel.vue')['default']
+    QuestionCarousel: typeof import('./src/components/QuestionCarousel.vue')['default']
+    ReviewCarousel: typeof import('./src/components/ReviewCarousel.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
