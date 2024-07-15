@@ -30,13 +30,10 @@ const getData = (query: LocationQuery) => {
       state.actionType = response.data?.actionType
       store.isCompoundAction = state.actionType === 'compound'
       if (store.isCompoundAction) {
-        // state.langsData = Object.keys(response.data?.actionDataList).filter(
-        //   (propName) => propName !== 'extAction'
-        // ) as any
+        state.langsData = response.data?.compoundActionList
       } else {
         store.selectedActionId = query.extActionId as any
         state.langsData = response.data?.actionDataList
-        console.log('state.langsData', state.langsData)
       }
     })
     .catch(function (error) {

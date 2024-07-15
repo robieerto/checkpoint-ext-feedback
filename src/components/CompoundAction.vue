@@ -11,7 +11,11 @@ const props = defineProps<{
   query: LocationQuery
 }>()
 
+const getActualActionText = () =>
+  props.data.compoundActionList?.find((at) => at.lang == store.chosenLang)?.texts
+
 const state = reactive({
+  activeActionText: getActualActionText(),
   data: {
     occurrence: null,
     order: null,
@@ -23,6 +27,13 @@ const state = reactive({
 const allDataLoaded = computed(() => {
   return Object.values(state.data).every((data) => data !== null)
 })
+
+watch(
+  () => store.chosenLang,
+  () => {
+    state.activeActionText = getActualActionText()
+  }
+)
 
 watch(
   () => store.selectedActionType,
@@ -37,7 +48,7 @@ watch(
 
 const endpointUrl = `${__API_URL__}/extFeedbackActionData`
 
-const getData = (query: LocationQuery) => {
+const getData = async (query: LocationQuery) => {
   axios
     .get(endpointUrl, {
       params: query
@@ -56,7 +67,7 @@ const getData = (query: LocationQuery) => {
     .finally(() => {})
 }
 
-const getAllData = () => {
+const getAllData = async () => {
   for (const action of props.data.actionDataList) {
     getData({ ...props.query, extActionId: action.extAction })
   }
@@ -75,7 +86,7 @@ const selectAction = (extActionId: any, type: any) => {
     <v-progress-circular v-if="!allDataLoaded" indeterminate />
   </div>
   <div v-if="!store.selectedActionId && allDataLoaded">
-    <h1 class="pb-5">Dobrý deň, o čo máte záujem?</h1>
+    <h1 class="pb-5">{{ state.activeActionText?.title }}</h1>
     <h4 class="pb-1">{{ props.data.checkpointName }}:</h4>
     <div class="py-4" v-for="(action, index) in props.data.actionDataList" :key="index">
       <v-btn

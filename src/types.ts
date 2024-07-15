@@ -6,6 +6,7 @@ export interface ExtFeedbackAction {
   building: Building
   checkpointName: string
   actionDataList: any[]
+  compoundActionList?: any[]
   actionType: string
 }
 
