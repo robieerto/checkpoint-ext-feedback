@@ -11,7 +11,8 @@ const state = reactive({
   langsData: null,
   actionType: null,
   query: null,
-  loading: true
+  loading: true,
+  errorCheckpoint: false
 })
 
 const endpointUrl = `${__API_URL__}/extFeedbackActionData`
@@ -39,6 +40,9 @@ const getData = (query: LocationQuery) => {
     .catch(function (error) {
       // handle error
       console.log(error.response.data)
+      if (error.response.data == 'Checkpoint not found') {
+        state.errorCheckpoint = true
+      }
     })
     .finally(() => {
       state.loading = false
@@ -71,6 +75,7 @@ setTimeout(() => {
       :data="state.data"
       :query="route.query"
     />
+    <ErrorCheckpoint v-if="state.errorCheckpoint && route.query" :query="route.query" />
     <LangChooser v-if="areLangsDataReady && route.query" :actionTexts="state.langsData" />
   </main>
 </template>

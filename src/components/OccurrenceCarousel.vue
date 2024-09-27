@@ -90,9 +90,8 @@ const ctaClick = () => {
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
       <h1 class="pb-5">{{ state.activeActionText?.title }}</h1>
-      <p class="pb-1">
-        {{ state.activeActionText?.text }}
-      </p>
+      <h5 class="pb-1">{{ props.data?.checkpointName }}</h5>
+      <p class="pb-1">{{ state.activeActionText?.text }}</p>
       <div class="text-end">
         <v-btn
           variant="text"
