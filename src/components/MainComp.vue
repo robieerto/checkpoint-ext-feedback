@@ -15,7 +15,7 @@ const state = reactive({
   errorCheckpoint: false
 })
 
-const endpointUrl = `${__API_URL__}/extFeedbackActionData`
+const endpointUrl = `${__API_URL__}/extFeebackActionData`
 
 const areDataReady = computed(() => state.data && route.query)
 const areLangsDataReady = computed(() => state.langsData && route.query)

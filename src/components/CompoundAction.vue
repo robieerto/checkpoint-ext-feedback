@@ -46,7 +46,7 @@ watch(
   }
 )
 
-const endpointUrl = `${__API_URL__}/extFeedbackActionData`
+const endpointUrl = `${__API_URL__}/extFeebackActionData`
 
 const getData = async (query: LocationQuery) => {
   axios
