@@ -7,7 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    CompoundAction: typeof import('./src/components/CompoundAction.vue')['default']
+    ActionComp: typeof import('./src/components/ActionComp.vue')['default']
     ErrorCheckpoint: typeof import('./src/components/ErrorCheckpoint.vue')['default']
     FooterComp: typeof import('./src/components/FooterComp.vue')['default']
     LangChooser: typeof import('./src/components/LangChooser.vue')['default']

@@ -3,12 +3,12 @@ import { ref, watch } from 'vue'
 
 import store from '@/store'
 
-const extFeedbackActionId = ref(store.extFeedbackActionId)
+const extUserActionId = ref(store.extUserActionId)
 
 watch(
-  () => store.extFeedbackActionId,
+  () => store.extUserActionId,
   (value) => {
-    extFeedbackActionId.value = value
+    extUserActionId.value = value
   }
 )
 </script>
@@ -16,7 +16,7 @@ watch(
 <template>
   <footer>
     <div class="footer">
-      <p v-if="extFeedbackActionId" class="opacity-text mb-1">{{ extFeedbackActionId }}</p>
+      <p v-if="extUserActionId" class="opacity-text mb-1">{{ extUserActionId }}</p>
       <p class="opacity-text mb-0">powered by</p>
       <a href="https://www.ofrules.com" rel="noopener noreferrer">www.ofrules.com</a>
       <br />

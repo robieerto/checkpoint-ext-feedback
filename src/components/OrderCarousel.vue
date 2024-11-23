@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { computed, reactive } from 'vue'
 import axios from 'axios'
 import { type LocationQuery } from 'vue-router'
 
@@ -7,15 +7,10 @@ import store from '@/store'
 import * as types from '@/types'
 
 const props = defineProps<{
-  data: types.ExtFeedbackAction
-  query: LocationQuery
+  data: any
 }>()
 
-const getActualActionText = () =>
-  props.data.actionDataList.find((at) => at.lang == store.chosenLang)?.texts
-
 const state = reactive({
-  activeActionText: getActualActionText() as types.OrderAction,
   activeItem: 0,
   successPage: false,
   loadingBtn: false,
@@ -24,12 +19,7 @@ const state = reactive({
   showError: false
 })
 
-watch(
-  () => store.chosenLang,
-  () => {
-    state.activeActionText = getActualActionText()
-  }
-)
+const text = computed(() => props.data.texts?.[store.chosenLang] as types.OrderAction)
 
 const endpointUrl = `${__API_URL__}/createExtUserOrder`
 
@@ -37,12 +27,13 @@ const pushData = () => {
   state.loadingBtn = true
   axios
     .post(endpointUrl, {
-      ...props.query,
+      buildingId: store.buildingId,
+      checkpointId: store.checkpointId,
       extActionId: store.selectedActionId,
       inputs: [state.inputCount.toString()]
     })
     .then(function (response) {
-      store.extFeedbackActionId = response.data
+      store.extActionId = response.data
       state.successPage = true
       state.activeItem = 1
     })
@@ -59,21 +50,16 @@ const pushData = () => {
 const previousPage = () => {
   state.activeItem--
   if (state.activeItem < 0) {
-    store.selectedActionId = null
-    store.selectedActionType = 'compound' as any
+    store.selectedActionType = null
   }
-}
-
-const goToPage = (url: string | undefined) => {
-  window.location.href = url ?? '/'
 }
 
 const ctaClick = () => {
-  if (store.isCompoundAction) {
-    store.selectedActionType = 'review' as any
-  } else {
-    goToPage(props.data.building?.website)
-  }
+  store.selectedActionType = 'review'
+}
+
+const backToMenuClick = () => {
+  store.selectedActionType = null
 }
 </script>
 
@@ -83,17 +69,17 @@ const ctaClick = () => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="400px"
+    height="420px"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
-      <h1 class="pb-5">{{ state.activeActionText?.title }}</h1>
+      <h1 class="pb-5">{{ text?.title }}</h1>
       <p class="pb-1">
-        {{ state.activeActionText?.text }}
+        {{ text?.text }}
       </p>
       <v-text-field
         v-model="state.inputCount"
-        :label="state.activeActionText?.inputText"
-        :hint="state.activeActionText?.typeText"
+        :label="text?.inputText"
+        :hint="text?.typeText"
         class="py-10"
         variant="outlined"
         type="number"
@@ -105,7 +91,7 @@ const ctaClick = () => {
           @click="previousPage"
           :disabled="state.loadingBtn"
         >
-          {{ state.activeActionText?.buttonBack }}
+          {{ text?.buttonBack }}
         </v-btn>
         <v-btn
           variant="flat"
@@ -113,30 +99,27 @@ const ctaClick = () => {
           :loading="state.loadingBtn"
           @click="pushData"
         >
-          {{ state.activeActionText?.buttonOk }}
+          {{ text?.buttonOk }}
         </v-btn>
       </div>
     </v-carousel-item>
 
     <v-carousel-item :value="1" :disabled="!state.activeItem">
       <div v-if="state.successPage">
-        <h1 class="pb-5">{{ state.activeActionText?.successTitle }}</h1>
-        <p class="pb-4">
-          {{ state.activeActionText?.successText }}
+        <h1 class="pb-5">{{ text?.successTitle }}</h1>
+        <p>
+          {{ text?.successText }}
         </p>
-        <p class="pb-4">
-          {{ state.activeActionText?.successText2 }}
+        <p v-if="store.extFeedbackId" class="pb-5">
+          {{ text?.successText2 }}
         </p>
       </div>
-      <!-- <div v-else>
-        <h1 class="pb-1">{{ state.activeActionText?.cancelTitle }}</h1>
-        <p>
-          {{ state.activeActionText?.cancelText }}
-        </p>
-      </div> -->
-      <div class="text-center">
+      <div v-if="store.extFeedbackId" class="text-center">
         <v-btn class="checkpoint-button" @click="ctaClick">
-          {{ state.activeActionText?.buttonCTA }}
+          {{ text?.buttonCTA }}
+        </v-btn>
+        <v-btn variant="text" class="checkpoint-secondary-button mt-5" @click="backToMenuClick">
+          {{ text?.buttonBackMenu }}
         </v-btn>
       </div>
     </v-carousel-item>

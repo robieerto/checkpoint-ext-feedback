@@ -1,23 +1,17 @@
 <script setup lang="ts">
-import { reactive, watch, computed } from 'vue'
+import { reactive, computed } from 'vue'
 import axios from 'axios'
-import { type LocationQuery } from 'vue-router'
 
 import store from '@/store'
 import * as types from '@/types'
 
 const props = defineProps<{
-  data: types.ExtFeedbackAction
-  query: LocationQuery
+  data: any
 }>()
 
 const isScoreFilled = computed(() => state.inputScore > 0)
 
-const getActualActionText = () =>
-  props.data.actionDataList.find((at) => at.lang == store.chosenLang)?.texts
-
 const state = reactive({
-  activeActionText: getActualActionText() as types.ReviewAction,
   activeItem: 0,
   successPage: false,
   loadingBtn: false,
@@ -28,12 +22,7 @@ const state = reactive({
   inputScoreError: false
 })
 
-watch(
-  () => store.chosenLang,
-  () => {
-    state.activeActionText = getActualActionText()
-  }
-)
+const text = computed(() => props.data.texts?.[store.chosenLang] as types.ReviewAction)
 
 const endpointUrl = `${__API_URL__}/createExtUserReview`
 
@@ -45,13 +34,14 @@ const pushData = () => {
   state.loadingBtn = true
   axios
     .post(endpointUrl, {
-      ...props.query,
+      buildingId: store.buildingId,
+      checkpointId: store.checkpointId,
       extActionId: store.selectedActionId,
       score: state.inputScore,
       note: state.inputNote
     })
     .then(function (response) {
-      store.extFeedbackActionId = response.data
+      store.extActionId = response.data
       if (state.inputScore < 4) {
         state.successPage = false
       } else {
@@ -92,11 +82,15 @@ const goToPage = (url: string | undefined) => {
 }
 
 const ctaClick = () => {
-  if (store.isCompoundAction) {
-    goToPage(props.data.building?.googleUrl)
+  if (store.extFeedbackId) {
+    goToPage(store.buildingData?.googleUrl)
   } else {
-    goToPage(props.data.building?.website)
+    goToPage(store.buildingData?.website)
   }
+}
+
+const backToMenuClick = () => {
+  store.selectedActionType = null
 }
 </script>
 
@@ -109,20 +103,18 @@ const ctaClick = () => {
     height="500px"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
-      <h1 class="pb-5">{{ state.activeActionText?.title }}</h1>
+      <h1 class="pb-5">{{ text?.title }}</h1>
       <p class="pb-1">
-        {{ state.activeActionText?.text }}
+        {{ text?.text }}
       </p>
       <div class="text-center py-2">
         <v-rating v-model="state.inputScore" density="default" hover></v-rating>
       </div>
-      <span v-if="state.inputScoreError" class="error"
-        >*{{ state.activeActionText?.requiredScore }}</span
-      >
+      <span v-if="state.inputScoreError" class="error">*{{ text?.requiredScore }}</span>
       <v-text-field
         v-model="state.inputNote"
-        :label="state.activeActionText?.inputText"
-        :hint="state.activeActionText?.typeText"
+        :label="text?.inputText"
+        :hint="text?.typeText"
         class="py-5"
         variant="outlined"
         type="text"
@@ -134,7 +126,7 @@ const ctaClick = () => {
           @click="previousPage"
           :disabled="state.loadingBtn"
         >
-          {{ state.activeActionText?.buttonBack }}
+          {{ text?.buttonBack }}
         </v-btn>
         <v-btn
           variant="flat"
@@ -143,28 +135,33 @@ const ctaClick = () => {
           @click="pushData"
           :disabled="!isScoreFilled"
         >
-          {{ state.activeActionText?.buttonOk }}
+          {{ text?.buttonOk }}
         </v-btn>
       </div>
     </v-carousel-item>
 
     <v-carousel-item :value="1" :disabled="!state.activeItem">
       <div v-if="state.successPage">
-        <h1 class="py-10">{{ state.activeActionText?.successTitle }}</h1>
+        <h1 class="py-10">{{ text?.successTitle }}</h1>
         <p class="pb-10">
-          {{ state.activeActionText?.successText }}
+          {{ text?.successText }}
         </p>
         <div class="text-center">
           <v-btn class="checkpoint-button" @click="ctaClick">
-            {{ state.activeActionText?.buttonCTA }}
+            {{ text?.buttonCTA }}
           </v-btn>
         </div>
       </div>
       <div v-else>
-        <h1 class="py-10">{{ state.activeActionText?.cancelTitle }}</h1>
+        <h1 class="py-10">{{ text?.cancelTitle }}</h1>
         <p>
-          {{ state.activeActionText?.cancelText }}
+          {{ text?.cancelText }}
         </p>
+      </div>
+      <div v-if="store.extFeedbackId" class="text-center">
+        <v-btn variant="text" class="checkpoint-secondary-button mt-5" @click="backToMenuClick">
+          {{ text?.buttonBackMenu }}
+        </v-btn>
       </div>
     </v-carousel-item>
   </v-carousel>

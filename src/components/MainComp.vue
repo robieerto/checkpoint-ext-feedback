@@ -3,22 +3,16 @@ import { reactive, watch, computed } from 'vue'
 import { useRoute, type LocationQuery } from 'vue-router'
 import axios from 'axios'
 import store from '@/store'
+import ActionComp from './ActionComp.vue'
 
 const route = useRoute()
 
 const state = reactive({
-  data: null,
-  langsData: null,
-  actionType: null,
-  query: null,
   loading: true,
   errorCheckpoint: false
 })
 
-const endpointUrl = `${__API_URL__}/extFeebackActionData`
-
-const areDataReady = computed(() => state.data && route.query)
-const areLangsDataReady = computed(() => state.langsData && route.query)
+const endpointUrl = `${__API_URL__}/extFeedbackActionData`
 
 const getData = (query: LocationQuery) => {
   axios
@@ -26,16 +20,20 @@ const getData = (query: LocationQuery) => {
       params: query
     })
     .then((response) => {
-      store.chosenLang = response.data?.building?.language ?? 'cz'
-      state.data = response.data
-      state.actionType = response.data?.actionType
-      store.isCompoundAction = state.actionType === 'compound'
-      if (store.isCompoundAction) {
-        state.langsData = response.data?.compoundActionList
-      } else {
-        store.selectedActionId = query.extActionId as any
-        state.langsData = response.data?.actionDataList
-      }
+      store.buildingId = query.buildingId
+      store.checkpointId = query.checkpointId
+      store.extFeedbackId = query.extFeedbackId
+      store.extActionId = query.extActionId
+
+      store.checkpointName = response.data?.checkpointName
+      store.actionData = response.data?.actionData
+      store.feedbackData = response.data?.extFeedbackData
+      store.buildingData = response.data?.building
+      store.chosenLang = response.data?.building?.language ?? 'sk'
+
+      store.languages = Object.keys(
+        store.extFeedbackId ? store.feedbackData.texts : store.actionData.texts
+      )
     })
     .catch(function (error) {
       // handle error
@@ -55,6 +53,7 @@ watch(
   { immediate: true }
 )
 
+// if query params not present
 setTimeout(() => {
   if (!Object.keys(route.query).length) state.loading = false
 }, 1000)
@@ -65,18 +64,9 @@ setTimeout(() => {
     <div class="text-center">
       <v-progress-circular v-if="state.loading" indeterminate />
     </div>
-    <CompoundAction
-      v-if="areDataReady && store.isCompoundAction"
-      :data="state.data"
-      :query="route.query"
-    />
-    <OccurrenceCarousel
-      v-if="areDataReady && !store.isCompoundAction"
-      :data="state.data"
-      :query="route.query"
-    />
-    <ErrorCheckpoint v-if="state.errorCheckpoint && route.query" :query="route.query" />
-    <LangChooser v-if="areLangsDataReady && route.query" :actionTexts="state.langsData" />
+    <ActionComp v-if="!state.loading" />
+    <ErrorCheckpoint v-if="state.errorCheckpoint" :query="route.query" />
+    <LangChooser v-if="!state.loading" />
   </main>
 </template>
 

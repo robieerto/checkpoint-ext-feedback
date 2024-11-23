@@ -1,23 +1,19 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import store from '@/store'
-import * as types from '@/types'
-
-const props = defineProps<{
-  actionTexts: types.ActionTextsEntity[]
-}>()
 
 const state = reactive({
   buttonLang: ''
 })
 
 const changeButtonLang = () => {
-  props.actionTexts.find((actionText) => {
-    if (actionText.lang !== store.chosenLang) {
-      state.buttonLang = actionText.lang
-      return true
-    }
-  })
+  if (store.languages.length <= 1) {
+    return
+  } else if (store.languages.length <= 2) {
+    state.buttonLang = store.languages.find((lang) => lang !== store.chosenLang)!
+  } else {
+    state.buttonLang = 'XX'
+  }
 }
 
 changeButtonLang()

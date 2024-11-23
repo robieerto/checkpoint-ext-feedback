@@ -5,7 +5,7 @@ export interface AssociativeArray {
 export interface ExtFeedbackAction {
   building: Building
   checkpointName: string
-  actionDataList: any[]
+  actionData: any[]
   compoundActionList?: any[]
   actionType: string
 }
@@ -36,6 +36,7 @@ export interface Building {
 
 export interface OccurenceAction {
   buttonBack: string
+  buttonBackMenu: string
   buttonCTA: string
   buttonOk: string
   cancelText: string
@@ -49,6 +50,7 @@ export interface OccurenceAction {
 
 export interface OrderAction {
   buttonBack: string
+  buttonBackMenu: string
   buttonCTA: string
   buttonOk: string
   cancelText: string
@@ -63,6 +65,7 @@ export interface OrderAction {
 
 export interface QuestionAction {
   buttonBack: string
+  buttonBackMenu: string
   buttonCTA: string
   buttonOk: string
   buttonNext: string
@@ -88,6 +91,7 @@ export interface QuestionAction {
 
 export interface ReviewAction {
   buttonBack: string
+  buttonBackMenu: string
   buttonCTA: string
   buttonOk: string
   cancelText: string
