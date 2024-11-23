@@ -93,7 +93,7 @@ const selectAction = (extActionId: any, type: any) => {
         variant="flat"
         class="checkpoint-button w-100"
         @click="selectAction(action.extAction, action.type)"
-        >{{ action[store.chosenLang] }}</v-btn
+        >{{ action.languages?.find((at: any) => at.lang == store.chosenLang)?.title }}</v-btn
       >
     </div>
   </div>
