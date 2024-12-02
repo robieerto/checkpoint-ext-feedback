@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { reactive, watch, computed } from 'vue'
+import { reactive, watch } from 'vue'
 import { useRoute, type LocationQuery } from 'vue-router'
 import axios from 'axios'
 import store from '@/store'
-import ActionComp from './ActionComp.vue'
+import MainView from './MainView.vue'
 
 const route = useRoute()
 
 const state = reactive({
   loading: true,
+  hasData: false,
   errorCheckpoint: false
 })
 
@@ -20,26 +21,38 @@ const getData = (query: LocationQuery) => {
       params: query
     })
     .then((response) => {
+      state.hasData = true
       store.buildingId = query.buildingId
       store.checkpointId = query.checkpointId
-      store.extFeedbackId = query.extFeedbackId
-      store.extActionId = query.extActionId
+      store.selectedActionId = query.extActionId
 
       store.checkpointName = response.data?.checkpointName
-      store.actionData = response.data?.actionData
-      store.feedbackData = response.data?.extFeedbackData
+      store.simpleActionData = response.data?.actionData
+      store.viewsData = response.data?.viewsDataList
+      store.actionsData = response.data?.actionsDataList
       store.buildingData = response.data?.building
       store.chosenLang = response.data?.building?.language ?? 'sk'
 
-      store.languages = Object.keys(
-        store.extFeedbackId ? store.feedbackData.texts : store.actionData.texts
-      )
+      store.hasViewsData = !!store.viewsData
+      store.isOnlySimpleAction = !!store.simpleActionData && !store.hasViewsData
+
+      if (store.simpleActionData) {
+        store.selectedActionId = store.simpleActionData.id
+        store.selectedAction = store.simpleActionData
+        store.languages = Object.keys(store.simpleActionData.texts)
+      }
+
+      if (store.hasViewsData) {
+        store.selectedView = store.viewsData.find((view: any) => view.id == query.extFeedbackId)
+        store.languages = Object.keys(store.selectedView.texts)
+      }
     })
     .catch(function (error) {
       // handle error
-      console.log(error.response.data)
-      if (error.response.data == 'Checkpoint not found') {
+      if (error?.response?.data == 'Checkpoint not found') {
         state.errorCheckpoint = true
+      } else {
+        console.log(error)
       }
     })
     .finally(() => {
@@ -64,9 +77,9 @@ setTimeout(() => {
     <div class="text-center">
       <v-progress-circular v-if="state.loading" indeterminate />
     </div>
-    <ActionComp v-if="!state.loading" />
     <ErrorCheckpoint v-if="state.errorCheckpoint" :query="route.query" />
-    <LangChooser v-if="!state.loading" />
+    <MainView v-if="!state.loading && state.hasData" />
+    <LangChooser v-if="!state.loading && state.hasData" />
   </main>
 </template>
 

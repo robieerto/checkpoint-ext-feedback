@@ -7,16 +7,17 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    ActionComp: typeof import('./src/components/ActionComp.vue')['default']
+    ActionListView: typeof import('./src/components/ActionListView.vue')['default']
     ErrorCheckpoint: typeof import('./src/components/ErrorCheckpoint.vue')['default']
-    FooterComp: typeof import('./src/components/FooterComp.vue')['default']
+    FooterComponent: typeof import('./src/components/FooterComponent.vue')['default']
     LangChooser: typeof import('./src/components/LangChooser.vue')['default']
-    MainComp: typeof import('./src/components/MainComp.vue')['default']
-    OccurrenceCarousel: typeof import('./src/components/OccurrenceCarousel.vue')['default']
-    OrderCarousel: typeof import('./src/components/OrderCarousel.vue')['default']
-    QuestionCarousel: typeof import('./src/components/QuestionCarousel.vue')['default']
-    ReviewCarousel: typeof import('./src/components/ReviewCarousel.vue')['default']
+    MainView: typeof import('./src/components/MainView.vue')['default']
+    OccurrenceAction: typeof import('./src/components/Actions/OccurrenceAction.vue')['default']
+    OrderAction: typeof import('./src/components/Actions/OrderAction.vue')['default']
+    QuestionAction: typeof import('./src/components/Actions/QuestionAction.vue')['default']
+    ReviewAction: typeof import('./src/components/Actions/ReviewAction.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ViewComponent: typeof import('./src/components/ViewComponent.vue')['default']
   }
 }

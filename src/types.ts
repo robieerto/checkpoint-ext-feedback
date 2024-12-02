@@ -35,6 +35,7 @@ export interface Building {
 }
 
 export interface OccurenceAction {
+  description?: string
   buttonBack: string
   buttonBackMenu: string
   buttonCTA: string
@@ -49,6 +50,7 @@ export interface OccurenceAction {
 }
 
 export interface OrderAction {
+  description?: string
   buttonBack: string
   buttonBackMenu: string
   buttonCTA: string
@@ -59,11 +61,16 @@ export interface OrderAction {
   successText2: string
   successTitle: string
   text: string
+  texts: [string]
   title: string
   typeText: string
+  bottomText: string
+  selectOptions?: string[]
+  checkboxes?: string[]
 }
 
 export interface QuestionAction {
+  description?: string
   buttonBack: string
   buttonBackMenu: string
   buttonCTA: string
@@ -90,6 +97,7 @@ export interface QuestionAction {
 }
 
 export interface ReviewAction {
+  description?: string
   buttonBack: string
   buttonBackMenu: string
   buttonCTA: string

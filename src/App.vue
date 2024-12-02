@@ -1,4 +1,4 @@
 <template>
-  <MainComp />
-  <FooterComp />
+  <ViewComponent />
+  <FooterComponent />
 </template>

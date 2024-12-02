@@ -6,10 +6,6 @@ import { phone } from 'phone'
 import store from '@/store'
 import * as types from '@/types'
 
-const props = defineProps<{
-  data: any
-}>()
-
 const state = reactive({
   activeItem: 0,
   successPage: false,
@@ -24,7 +20,7 @@ const state = reactive({
   phoneCorrect: true
 })
 
-const text = computed(() => props.data.texts?.[store.chosenLang] as types.QuestionAction)
+const text = computed(() => store.selectedAction?.texts?.[store.chosenLang] as types.QuestionAction)
 
 const isTextFilled = computed(() => state.inputText.length > 0)
 const isEmailOrPhoneFilled = computed(
@@ -34,19 +30,21 @@ const isEmailOrPhoneFilled = computed(
 
 const endpointUrl = `${__API_URL__}/createExtUserQuestion`
 
+console.log(store.selectedAction)
+
 const pushData = () => {
   state.loadingBtn = true
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.checkpointId,
-      extActionId: store.selectedActionId,
+      extActionPath: store.selectedAction?.path,
       text: state.inputText,
       email: state.inputEmail,
       phone: state.inputPhone
     })
     .then(function (response) {
-      store.extActionId = response.data
+      store.extUserActionId = response.data
       state.successPage = true
       state.activeItem++
     })
@@ -82,7 +80,7 @@ const validatePhone = () => {
 const previousPage = () => {
   state.activeItem--
   if (state.activeItem < 0) {
-    store.selectedActionType = null
+    store.selectedActionId = null
   }
 }
 
@@ -99,11 +97,11 @@ const nextPage = () => {
 }
 
 const ctaClick = () => {
-  store.selectedActionType = 'review'
+  store.selectedActionId = 'review'
 }
 
 const backToMenuClick = () => {
-  store.selectedActionType = null
+  store.selectedActionId = null
 }
 </script>
 
@@ -204,7 +202,7 @@ const backToMenuClick = () => {
         <p class="pb-10">
           {{ text?.successText }}
         </p>
-        <p v-if="store.extFeedbackId" class="pb-10">
+        <p v-if="store.hasViewsData" class="pb-10">
           {{ text?.successText2 }}
         </p>
       </div>
@@ -214,7 +212,7 @@ const backToMenuClick = () => {
           {{ text?.cancelText }}
         </p>
       </div>
-      <div v-if="store.extFeedbackId" class="text-center">
+      <div v-if="store.hasViewsData" class="text-center">
         <v-btn class="checkpoint-button" @click="ctaClick">
           {{ text?.buttonCTA }}
         </v-btn>

@@ -1,40 +1,48 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import axios from 'axios'
-import { type LocationQuery } from 'vue-router'
 
 import store from '@/store'
 import * as types from '@/types'
 
-const props = defineProps<{
-  data: any
-}>()
+const isScoreFilled = computed(() => state.inputScore > 0)
 
 const state = reactive({
   activeItem: 0,
   successPage: false,
   loadingBtn: false,
-  inputCount: 1,
+  inputScore: 0,
+  inputNote: '',
   error: '',
-  showError: false
+  showError: false,
+  inputScoreError: false
 })
 
-const text = computed(() => props.data.texts?.[store.chosenLang] as types.OrderAction)
+const text = computed(() => store.selectedAction?.texts?.[store.chosenLang] as types.ReviewAction)
 
-const endpointUrl = `${__API_URL__}/createExtUserOrder`
+const endpointUrl = `${__API_URL__}/createExtUserReview`
 
 const pushData = () => {
+  const rules = [validateInputScore]
+  if (!rules.every((rule) => rule())) {
+    return
+  }
   state.loadingBtn = true
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.checkpointId,
-      extActionId: store.selectedActionId,
-      inputs: [state.inputCount.toString()]
+      extActionPath: store.selectedAction?.path,
+      score: state.inputScore,
+      note: state.inputNote
     })
     .then(function (response) {
-      store.extActionId = response.data
-      state.successPage = true
+      store.extUserActionId = response.data
+      if (state.inputScore < 4) {
+        state.successPage = false
+      } else {
+        state.successPage = true
+      }
       state.activeItem = 1
     })
     .catch(function (error) {
@@ -47,19 +55,37 @@ const pushData = () => {
     })
 }
 
+const validateInputScore = () => {
+  const value = state.inputScore
+  if (value === null || value === undefined || isNaN(value)) {
+    state.inputScoreError = true
+    return false
+  }
+  state.inputScoreError = false
+  return true
+}
+
 const previousPage = () => {
   state.activeItem--
   if (state.activeItem < 0) {
-    store.selectedActionType = null
+    store.selectedActionId = null
   }
 }
 
+const goToPage = (url: string | undefined) => {
+  window.location.href = url ?? '/'
+}
+
 const ctaClick = () => {
-  store.selectedActionType = 'review'
+  if (store.hasViewsData) {
+    goToPage(store.buildingData?.googleUrl)
+  } else {
+    goToPage(store.buildingData?.website)
+  }
 }
 
 const backToMenuClick = () => {
-  store.selectedActionType = null
+  store.selectedActionId = null
 }
 </script>
 
@@ -69,20 +95,24 @@ const backToMenuClick = () => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="420px"
+    height="520px"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
       <h1 class="pb-5">{{ text?.title }}</h1>
       <p class="pb-1">
         {{ text?.text }}
       </p>
+      <div class="text-center py-2">
+        <v-rating v-model="state.inputScore" density="default" hover></v-rating>
+      </div>
+      <span v-if="state.inputScoreError" class="error">*{{ text?.requiredScore }}</span>
       <v-text-field
-        v-model="state.inputCount"
+        v-model="state.inputNote"
         :label="text?.inputText"
         :hint="text?.typeText"
-        class="py-10"
+        class="py-5"
         variant="outlined"
-        type="number"
+        type="text"
       ></v-text-field>
       <div class="text-end">
         <v-btn
@@ -98,6 +128,7 @@ const backToMenuClick = () => {
           class="checkpoint-button"
           :loading="state.loadingBtn"
           @click="pushData"
+          :disabled="!isScoreFilled"
         >
           {{ text?.buttonOk }}
         </v-btn>
@@ -106,18 +137,23 @@ const backToMenuClick = () => {
 
     <v-carousel-item :value="1" :disabled="!state.activeItem">
       <div v-if="state.successPage">
-        <h1 class="pb-5">{{ text?.successTitle }}</h1>
-        <p>
+        <h1 class="py-10">{{ text?.successTitle }}</h1>
+        <p class="pb-10">
           {{ text?.successText }}
         </p>
-        <p v-if="store.extFeedbackId" class="pb-5">
-          {{ text?.successText2 }}
+        <div class="text-center">
+          <v-btn class="checkpoint-button" @click="ctaClick">
+            {{ text?.buttonCTA }}
+          </v-btn>
+        </div>
+      </div>
+      <div v-else>
+        <h1 class="py-10">{{ text?.cancelTitle }}</h1>
+        <p>
+          {{ text?.cancelText }}
         </p>
       </div>
-      <div v-if="store.extFeedbackId" class="text-center">
-        <v-btn class="checkpoint-button" @click="ctaClick">
-          {{ text?.buttonCTA }}
-        </v-btn>
+      <div v-if="store.hasViewsData" class="text-center">
         <v-btn variant="text" class="checkpoint-secondary-button mt-5" @click="backToMenuClick">
           {{ text?.buttonBackMenu }}
         </v-btn>
@@ -126,3 +162,13 @@ const backToMenuClick = () => {
   </v-carousel>
   <v-snackbar v-model="state.showError" rounded="pill">{{ state.error }}</v-snackbar>
 </template>
+
+<style lang="scss">
+.v-rating__wrapper {
+  padding: 5px;
+}
+
+.v-rating__item .v-btn .v-icon {
+  color: #705d0d;
+}
+</style>

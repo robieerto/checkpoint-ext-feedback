@@ -1,0 +1,37 @@
+<script setup lang="ts">
+import { watch, computed } from 'vue'
+
+import store from '@/store'
+
+const isDefaultSelectedView = computed(() => store.selectedView?.id === 'default')
+const showCloseButton = computed(
+  () => !store.isOnlySimpleAction && (!isDefaultSelectedView.value || store.selectedActionId)
+)
+
+watch(
+  () => store.selectedActionId,
+  () => {
+    store.selectedAction = store.selectedActionId
+      ? store.actionsData?.find((action: any) => action.id === store.selectedActionId)
+      : null
+  }
+)
+
+function closeAction() {
+  store.selectedActionId = null
+  store.selectedView = store.viewsData?.find((view: any) => view.id === 'default')
+}
+</script>
+
+<template>
+  <div v-if="showCloseButton" class="d-flex justify-end">
+    <v-btn class="close-button" density="default" @click="closeAction" icon flat>
+      <v-icon color="text">mdi-close</v-icon>
+    </v-btn>
+  </div>
+  <ActionListView v-if="!store.selectedActionId" />
+  <OccurrenceAction v-else-if="store.selectedAction?.type === 'occurrence'" />
+  <OrderAction v-else-if="store.selectedAction?.type === 'order'" />
+  <QuestionAction v-else-if="store.selectedAction?.type === 'question'" />
+  <ReviewAction v-else-if="store.selectedAction?.type === 'review'" />
+</template>

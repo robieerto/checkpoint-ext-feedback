@@ -5,10 +5,6 @@ import axios from 'axios'
 import store from '@/store'
 import * as types from '@/types'
 
-const props = defineProps<{
-  data: any
-}>()
-
 const state = reactive({
   activeItem: 0,
   successPage: false,
@@ -17,7 +13,9 @@ const state = reactive({
   showError: false
 })
 
-const text = computed(() => props.data.texts?.[store.chosenLang] as types.OccurenceAction)
+const text = computed(
+  () => store.selectedAction?.texts?.[store.chosenLang] as types.OccurenceAction
+)
 
 const endpointUrl = `${__API_URL__}/createOccurrenceExt`
 
@@ -27,10 +25,10 @@ const pushData = () => {
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.checkpointId,
-      extActionId: store.selectedActionId
+      extActionPath: store.selectedAction?.path
     })
     .then(function (response) {
-      store.extActionId = response.data
+      store.extUserActionId = response.data
       state.successPage = true
       state.activeItem = 1
     })
@@ -45,9 +43,9 @@ const pushData = () => {
 }
 
 const cancel = () => {
-  if (store.extFeedbackId) {
+  if (store.hasViewsData) {
     state.activeItem = 0
-    store.selectedActionType = null
+    store.selectedActionId = null
   } else {
     state.successPage = false
     state.activeItem = 1
@@ -59,17 +57,17 @@ const goToPage = (url: string | undefined) => {
 }
 
 const ctaClick = () => {
-  if (store.extFeedbackId) {
-    store.selectedActionType = 'review' as any
+  if (store.hasViewsData) {
+    store.selectedActionId = 'review'
   } else {
-    if (props.data.building?.website) {
-      goToPage(props.data.building?.website)
+    if (store.buildingData?.website) {
+      goToPage(store.buildingData?.building?.website)
     }
   }
 }
 
 const backToMenuClick = () => {
-  store.selectedActionType = null
+  store.selectedActionId = null
 }
 </script>
 
@@ -83,7 +81,7 @@ const backToMenuClick = () => {
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
       <h1 class="pb-5">{{ text?.title }}</h1>
-      <h5 class="pb-1">{{ props.data?.checkpointName }}</h5>
+      <h5 class="pb-1">{{ store.checkpointName }}</h5>
       <p class="pb-1">{{ text?.text }}</p>
       <div class="text-end">
         <v-btn
@@ -111,7 +109,7 @@ const backToMenuClick = () => {
         <p>
           {{ text?.successText }}
         </p>
-        <p v-if="store.extFeedbackId" class="pb-5">
+        <p v-if="store.hasViewsData" class="pb-5">
           {{ text?.successText2 }}
         </p>
       </div>
@@ -121,7 +119,7 @@ const backToMenuClick = () => {
           {{ text?.cancelText }}
         </p>
       </div>
-      <div v-if="store.extFeedbackId" class="text-center">
+      <div v-if="store.hasViewsData" class="text-center">
         <v-btn class="checkpoint-button" @click="ctaClick">
           {{ text?.buttonCTA }}
         </v-btn>
