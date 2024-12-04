@@ -133,8 +133,8 @@ const backToMenuClick = () => {
     height="auto"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem" height="auto" content-class="pb-16">
-      <h1 class="pb-5">{{ texts?.title }}</h1>
-      <v-list max-height="52vh">
+      <v-list max-height="65vh">
+        <h1>{{ texts?.title }}</h1>
         <p v-if="texts?.text" class="pb-1">
           {{ texts?.text }}
         </p>
@@ -191,26 +191,27 @@ const backToMenuClick = () => {
         <p v-if="texts?.bottomText" class="pb-1">
           {{ texts?.bottomText }}
         </p>
+
+        <div class="text-end">
+          <v-btn
+            variant="text"
+            class="checkpoint-secondary-button"
+            @click="previousPage"
+            :disabled="state.loadingBtn"
+          >
+            {{ texts?.buttonBack }}
+          </v-btn>
+          <v-btn
+            variant="flat"
+            class="checkpoint-button"
+            :loading="state.loadingBtn"
+            :disabled="!isOptionSelected || state.loadingBtn"
+            @click="pushData"
+          >
+            {{ texts?.buttonOk }}
+          </v-btn>
+        </div>
       </v-list>
-      <div class="text-end">
-        <v-btn
-          variant="text"
-          class="checkpoint-secondary-button"
-          @click="previousPage"
-          :disabled="state.loadingBtn"
-        >
-          {{ texts?.buttonBack }}
-        </v-btn>
-        <v-btn
-          variant="flat"
-          class="checkpoint-button"
-          :loading="state.loadingBtn"
-          :disabled="!isOptionSelected || state.loadingBtn"
-          @click="pushData"
-        >
-          {{ texts?.buttonOk }}
-        </v-btn>
-      </div>
     </v-carousel-item>
 
     <v-carousel-item :value="1" :disabled="!state.activeItem">

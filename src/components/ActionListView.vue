@@ -34,17 +34,17 @@ const selectItem = (item: any) => {
 
 <template>
   <div>
-    <h1 class="pt-1">{{ texts?.title }}</h1>
-    <h4 v-if="store.selectedView?.viewType !== 'expansion'" class="pb-0">
-      {{ store.checkpointName }}
-    </h4>
     <div v-if="store.selectedView?.viewType === 'tile'">
-      <v-list max-height="70vh" class="mt-0 pt-0 pb-15">
+      <v-list max-height="75vh" class="mt-0 py-0">
+        <h1 class="pt-1">{{ texts?.title }}</h1>
+        <h4 class="pb-0">
+          {{ store.checkpointName }}
+        </h4>
         <v-row class="m-0">
-          <v-col cols="6" v-for="(item, index) in selectedViewListItems" class="pa-2" :key="index">
+          <v-col cols="6" v-for="(item, index) in selectedViewListItems" class="pa-0" :key="index">
             <v-card
-              class="px-0 py-2"
-              height="160"
+              :class="'mb-4 px-0 pt-1 pb-0' + (index % 2 == 0 ? ' mr-2' : ' ml-2')"
+              height="170"
               :hover="true"
               :title="item?.texts?.[store.chosenLang]?.listTitle"
               :text="item?.texts?.[store.chosenLang]?.listText"
@@ -55,7 +55,9 @@ const selectItem = (item: any) => {
       </v-list>
     </div>
     <div v-else-if="store.selectedView?.viewType === 'expansion'">
-      <v-list max-height="75vh" class="mt-0 pt-0 pb-15">
+      <v-list max-height="70vh" class="mt-0 py-0">
+        <h1 class="pt-1">{{ texts?.title }}</h1>
+
         <div
           v-for="(item, index) in selectedViewListItems"
           :key="index"
@@ -106,6 +108,10 @@ const selectItem = (item: any) => {
       </v-list>
     </div>
     <div v-else>
+      <h1 class="pt-1">{{ texts?.title }}</h1>
+      <h4 class="pb-0">
+        {{ store.checkpointName }}
+      </h4>
       <div v-for="(action, index) in store.selectedView?.actionsData" class="py-4" :key="index">
         <v-btn variant="flat" class="checkpoint-button w-100" @click="selectItem(action.type)">
           {{ action.texts?.[store.chosenLang]?.title }}

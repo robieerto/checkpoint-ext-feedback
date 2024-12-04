@@ -38,7 +38,7 @@ function closeAction() {
 </script>
 
 <template>
-  <div v-if="showCloseButton" class="d-flex justify-end mt-5">
+  <div v-if="showCloseButton" class="d-flex justify-end mt-0 mb-2">
     <v-btn class="close-button" density="default" @click="closeAction" icon flat>
       <v-icon color="text">mdi-close</v-icon>
     </v-btn>
