@@ -218,7 +218,7 @@ const backToMenuClick = () => {
       <div v-if="state.successPage">
         <h1 class="pb-0">{{ texts?.successTitle }}</h1>
         <v-list max-height="62vh">
-          <v-card class="mx-auto mb-5 py-1">
+          <v-card class="mx-auto mb-5 pt-1 pb-2">
             <v-card-title>Rezervácia</v-card-title>
             <v-card-text>
               {{ state.reservationText }}
@@ -238,7 +238,7 @@ const backToMenuClick = () => {
         </v-btn>
         <v-btn
           variant="text"
-          class="checkpoint-secondary-button mt-5 mb-10"
+          class="checkpoint-secondary-button mt-5 mb-12"
           @click="backToMenuClick"
         >
           {{ texts?.buttonBackMenu }}

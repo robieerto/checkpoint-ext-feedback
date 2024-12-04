@@ -2,6 +2,7 @@
 import { computed, watch, ref } from 'vue'
 
 import store from '@/store'
+import ActionListExpandItem from './ActionListExpandItem.vue'
 
 const texts = computed(() => store.selectedView?.texts?.[store.chosenLang])
 const selectedViewListItems = ref([] as any[])
@@ -9,12 +10,11 @@ const selectedViewListItems = ref([] as any[])
 watch(
   () => store.selectedView,
   () => {
-    selectedViewListItems.value = store.selectedView?.actions.map((id: any) => ({
-      expanded: false,
-      ...(store.actionsData.find((action: any) => action.id === id) ??
-        store.viewsData.find((action: any) => action.id === id))
-    }))
-    // console.log(selectedViewListItems.value)
+    selectedViewListItems.value = store.selectedView?.actions.map(
+      (id: any) =>
+        store.actionsData.find((action: any) => action.id === id) ??
+        store.viewsData.find((action: any) => action.id === id)
+    )
   },
   { immediate: true }
 )
@@ -58,39 +58,8 @@ const selectItem = (item: any) => {
       <v-list max-height="70vh" class="mt-0 py-0">
         <h1 class="pt-1">{{ texts?.title }}</h1>
 
-        <div
-          v-for="(item, index) in selectedViewListItems"
-          :key="index"
-          @click="item.expanded = !item.expanded"
-        >
-          <v-card class="mx-auto mb-4 py-2">
-            <v-card-title>{{ item?.texts?.[store.chosenLang]?.listTitle }}</v-card-title>
-            <v-expand-transition>
-              <!-- <div v-show="item.expanded"> -->
-              <v-card-text>
-                {{ item?.texts?.[store.chosenLang]?.listText }}
-              </v-card-text>
-              <!-- </div> -->
-            </v-expand-transition>
-            <v-card-actions>
-              <v-btn
-                :icon="item.expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-                color="#8E8E93"
-                density="default"
-                @click="() => {}"
-              ></v-btn>
-              <v-card-title>{{ item?.texts?.[store.chosenLang]?.listBottomText }}</v-card-title>
-              <v-spacer></v-spacer>
-              <v-btn
-                v-show="item?.texts?.[store.chosenLang]?.listCTAButton"
-                variant="flat"
-                class="checkpoint-button mr-2"
-                @click="selectItem(item)"
-              >
-                {{ item?.texts?.[store.chosenLang]?.listCTAButton }}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+        <div v-for="(item, index) in selectedViewListItems" :key="index">
+          <ActionListExpandItem :item="item" @selectItem="selectItem" />
         </div>
 
         <div v-if="texts?.buttonCTA" class="text-center px-5">
