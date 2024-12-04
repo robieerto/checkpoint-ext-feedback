@@ -58,15 +58,21 @@ export interface OrderAction {
   cancelText: string
   inputText: string
   successText: string
-  successText2: string
+  ctaText?: string
   successTitle: string
   text: string
   texts: [string]
   title: string
-  typeText: string
+  typeText?: string
+  typeNumberText?: string
   bottomText: string
   selectOptions?: string[]
   checkboxes?: string[]
+  checkboxesText?: string[]
+  selectionText?: string
+  stringInputText?: string
+  labelText?: string
+  reservationText?: string
 }
 
 export interface QuestionAction {

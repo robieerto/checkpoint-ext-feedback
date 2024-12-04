@@ -30,8 +30,6 @@ const isEmailOrPhoneFilled = computed(
 
 const endpointUrl = `${__API_URL__}/createExtUserQuestion`
 
-console.log(store.selectedAction)
-
 const pushData = () => {
   state.loadingBtn = true
   axios

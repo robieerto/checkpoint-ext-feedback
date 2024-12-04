@@ -15,8 +15,10 @@ import store from '@/store'
 
 <style scoped>
 .footer {
+  background-color: #fff8ef;
   text-align: center;
-  padding: 10px;
+  padding-top: 0px;
+  padding-bottom: 5px;
   position: fixed;
   left: 0;
   bottom: 0;

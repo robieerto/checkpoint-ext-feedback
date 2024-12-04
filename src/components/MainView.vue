@@ -11,9 +11,23 @@ const showCloseButton = computed(
 watch(
   () => store.selectedActionId,
   () => {
-    store.selectedAction = store.selectedActionId
-      ? store.actionsData?.find((action: any) => action.id === store.selectedActionId)
-      : null
+    if (store.selectedActionId) {
+      const selectedAction = (store.selectedAction = store.actionsData?.find(
+        (action: any) => action.id === store.selectedActionId
+      ))
+      if (selectedAction) {
+        store.selectedAction = selectedAction
+      } else {
+        store.selectedView = store.viewsData?.find(
+          (view: any) => view.id === store.selectedActionId
+        )
+        store.selectedAction = null
+        store.selectedActionId = null
+      }
+    } else {
+      store.selectedAction = null
+    }
+    store.extUserActionId = null
   }
 )
 
@@ -24,7 +38,7 @@ function closeAction() {
 </script>
 
 <template>
-  <div v-if="showCloseButton" class="d-flex justify-end">
+  <div v-if="showCloseButton" class="d-flex justify-end mt-5">
     <v-btn class="close-button" density="default" @click="closeAction" icon flat>
       <v-icon color="text">mdi-close</v-icon>
     </v-btn>

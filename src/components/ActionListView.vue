@@ -3,7 +3,7 @@ import { computed, watch, ref } from 'vue'
 
 import store from '@/store'
 
-const text = computed(() => store.selectedView?.texts?.[store.chosenLang])
+const texts = computed(() => store.selectedView?.texts?.[store.chosenLang])
 const selectedViewListItems = ref([] as any[])
 
 watch(
@@ -34,26 +34,28 @@ const selectItem = (item: any) => {
 
 <template>
   <div>
-    <h1 class="pb-5">{{ text?.title }}</h1>
-    <h4 v-if="store.selectedView?.viewType !== 'expansion'" class="pb-1">
+    <h1 class="pt-1">{{ texts?.title }}</h1>
+    <h4 v-if="store.selectedView?.viewType !== 'expansion'" class="pb-0">
       {{ store.checkpointName }}
     </h4>
     <div v-if="store.selectedView?.viewType === 'tile'">
-      <v-row>
-        <v-col cols="6" v-for="(item, index) in selectedViewListItems" class="pa-2" :key="index">
-          <v-card
-            class="px-0 py-2"
-            height="160"
-            :hover="true"
-            :title="item?.texts?.[store.chosenLang]?.listTitle"
-            :text="item?.texts?.[store.chosenLang]?.listText"
-            @click="selectItem(item)"
-          ></v-card>
-        </v-col>
-      </v-row>
+      <v-list max-height="70vh" class="mt-0 pt-0 pb-15">
+        <v-row class="m-0">
+          <v-col cols="6" v-for="(item, index) in selectedViewListItems" class="pa-2" :key="index">
+            <v-card
+              class="px-0 py-2"
+              height="160"
+              :hover="true"
+              :title="item?.texts?.[store.chosenLang]?.listTitle"
+              :text="item?.texts?.[store.chosenLang]?.listText"
+              @click="selectItem(item)"
+            ></v-card>
+          </v-col>
+        </v-row>
+      </v-list>
     </div>
     <div v-else-if="store.selectedView?.viewType === 'expansion'">
-      <v-list max-height="78vh">
+      <v-list max-height="75vh" class="mt-0 pt-0 pb-15">
         <div
           v-for="(item, index) in selectedViewListItems"
           :key="index"
@@ -87,6 +89,19 @@ const selectItem = (item: any) => {
               </v-btn>
             </v-card-actions>
           </v-card>
+        </div>
+
+        <div v-if="texts?.buttonCTA" class="text-center px-5">
+          <p v-if="texts?.buttonCTA" class="pt-5">
+            {{ texts?.ctaText }}
+          </p>
+          <v-btn
+            v-if="texts?.buttonCTA"
+            class="checkpoint-button"
+            @click="() => (store.selectedActionId = store.selectedView?.upsellId)"
+          >
+            {{ texts?.buttonCTA }}
+          </v-btn>
         </div>
       </v-list>
     </div>

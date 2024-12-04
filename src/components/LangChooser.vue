@@ -42,7 +42,8 @@ const changeLang = () => {
   align-items: center;
   user-select: none;
   position: absolute;
-  bottom: 80px;
+  bottom: 30px;
+  z-index: 1000;
 }
 .fab-container .fab .fab-content {
   display: flex;
