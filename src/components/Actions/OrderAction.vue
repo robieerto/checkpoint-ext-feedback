@@ -224,10 +224,15 @@ const backToMenuClick = () => {
               {{ state.reservationText }}
             </v-card-text>
           </v-card>
-          <p>
+          <p v-if="texts?.successText" class="pb-5">
             {{ texts?.successText }}
           </p>
-          <p v-if="store.hasViewsData && texts?.buttonCTA" class="pt-5">
+          <div v-if="texts?.successTexts" class="pb-5">
+            <p v-for="(text, index) in texts?.successTexts" :key="index">
+              {{ text }}
+            </p>
+          </div>
+          <p v-if="store.hasViewsData && texts?.buttonCTA">
             {{ texts?.ctaText }}
           </p>
         </v-list>

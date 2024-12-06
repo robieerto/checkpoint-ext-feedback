@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, computed } from 'vue'
+import { watch, computed, nextTick } from 'vue'
 
 import store from '@/store'
 
@@ -11,23 +11,23 @@ const showCloseButton = computed(
 watch(
   () => store.selectedActionId,
   () => {
-    if (store.selectedActionId) {
-      const selectedAction = (store.selectedAction = store.actionsData?.find(
-        (action: any) => action.id === store.selectedActionId
-      ))
-      if (selectedAction) {
-        store.selectedAction = selectedAction
-      } else {
-        store.selectedView = store.viewsData?.find(
-          (view: any) => view.id === store.selectedActionId
-        )
-        store.selectedAction = null
-        store.selectedActionId = null
-      }
-    } else {
-      store.selectedAction = null
-    }
+    store.selectedAction = null
     store.extUserActionId = null
+    nextTick(() => {
+      if (store.selectedActionId) {
+        const selectedAction = (store.selectedAction = store.actionsData?.find(
+          (action: any) => action.id === store.selectedActionId
+        ))
+        if (selectedAction) {
+          store.selectedAction = selectedAction
+        } else {
+          store.selectedView = store.viewsData?.find(
+            (view: any) => view.id === store.selectedActionId
+          )
+          store.selectedActionId = null
+        }
+      }
+    })
   }
 )
 

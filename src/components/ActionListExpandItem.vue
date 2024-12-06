@@ -14,35 +14,33 @@ const emit = defineEmits<{
 const isExpanded = ref(false)
 
 const texts = computed(() => props.item?.texts?.[store.chosenLang])
-const listTextWords = computed(() => {
-  return texts?.value?.listText?.split(' ')
-})
-const listTextWordsLen = computed(() => {
-  return listTextWords.value?.length
-})
-const displayText = computed(() => {
-  if (isExpanded.value) {
-    return texts?.value?.listText
-  } else {
-    if (listTextWordsLen.value < 25) {
-      return texts?.value?.listText
-    } else {
-      return listTextWords.value?.slice(0, 25).join(' ') + '...'
-    }
-  }
-})
+const listTextsExpanded = computed(() =>
+  texts.value?.listTexts?.length > 1 ? texts.value?.listTexts?.slice(1) : null
+)
+
+const selectItem = () => {
+  emit('selectItem', props.item)
+}
 </script>
 
 <template>
   <v-card class="mx-auto mb-4 py-2" @click="isExpanded = !isExpanded">
     <v-card-title>{{ texts?.listTitle }}</v-card-title>
-    <v-card-text v-show="!isExpanded || listTextWordsLen < 25">
-      {{ displayText }}
+    <v-card-text v-if="texts?.listText">
+      {{ texts?.listText }}
+    </v-card-text>
+    <v-card-text v-if="texts?.listTexts">
+      {{ texts?.listTexts?.[0] }}
     </v-card-text>
     <v-expand-transition>
-      <div v-show="isExpanded && listTextWordsLen >= 25">
-        <v-card-text>
-          {{ displayText }}
+      <div v-show="isExpanded && listTextsExpanded">
+        <v-card-text v-for="(listText, index) in listTextsExpanded" :key="index">
+          {{ listText }}
+        </v-card-text>
+        <v-card-text v-for="(link, index) in texts?.listLinks" :key="index">
+          <a :href="link?.url" target="_blank" @click.stop>
+            {{ link?.text }}
+          </a>
         </v-card-text>
       </div>
     </v-expand-transition>
@@ -59,16 +57,10 @@ const displayText = computed(() => {
         v-show="texts?.listCTAButton"
         variant="flat"
         class="checkpoint-button mr-2"
-        @click="emit('selectItem', item)"
+        @click="selectItem"
       >
         {{ texts?.listCTAButton }}
       </v-btn>
     </v-card-actions>
   </v-card>
 </template>
-
-<style scoped>
-.v-card-text {
-  padding-top: 0;
-}
-</style>
