@@ -68,12 +68,14 @@ export interface OrderAction {
   bottomText: string
   selectOptions?: string[]
   checkboxes?: string[]
-  checkboxesText?: string[]
+  checkboxesTexts?: string[]
   selectionText?: string
   stringInputText?: string
   labelText?: string
   reservationText?: string
   successTexts?: string[]
+  reservation?: string
+  reservationFull?: string
 }
 
 export interface QuestionAction {

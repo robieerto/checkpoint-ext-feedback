@@ -5,29 +5,54 @@ import axios from 'axios'
 import store from '@/store'
 import * as types from '@/types'
 
+const endpointUrl = `${__API_URL__}/createExtUserOrder`
+
 const state = reactive({
   activeItem: 0,
   successPage: false,
   loadingBtn: false,
   error: '',
-  showError: false,
-  reservationText: ''
+  showError: false
 })
 
 const inputs = reactive({
   number: 1,
   text: '',
-  selectedOption: null,
+  selectedOption: null as number | null,
   checkboxes: {} as any
 })
 
 const noteFocused = ref(false)
 
 const texts = computed(() => store.selectedAction?.texts?.[store.chosenLang] as types.OrderAction)
+const reservationText = computed(() => {
+  let text = texts.value?.reservationText!
+  const textInputs = createTextInputs()
+  textInputs?.forEach((input, index) => {
+    text = text?.replace(`$${index + 1}`, input ?? '')
+  })
+  return text
+})
+const reservation = computed(() => store.selectedAction?.reservation)
+const reservationDate = computed(() => {
+  if (reservation.value) {
+    const reservationDate = new Date()
+    if (reservation.value?.type === 'tomorrow') {
+      reservationDate.setDate(reservationDate.getDate() + 1)
+    }
+    return reservationDate.toLocaleDateString('sk-SK').replace(/\s/g, '')
+  } else {
+    return null
+  }
+})
 const options = computed(() => store.selectedAction.options)
-
 const isOptionSelected = computed(() =>
-  options?.value?.selection ? !!inputs.selectedOption : true
+  options?.value?.selection ? inputs.selectedOption !== null : true
+)
+const areAllOptionsBooked = computed(() =>
+  options?.value?.selection
+    ? texts.value?.selectOptions?.every((_, index) => isOptionDisabled(index))
+    : false
 )
 
 watch(
@@ -39,15 +64,17 @@ watch(
   }
 )
 
-const endpointUrl = `${__API_URL__}/createExtUserOrder`
-
 const createPostInputs = () => {
   const postInputs = []
   if (options.value?.inputNumber) {
     postInputs.push(inputs.number.toString())
   }
   if (options.value?.selection) {
-    postInputs.push(inputs.selectedOption)
+    postInputs.push(
+      store.selectedAction?.texts?.[store.buildingData?.language ?? 'sk']?.selectOptions?.[
+        inputs.selectedOption!
+      ]
+    )
   }
   if (options.value?.inputText) {
     postInputs.push(inputs.text)
@@ -66,23 +93,39 @@ const createPostInputs = () => {
   return postInputs
 }
 
-const createReservationText = (inputs: (string | null)[]) => {
-  let reservationText = texts.value?.reservationText!
-  inputs.forEach((input, index) => {
-    reservationText = reservationText?.replace(`$${index + 1}`, input ?? '')
-  })
-  state.reservationText = reservationText
+const createTextInputs = () => {
+  const textInputs = []
+  if (options.value?.inputNumber) {
+    textInputs.push(inputs.number.toString())
+  }
+  if (options.value?.selection) {
+    textInputs.push(texts.value?.selectOptions?.[inputs.selectedOption!])
+  }
+  if (options.value?.inputText) {
+    textInputs.push(inputs.text)
+  }
+  if (options.value?.checkbox) {
+    const buildingLanguageTexts = texts.value?.checkboxesTexts
+
+    const checkedTexts = Object.keys(inputs.checkboxes)
+      .filter((key) => inputs.checkboxes[key])
+      .map((_, index) => buildingLanguageTexts?.[index])
+      .join(' ')
+
+    textInputs.push(checkedTexts)
+  }
+  return textInputs
 }
 
 const pushData = () => {
   state.loadingBtn = true
-  const postInputs = createPostInputs()
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.checkpointId,
       extActionPath: store.selectedAction?.path,
-      inputs: postInputs
+      selectedOption: inputs.selectedOption,
+      inputs: createPostInputs()
     })
     .then(function (response) {
       store.extUserActionId = response.data
@@ -95,8 +138,14 @@ const pushData = () => {
       console.log(error)
     })
     .finally(() => {
-      createReservationText(postInputs)
       state.loadingBtn = false
+      createTextInputs()
+      if (reservation.value) {
+        if (!reservation.value.dates) {
+          store.selectedAction.reservation.dates = []
+        }
+        store.selectedAction.reservation.dates[inputs.selectedOption!] = reservationDate.value
+      }
     })
 }
 
@@ -104,8 +153,11 @@ const validateInteger = (event: any) => {
   const value = event.target.value
   // Remove any non-digit characters
   const integerValue = value.replace(/\D/g, '')
-  // Update the v-model value
   inputs.number = integerValue
+}
+
+const isOptionDisabled = (index: number) => {
+  return reservation.value ? reservation.value?.dates?.[index] === reservationDate.value : false
 }
 
 const previousPage = () => {
@@ -158,12 +210,16 @@ const backToMenuClick = () => {
         <p v-if="texts?.selectionText">
           {{ texts?.selectionText }}
         </p>
+        <span v-if="areAllOptionsBooked" class="error font-weight-bold">{{
+          texts?.reservationFull
+        }}</span>
         <v-radio-group v-if="options?.selection" v-model="inputs.selectedOption" color="#705d0d">
           <v-radio
             v-for="(option, index) in texts?.selectOptions"
             :label="option"
-            :value="option"
+            :value="index"
             :key="index"
+            :disabled="isOptionDisabled(index)"
           ></v-radio>
         </v-radio-group>
         <p v-if="texts?.stringInputText">
@@ -219,9 +275,9 @@ const backToMenuClick = () => {
         <h1 class="pb-0">{{ texts?.successTitle }}</h1>
         <v-list max-height="62vh">
           <v-card class="mx-auto mb-5 pt-1 pb-2">
-            <v-card-title>Rezervácia</v-card-title>
+            <v-card-title>{{ texts?.reservation }}</v-card-title>
             <v-card-text>
-              {{ state.reservationText }}
+              {{ reservationText }}
             </v-card-text>
           </v-card>
           <p v-if="texts?.successText" class="pb-5">
