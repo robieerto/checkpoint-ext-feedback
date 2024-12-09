@@ -131,6 +131,13 @@ const pushData = () => {
       store.extUserActionId = response.data
       state.successPage = true
       state.activeItem = 1
+      createTextInputs()
+      if (reservation.value) {
+        if (!reservation.value.dates) {
+          store.selectedAction.reservation.dates = []
+        }
+        store.selectedAction.reservation.dates[inputs.selectedOption!] = reservationDate.value
+      }
     })
     .catch(function (error) {
       state.error = error.response.data
@@ -139,13 +146,6 @@ const pushData = () => {
     })
     .finally(() => {
       state.loadingBtn = false
-      createTextInputs()
-      if (reservation.value) {
-        if (!reservation.value.dates) {
-          store.selectedAction.reservation.dates = []
-        }
-        store.selectedAction.reservation.dates[inputs.selectedOption!] = reservationDate.value
-      }
     })
 }
 
