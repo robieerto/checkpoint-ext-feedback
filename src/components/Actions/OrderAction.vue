@@ -18,11 +18,12 @@ const state = reactive({
 const inputs = reactive({
   number: 1,
   text: '',
-  selectedOption: null as number | null,
+  selectedOption: setSelectedOption() as number | null,
   checkboxes: {} as any
 })
 
 const noteFocused = ref(false)
+const selectedOptionIsDisabled = ref(false)
 
 const texts = computed(() => store.selectedAction?.texts?.[store.chosenLang] as types.OrderAction)
 const reservationText = computed(() => {
@@ -34,8 +35,9 @@ const reservationText = computed(() => {
   return text
 })
 const reservation = computed(() => store.selectedAction?.reservation)
+const isReservationExclusive = computed(() => !!reservation.value?.exclusive)
 const reservationDate = computed(() => {
-  if (reservation.value) {
+  if (isReservationExclusive.value) {
     const reservationDate = new Date()
     if (reservation.value?.type === 'tomorrow') {
       reservationDate.setDate(reservationDate.getDate() + 1)
@@ -49,19 +51,10 @@ const options = computed(() => store.selectedAction.options)
 const isOptionSelected = computed(() =>
   options?.value?.selection ? inputs.selectedOption !== null : true
 )
-const areAllOptionsBooked = computed(() =>
+const areAllOptionsDisabled = computed(() =>
   options?.value?.selection
     ? texts.value?.selectOptions?.every((_, index) => isOptionDisabled(index))
     : false
-)
-
-watch(
-  () => inputs.number,
-  () => {
-    if (inputs.number && inputs.number < 1) {
-      inputs.number = 1
-    }
-  }
 )
 
 const createPostInputs = () => {
@@ -132,11 +125,11 @@ const pushData = () => {
       state.successPage = true
       state.activeItem = 1
       createTextInputs()
-      if (reservation.value) {
+      if (isReservationExclusive.value) {
         if (!reservation.value.dates) {
-          store.selectedAction.reservation.dates = []
+          reservation.value.dates = []
         }
-        store.selectedAction.reservation.dates[inputs.selectedOption!] = reservationDate.value
+        reservation.value.dates[inputs.selectedOption!] = reservationDate.value
       }
     })
     .catch(function (error) {
@@ -156,9 +149,53 @@ const validateInteger = (event: any) => {
   inputs.number = integerValue
 }
 
-const isOptionDisabled = (index: number) => {
-  return reservation.value ? reservation.value?.dates?.[index] === reservationDate.value : false
+const isOptionReserved = (index: number) =>
+  isReservationExclusive.value && reservation.value?.dates?.[index] === reservationDate.value
+
+const isOptionAfterStartTime = (index: number) => {
+  const optionStartTime = reservation.value?.times?.[index]?.start
+  if (optionStartTime) {
+    const hoursInAdvance = reservation.value?.hoursInAdvance ?? 0
+    const currentDatePlusAdvance = new Date()
+    currentDatePlusAdvance.setHours(currentDatePlusAdvance.getHours() + hoursInAdvance)
+    const currentTimePlusAdvance = currentDatePlusAdvance.getTime()
+    const [hours, minutes] = optionStartTime.split(':')
+    const optionDate = new Date()
+    optionDate.setHours(Number(hours))
+    optionDate.setMinutes(Number(minutes))
+    const optionTime = optionDate.getTime()
+    return currentTimePlusAdvance + hoursInAdvance > optionTime
+  } else {
+    return false
+  }
 }
+
+const isOptionDisabled = (index: number) => {
+  if (reservation.value) {
+    return isOptionReserved(index) || isOptionAfterStartTime(index)
+  } else {
+    return false
+  }
+}
+
+watch(
+  () => inputs.number,
+  () => {
+    if (inputs.number && inputs.number < 1) {
+      inputs.number = 1
+    }
+  }
+)
+
+watch(
+  () => inputs.selectedOption,
+  () => {
+    if (inputs.selectedOption !== null && isOptionDisabled(inputs.selectedOption)) {
+      selectedOptionIsDisabled.value = true
+    }
+  },
+  { immediate: true }
+)
 
 const previousPage = () => {
   state.activeItem--
@@ -173,6 +210,15 @@ const ctaClick = () => {
 
 const backToMenuClick = () => {
   store.selectedActionId = null
+}
+
+function setSelectedOption() {
+  const defaultOption = store.selectedAction?.reservation?.times?.[0]
+  if (!store.selectedAction?.options?.selection && defaultOption) {
+    return 0
+  } else {
+    return null
+  }
 }
 </script>
 
@@ -210,7 +256,7 @@ const backToMenuClick = () => {
         <p v-if="texts?.selectionText">
           {{ texts?.selectionText }}
         </p>
-        <span v-if="areAllOptionsBooked" class="error font-weight-bold">{{
+        <span v-if="areAllOptionsDisabled" class="error font-weight-bold">{{
           texts?.reservationFull
         }}</span>
         <v-radio-group v-if="options?.selection" v-model="inputs.selectedOption" color="#705d0d">
@@ -261,7 +307,7 @@ const backToMenuClick = () => {
             variant="flat"
             class="checkpoint-button"
             :loading="state.loadingBtn"
-            :disabled="!isOptionSelected || state.loadingBtn"
+            :disabled="selectedOptionIsDisabled || !isOptionSelected || state.loadingBtn"
             @click="pushData"
           >
             {{ texts?.buttonOk }}
