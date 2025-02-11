@@ -41,14 +41,29 @@ const selectItem = (item: any) => {
           {{ store.checkpointName }}
         </h4>
         <v-row class="m-0">
-          <v-col cols="6" v-for="(item, index) in selectedViewListItems" class="pa-0" :key="index">
+          <v-col
+            v-for="(item, index) in selectedViewListItems"
+            :cols="item.type !== 'info' ? 6 : 12"
+            class="pa-0"
+            :key="index"
+          >
             <v-card
+              v-if="item.type !== 'info'"
               :class="'mb-4 px-0 pt-1 pb-0' + (index % 2 == 0 ? ' mr-2' : ' ml-2')"
               height="170"
               :hover="true"
               :title="item?.texts?.[store.chosenLang]?.listTitle"
               :text="item?.texts?.[store.chosenLang]?.listText"
               @click="selectItem(item)"
+            ></v-card>
+            <v-card
+              v-else
+              :class="'mb-4 pt-1 pb-0 text-center'"
+              height="60"
+              :hover="false"
+              :title="item?.texts?.[store.chosenLang]?.listTitle"
+              :text="item?.texts?.[store.chosenLang]?.listText"
+              flat
             ></v-card>
           </v-col>
         </v-row>
