@@ -38,14 +38,16 @@ function closeAction() {
 </script>
 
 <template>
-  <div v-if="showCloseButton" class="d-flex justify-end mt-0 mb-2">
-    <v-btn class="close-button" density="default" @click="closeAction" icon flat>
-      <v-icon color="text">mdi-close</v-icon>
-    </v-btn>
+  <div id="main-view">
+    <div v-if="showCloseButton" class="d-flex justify-end mt-0 mb-2">
+      <v-btn class="close-button" density="default" @click="closeAction" icon flat>
+        <v-icon color="text">mdi-close</v-icon>
+      </v-btn>
+    </div>
+    <ActionListView v-if="!store.selectedActionId" />
+    <OccurrenceAction v-else-if="store.selectedAction?.type === 'occurrence'" />
+    <OrderAction v-else-if="store.selectedAction?.type === 'order'" />
+    <QuestionAction v-else-if="store.selectedAction?.type === 'question'" />
+    <ReviewAction v-else-if="store.selectedAction?.type === 'review'" />
   </div>
-  <ActionListView v-if="!store.selectedActionId" />
-  <OccurrenceAction v-else-if="store.selectedAction?.type === 'occurrence'" />
-  <OrderAction v-else-if="store.selectedAction?.type === 'order'" />
-  <QuestionAction v-else-if="store.selectedAction?.type === 'question'" />
-  <ReviewAction v-else-if="store.selectedAction?.type === 'review'" />
 </template>

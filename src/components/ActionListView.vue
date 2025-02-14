@@ -33,8 +33,8 @@ const selectItem = (item: any) => {
 </script>
 
 <template>
-  <div>
-    <div v-if="store.selectedView?.viewType === 'tile'">
+  <div :data-view-id="store.selectedView?.id">
+    <div v-if="store.selectedView?.viewType === 'tile'" id="action-menu-view">
       <v-list max-height="75vh" class="mt-0 py-0">
         <h1 class="pt-1">{{ texts?.title }}</h1>
         <h4 class="pb-0">
@@ -49,7 +49,9 @@ const selectItem = (item: any) => {
           >
             <v-card
               v-if="item.type !== 'info'"
-              :class="'mb-4 px-0 pt-1 pb-0' + (index % 2 == 0 ? ' mr-2' : ' ml-2')"
+              :id="item.id"
+              :data-action-id="item?.type ? item.id : ''"
+              :class="'action-menu mb-4 px-0 pt-1 pb-0' + (index % 2 == 0 ? ' mr-2' : ' ml-2')"
               height="170"
               :hover="true"
               :title="item?.texts?.[store.chosenLang]?.listTitle"
@@ -69,7 +71,7 @@ const selectItem = (item: any) => {
         </v-row>
       </v-list>
     </div>
-    <div v-else-if="store.selectedView?.viewType === 'expansion'">
+    <div v-else-if="store.selectedView?.viewType === 'expansion'" id="action-list-view">
       <v-list max-height="70vh" class="mt-0 py-0">
         <h1 class="pt-1">{{ texts?.title }}</h1>
 
@@ -83,6 +85,7 @@ const selectItem = (item: any) => {
           </p>
           <v-btn
             v-if="texts?.buttonCTA"
+            id="upsell-button"
             class="checkpoint-button"
             @click="() => (store.selectedActionId = store.selectedView?.upsellId)"
           >

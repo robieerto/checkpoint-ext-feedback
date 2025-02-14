@@ -225,6 +225,8 @@ function setSelectedOption() {
 <template>
   <v-carousel
     v-model="state.activeItem"
+    id="order-action"
+    :data-action-id="store.selectedAction?.id"
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
@@ -296,6 +298,7 @@ function setSelectedOption() {
 
         <div class="text-end">
           <v-btn
+            id="back-button"
             variant="text"
             class="checkpoint-secondary-button"
             @click="previousPage"
@@ -304,6 +307,7 @@ function setSelectedOption() {
             {{ texts?.buttonBack }}
           </v-btn>
           <v-btn
+            id="submit-button"
             variant="flat"
             class="checkpoint-button"
             :loading="state.loadingBtn"
@@ -317,7 +321,7 @@ function setSelectedOption() {
     </v-carousel-item>
 
     <v-carousel-item :value="1" :disabled="!state.activeItem">
-      <div v-if="state.successPage">
+      <div v-if="state.successPage" id="success-page">
         <h1 class="pb-0">{{ texts?.successTitle }}</h1>
         <v-list max-height="62vh">
           <v-card class="mx-auto mb-5 pt-1 pb-2">
@@ -340,10 +344,16 @@ function setSelectedOption() {
         </v-list>
       </div>
       <div v-if="store.hasViewsData" class="text-center">
-        <v-btn v-if="texts?.buttonCTA" class="checkpoint-button" @click="ctaClick">
+        <v-btn
+          v-if="texts?.buttonCTA"
+          id="upsell-button"
+          class="checkpoint-button"
+          @click="ctaClick"
+        >
           {{ texts?.buttonCTA }}
         </v-btn>
         <v-btn
+          id="back-to-menu-button"
           variant="text"
           class="checkpoint-secondary-button mt-5 mb-12"
           @click="backToMenuClick"

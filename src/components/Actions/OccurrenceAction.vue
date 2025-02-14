@@ -74,6 +74,8 @@ const backToMenuClick = () => {
 <template>
   <v-carousel
     v-model="state.activeItem"
+    id="occurrence-action"
+    :data-action-id="store.selectedAction?.id"
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
@@ -85,6 +87,7 @@ const backToMenuClick = () => {
       <p class="pb-1">{{ text?.text }}</p>
       <div class="text-end">
         <v-btn
+          id="back-button"
           variant="text"
           class="checkpoint-secondary-button"
           @click="cancel"
@@ -93,6 +96,7 @@ const backToMenuClick = () => {
           {{ text?.buttonBack }}
         </v-btn>
         <v-btn
+          id="submit-button"
           variant="flat"
           class="checkpoint-button"
           :loading="state.loadingBtn"
@@ -104,7 +108,7 @@ const backToMenuClick = () => {
     </v-carousel-item>
 
     <v-carousel-item :value="1" :disabled="!state.activeItem">
-      <div v-if="state.successPage">
+      <div v-if="state.successPage" id="success-page">
         <h1 class="pb-5">{{ text?.successTitle }}</h1>
         <p>
           {{ text?.successText }}
@@ -120,10 +124,15 @@ const backToMenuClick = () => {
         </p>
       </div>
       <div v-if="store.hasViewsData" class="text-center">
-        <v-btn class="checkpoint-button" @click="ctaClick">
+        <v-btn id="upsell-button" class="checkpoint-button" @click="ctaClick">
           {{ text?.buttonCTA }}
         </v-btn>
-        <v-btn variant="text" class="checkpoint-secondary-button mt-5" @click="backToMenuClick">
+        <v-btn
+          id="back-to-menu-button"
+          variant="text"
+          class="checkpoint-secondary-button mt-5"
+          @click="backToMenuClick"
+        >
           {{ text?.buttonBackMenu }}
         </v-btn>
       </div>

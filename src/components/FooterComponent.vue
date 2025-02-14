@@ -5,6 +5,9 @@ import store from '@/store'
 <template>
   <footer>
     <div class="footer">
+      <p id="checkpoint-name" class="pb-0" style="display: none">
+        {{ store.checkpointName }}
+      </p>
       <p v-if="store.extUserActionId" class="opacity-text mb-1">{{ store.extUserActionId }}</p>
       <p class="opacity-text mb-0">powered by</p>
       <a href="https://www.ofrules.com" rel="noopener noreferrer">www.ofrules.com</a>

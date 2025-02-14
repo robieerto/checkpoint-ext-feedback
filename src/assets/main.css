@@ -81,3 +81,15 @@ body {
 .v-selection-control .v-label {
   opacity: 1 !important;
 }
+
+.v-card-text:not(.v-card-link),
+.v-card-title,
+.v-card-item,
+.v-card-actions,
+.v-btn__content {
+  pointer-events: none;
+}
+
+.v-btn {
+  pointer-events: auto;
+}

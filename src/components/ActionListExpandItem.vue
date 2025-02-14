@@ -24,7 +24,12 @@ const selectItem = () => {
 </script>
 
 <template>
-  <v-card class="mx-auto mb-4 py-2" @click="isExpanded = !isExpanded">
+  <v-card
+    class="action-expand mx-auto mb-4 py-2"
+    :data-view-id="store.selectedView?.id"
+    :data-action-id="item.id"
+    @click="isExpanded = !isExpanded"
+  >
     <v-card-title>{{ texts?.listTitle }}</v-card-title>
     <v-card-text v-if="texts?.listText">
       {{ texts?.listText }}
@@ -37,8 +42,8 @@ const selectItem = () => {
         <v-card-text v-for="(listText, index) in listTextsExpanded" :key="index">
           {{ listText }}
         </v-card-text>
-        <v-card-text v-for="(link, index) in texts?.listLinks" :key="index">
-          <a :href="link?.url" target="_blank" @click.stop>
+        <v-card-text class="v-card-link" v-for="(link, index) in texts?.listLinks" :key="index">
+          <a :href="link?.url" class="action-href" target="_blank" @click.stop>
             {{ link?.text }}
           </a>
         </v-card-text>
@@ -47,6 +52,7 @@ const selectItem = () => {
     <v-card-actions>
       <v-btn
         :icon="isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+        class="action-expand"
         color="#8E8E93"
         density="default"
         @click="() => {}"
@@ -56,7 +62,7 @@ const selectItem = () => {
       <v-btn
         v-show="texts?.listCTAButton"
         variant="flat"
-        class="checkpoint-button mr-2"
+        class="action-list checkpoint-button mr-2"
         @click="selectItem"
       >
         {{ texts?.listCTAButton }}
