@@ -20,17 +20,25 @@ const state = reactive({
   inputScoreError: false,
   emailCorrect: true,
   isNegativeRating: false,
-  selectedChoices: new Array(options?.numberPages?.positive).fill([]) as any[],
-  otherUserInputs: new Array(options?.numberPages?.positive).fill('') as any[]
+  selectedChoices: Array.from({ length: options?.numberQuestions?.positive }, () => []) as any[],
+  selectedChoicesInput: Array.from(
+    { length: options?.numberQuestions?.positive },
+    () => []
+  ) as any[],
+  historySelectedChoicesInput: Array.from(
+    { length: options?.numberQuestions?.positive },
+    () => []
+  ) as any[],
+  otherInputs: Array(options?.numberQuestions?.positive).fill('') as any[]
 })
 
 const isScoreFilled = computed(() => state.inputScore > 0)
 const text = computed(() => store.selectedAction?.texts?.[store.chosenLang] as types.ReviewAction)
-const questionPagesText = computed(() =>
-  !state.isNegativeRating ? text.value?.positivePages : text.value?.negativePages
+const questionFormsText = computed(() =>
+  !state.isNegativeRating ? text.value?.positiveQuestions : text.value?.negativeQuestions
 )
-const numberOfQuestionPages = computed(() =>
-  !state.isNegativeRating ? options?.numberPages?.positive : options?.numberPages?.negative
+const numberOfQuestions = computed(() =>
+  !state.isNegativeRating ? options?.numberQuestions?.positive : options?.numberQuestions?.negative
 )
 
 const endpointUrl = `${__API_URL__}/createExtUserReview`
@@ -102,20 +110,24 @@ const goToPage = (url: string | undefined) => {
 }
 
 const resetChoicesAndInputs = () => {
-  state.selectedChoices = new Array(numberOfQuestionPages.value).fill([])
-  state.otherUserInputs = new Array(numberOfQuestionPages.value).fill('')
+  state.selectedChoices = Array.from({ length: numberOfQuestions.value }, () => [])
+  state.selectedChoicesInput = Array.from({ length: numberOfQuestions.value }, () => [])
+  state.historySelectedChoicesInput = Array.from({ length: numberOfQuestions.value }, () => [])
+  state.otherInputs = new Array(numberOfQuestions.value).fill('')
 }
 
 const dataToQuestionnairePost = () => {
-  return state.selectedChoices.map((pageChoices, index) => {
-    const questionPage = questionPagesText.value?.[index] as any
-    const question = questionPage.question
+  return state.selectedChoices.map((questionChoices, index) => {
+    const questionForm = questionFormsText.value?.[index] as any
+    const question = questionForm.question
+    const choicesInput = state.selectedChoicesInput[index].filter(() => true)
     return {
       question: question,
-      answers: pageChoices.map((choice: any) => ({
-        choice: choice
+      answers: questionChoices.sort().map((choice: number, indexChoice: number) => ({
+        choice: questionForm.choices[choice],
+        input: choicesInput[indexChoice] ?? undefined
       })),
-      otherInput: state.otherUserInputs[index]
+      otherInput: state.otherInputs[index]
     }
   })
 }
@@ -148,6 +160,18 @@ const ctaClick = () => {
 const backToMenuClick = () => {
   store.selectedActionId = null
 }
+
+const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
+  const wasChecked = state.selectedChoices[indexQuestion].includes(indexChoice)
+  if (wasChecked) {
+    state.historySelectedChoicesInput[indexQuestion][indexChoice] =
+      state.selectedChoicesInput[indexQuestion][indexChoice]
+    delete state.selectedChoicesInput[indexQuestion][indexChoice]
+  } else {
+    state.selectedChoicesInput[indexQuestion][indexChoice] =
+      state.historySelectedChoicesInput[indexQuestion][indexChoice]
+  }
+}
 </script>
 
 <template>
@@ -158,9 +182,9 @@ const backToMenuClick = () => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="520px"
+    height="auto"
   >
-    <v-carousel-item :value="0" :disabled="state.activeItem !== 0">
+    <v-carousel-item :value="0" :disabled="state.activeItem !== 0" content-class="pb-16">
       <h1 class="pb-5">{{ text?.title }}</h1>
       <p class="pb-1">
         {{ text?.text }}
@@ -206,67 +230,90 @@ const backToMenuClick = () => {
     </v-carousel-item>
 
     <v-carousel-item
-      v-for="(page, index) in questionPagesText"
+      v-for="(questionForm, index) in questionFormsText"
       :key="index + 1"
       :value="index + 1"
       :disabled="state.activeItem !== index + 1"
+      content-class="pb-16"
     >
-      <p class="pb-1 fw-bold">{{ (page as any)?.question }}</p>
-      <v-checkbox
-        v-for="(choice, indexPage) in (page as any)?.choices"
-        :key="indexPage"
-        :value="choice"
-        v-model="state.selectedChoices[index]"
-        :label="choice"
-        class="pb-3"
-        color="#705d0d"
-        hide-details
-      ></v-checkbox>
-      <v-text-field
-        v-model="state.otherUserInputs[index]"
-        :label="(page as any)?.otherInput"
-        :hint="(page as any)?.otherText"
-        class="py-5"
-        variant="outlined"
-        type="text"
-        maxlength="100"
-      ></v-text-field>
-      <div class="text-end">
-        <v-btn
-          id="back-button"
-          variant="text"
-          class="checkpoint-secondary-button"
-          @click="previousPage"
-          :disabled="state.loadingBtn"
+      <v-list max-height="65vh">
+        <p class="pb-1 fw-bold">{{ (questionForm as any)?.question }}</p>
+        <div
+          v-for="(choice, indexChoice) in (questionForm as any)?.choices"
+          :key="indexChoice"
+          class="pb-2"
         >
-          {{ text?.buttonBack }}
-        </v-btn>
-        <v-btn
-          v-if="index + 1 < numberOfQuestionPages || showContactPage"
-          id="next-button"
-          variant="flat"
-          class="checkpoint-button"
-          @click="nextPage"
-        >
-          {{ text?.buttonNext }}
-        </v-btn>
-        <v-btn
-          v-else
-          id="submit-button"
-          variant="flat"
-          class="checkpoint-button"
-          :loading="state.loadingBtn"
-          @click="pushData"
-        >
-          {{ text?.buttonOk }}
-        </v-btn>
-      </div>
+          <v-checkbox
+            :value="indexChoice"
+            v-model="state.selectedChoices[index]"
+            :label="choice"
+            color="#705d0d"
+            hide-details
+            @click="() => choiceChoosen(index, indexChoice)"
+          ></v-checkbox>
+          <v-text-field
+            v-if="
+              (questionForm as any)?.elaborateChoice &&
+              state.selectedChoices[index].includes(indexChoice)
+            "
+            v-model="state.selectedChoicesInput[index][indexChoice]"
+            :label="(questionForm as any)?.elaborateInput"
+            :hint="(questionForm as any)?.elaborateText"
+            :rules="[validateEmail]"
+            variant="outlined"
+            type="email"
+            required
+            maxlength="50"
+          ></v-text-field>
+        </div>
+
+        <v-text-field
+          v-model="state.otherInputs[index]"
+          :label="(questionForm as any)?.otherInput"
+          :hint="(questionForm as any)?.otherText"
+          class="py-5"
+          variant="outlined"
+          type="text"
+          maxlength="100"
+        ></v-text-field>
+        <div class="text-end">
+          <v-btn
+            id="back-button"
+            variant="text"
+            class="checkpoint-secondary-button"
+            @click="previousPage"
+            :disabled="state.loadingBtn"
+          >
+            {{ text?.buttonBack }}
+          </v-btn>
+          <v-btn
+            v-if="index + 1 < numberOfQuestions || showContactPage"
+            id="next-button"
+            variant="flat"
+            class="checkpoint-button"
+            @click="nextPage"
+          >
+            {{ text?.buttonNext }}
+          </v-btn>
+          <v-btn
+            v-else
+            id="submit-button"
+            variant="flat"
+            class="checkpoint-button"
+            :loading="state.loadingBtn"
+            @click="pushData"
+          >
+            {{ text?.buttonOk }}
+          </v-btn>
+        </div>
+      </v-list>
     </v-carousel-item>
 
     <v-carousel-item
       v-if="showContactPage"
-      :value="numberOfQuestionPages + 1"
-      :disabled="state.activeItem !== numberOfQuestionPages + 1"
+      :value="numberOfQuestions + 1"
+      :disabled="state.activeItem !== numberOfQuestions + 1"
+      content-class="pb-16"
     >
       <div v-if="!state.isNegativeRating">
         <p v-if="text?.contactPositiveTitle" class="pb-5 fw-bold">
@@ -315,8 +362,9 @@ const backToMenuClick = () => {
     </v-carousel-item>
 
     <v-carousel-item
-      :value="numberOfQuestionPages + 1 + showContactPage"
-      :disabled="state.activeItem !== numberOfQuestionPages + 1 + showContactPage"
+      :value="numberOfQuestions + 1 + showContactPage"
+      :disabled="state.activeItem !== numberOfQuestions + 1 + showContactPage"
+      content-class="pb-16"
     >
       <div v-if="state.successPage" id="success-page">
         <h1 class="py-10">{{ text?.successTitle }}</h1>
