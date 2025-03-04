@@ -198,9 +198,12 @@ watch(
 )
 
 const previousPage = () => {
-  state.activeItem--
-  if (state.activeItem < 0) {
-    store.selectedActionId = null
+  if (state.activeItem > 0) {
+    state.activeItem--
+  } else {
+    if (store.hasViewsData) {
+      store.selectedActionId = null
+    }
   }
 }
 
@@ -254,6 +257,7 @@ function setSelectedOption() {
           type="number"
           @input="validateInteger"
           @blur="() => !inputs.number && (inputs.number = 1)"
+          maxlength="20"
         ></v-text-field>
         <p v-if="texts?.selectionText">
           {{ texts?.selectionText }}
@@ -298,6 +302,7 @@ function setSelectedOption() {
 
         <div class="text-end">
           <v-btn
+            v-if="store.hasViewsData"
             id="back-button"
             variant="text"
             class="checkpoint-secondary-button"

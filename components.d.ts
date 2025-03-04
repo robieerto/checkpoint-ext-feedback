@@ -7,18 +7,19 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    ActionListExpandItem: typeof import('./src/components/ActionListExpandItem.vue')['default']
-    ActionListView: typeof import('./src/components/ActionListView.vue')['default']
-    ErrorCheckpoint: typeof import('./src/components/ErrorCheckpoint.vue')['default']
-    FooterComponent: typeof import('./src/components/FooterComponent.vue')['default']
-    LangChooser: typeof import('./src/components/LangChooser.vue')['default']
-    MainView: typeof import('./src/components/MainView.vue')['default']
-    OccurrenceAction: typeof import('./src/components/Actions/OccurrenceAction.vue')['default']
-    OrderAction: typeof import('./src/components/Actions/OrderAction.vue')['default']
-    QuestionAction: typeof import('./src/components/Actions/QuestionAction.vue')['default']
-    ReviewAction: typeof import('./src/components/Actions/ReviewAction.vue')['default']
-    RouterLink: typeof import('vue-router')['RouterLink']
-    RouterView: typeof import('vue-router')['RouterView']
-    ViewComponent: typeof import('./src/components/ViewComponent.vue')['default']
+    ActionListExpandItem: (typeof import('./src/components/ActionListExpandItem.vue'))['default']
+    ActionListView: (typeof import('./src/components/ActionListView.vue'))['default']
+    ErrorCheckpoint: (typeof import('./src/components/ErrorCheckpoint.vue'))['default']
+    FooterComponent: (typeof import('./src/components/FooterComponent.vue'))['default']
+    LangChooser: (typeof import('./src/components/LangChooser.vue'))['default']
+    MainView: (typeof import('./src/components/MainView.vue'))['default']
+    OccurrenceAction: (typeof import('./src/components/Actions/OccurrenceAction.vue'))['default']
+    OrderAction: (typeof import('./src/components/Actions/OrderAction.vue'))['default']
+    QuestionAction: (typeof import('./src/components/Actions/QuestionAction.vue'))['default']
+    ReviewAction: (typeof import('./src/components/Actions/ReviewAction.vue'))['default']
+    ReviewComplexAction: (typeof import('./src/components/Actions/ReviewComplexAction.vue'))['default']
+    RouterLink: (typeof import('vue-router'))['RouterLink']
+    RouterView: (typeof import('vue-router'))['RouterView']
+    ViewComponent: (typeof import('./src/components/ViewComponent.vue'))['default']
   }
 }

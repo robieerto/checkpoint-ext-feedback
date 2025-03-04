@@ -48,6 +48,9 @@ function closeAction() {
     <OccurrenceAction v-else-if="store.selectedAction?.type === 'occurrence'" />
     <OrderAction v-else-if="store.selectedAction?.type === 'order'" />
     <QuestionAction v-else-if="store.selectedAction?.type === 'question'" />
-    <ReviewAction v-else-if="store.selectedAction?.type === 'review'" />
+    <div v-else-if="store.selectedAction?.type === 'review'">
+      <ReviewComplexAction v-if="store.selectedAction?.options?.complex" />
+      <ReviewAction v-else />
+    </div>
   </div>
 </template>

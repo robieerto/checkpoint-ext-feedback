@@ -29,7 +29,9 @@ const changeLang = () => {
     <p id="active-language" style="display: none; visibility: hidden">{{ store.chosenLang }}</p>
     <div class="fab">
       <div class="fab-content">
-        <v-btn @click="changeLang" class="checkpoint-lang-button">{{ state.buttonLang }}</v-btn>
+        <v-btn v-if="state.buttonLang !== ''" @click="changeLang" class="checkpoint-lang-button">{{
+          state.buttonLang
+        }}</v-btn>
       </div>
     </div>
   </div>

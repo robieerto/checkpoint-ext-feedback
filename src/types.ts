@@ -108,6 +108,7 @@ export interface QuestionAction {
 export interface ReviewAction {
   description?: string
   buttonBack: string
+  buttonNext: string
   buttonBackMenu: string
   buttonCTA: string
   buttonOk: string
@@ -120,4 +121,14 @@ export interface ReviewAction {
   title: string
   typeText: string
   requiredScore: string
+  textQuestion?: string
+  contactPositiveTitle?: string
+  contactPositiveText?: string
+  contactNegativeTitle?: string
+  contactNegativeText?: string
+  mailText?: string
+  typeEmail?: string
+  errorEmail?: string
+  positivePages?: []
+  negativePages?: []
 }

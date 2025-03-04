@@ -66,18 +66,20 @@ const validateInputScore = () => {
 }
 
 const previousPage = () => {
-  state.activeItem--
-  if (state.activeItem < 0) {
-    store.selectedActionId = null
+  if (state.activeItem > 0) {
+    state.activeItem--
+  } else {
+    if (store.hasViewsData) {
+      store.selectedActionId = null
+    }
   }
 }
-
 const goToPage = (url: string | undefined) => {
   window.location.href = url ?? '/'
 }
 
 const ctaClick = () => {
-  if (store.hasViewsData) {
+  if (store.buildingData?.googleUrl) {
     goToPage(store.buildingData?.googleUrl)
   } else {
     goToPage(store.buildingData?.website)
@@ -115,9 +117,11 @@ const backToMenuClick = () => {
         class="py-5"
         variant="outlined"
         type="text"
+        :maxlength="100"
       ></v-text-field>
       <div class="text-end">
         <v-btn
+          v-if="store.hasViewsData"
           id="back-button"
           variant="text"
           class="checkpoint-secondary-button"

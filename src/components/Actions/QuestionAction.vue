@@ -76,9 +76,12 @@ const validatePhone = () => {
 }
 
 const previousPage = () => {
-  state.activeItem--
-  if (state.activeItem < 0) {
-    store.selectedActionId = null
+  if (state.activeItem > 0) {
+    state.activeItem--
+  } else {
+    if (store.hasViewsData) {
+      store.selectedActionId = null
+    }
   }
 }
 
@@ -125,12 +128,14 @@ const backToMenuClick = () => {
           :hint="text?.typeQuestionText"
           variant="outlined"
           type="text"
+          maxlength="100"
         ></v-text-field>
         <span v-if="state.inputTextError" class="error">*{{ text?.requiredText }}</span>
       </div>
 
       <div class="text-end">
         <v-btn
+          v-if="store.hasViewsData"
           id="back-button"
           variant="text"
           class="checkpoint-secondary-button"
@@ -166,6 +171,7 @@ const backToMenuClick = () => {
         variant="outlined"
         type="tel"
         required
+        maxlength="20"
       ></v-text-field>
       <v-text-field
         v-model="state.inputEmail"
@@ -176,6 +182,7 @@ const backToMenuClick = () => {
         variant="outlined"
         type="email"
         required
+        maxlength="50"
       ></v-text-field>
       <div class="text-end">
         <v-btn
