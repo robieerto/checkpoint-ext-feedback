@@ -107,8 +107,6 @@ const resetChoicesAndInputs = () => {
 }
 
 const dataToQuestionnairePost = () => {
-  console.log(state.selectedChoices)
-
   return state.selectedChoices.map((pageChoices, index) => {
     const questionPage = questionPagesText.value?.[index] as any
     const question = questionPage.question

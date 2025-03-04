@@ -128,7 +128,7 @@ export interface ReviewAction {
   contactNegativeText?: string
   mailText?: string
   typeEmail?: string
-  errorEmail?: string
+  errorEmail: string
   positivePages?: []
   negativePages?: []
 }
