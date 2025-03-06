@@ -39,11 +39,14 @@ function closeAction() {
 
 <template>
   <div id="main-view">
-    <div v-if="showCloseButton" class="d-flex justify-end mt-0 mb-2">
-      <v-btn class="close-button" density="default" @click="closeAction" icon flat>
-        <v-icon color="text">mdi-close</v-icon>
-      </v-btn>
+    <div v-if="showCloseButton" class="panel-container">
+      <div class="panel-content">
+        <v-btn class="close-button" density="default" @click="closeAction" icon flat>
+          <v-icon color="text">mdi-close</v-icon>
+        </v-btn>
+      </div>
     </div>
+    <div v-else class="mb-6"></div>
     <ActionListView v-if="!store.selectedActionId" />
     <OccurrenceAction v-else-if="store.selectedAction?.type === 'occurrence'" />
     <OrderAction v-else-if="store.selectedAction?.type === 'order'" />
@@ -54,3 +57,25 @@ function closeAction() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.panel-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  user-select: none;
+  position: relative;
+  top: 5px;
+  right: 0px;
+  z-index: 1000;
+}
+.panel-container .panel-content {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+</style>

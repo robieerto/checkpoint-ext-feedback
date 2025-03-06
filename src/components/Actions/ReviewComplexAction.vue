@@ -182,9 +182,9 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="auto"
+    height="85vh"
   >
-    <v-carousel-item :value="0" :disabled="state.activeItem !== 0" content-class="pb-16">
+    <v-carousel-item :value="0" :disabled="state.activeItem !== 0">
       <h1 class="pb-5">{{ text?.title }}</h1>
       <p class="pb-1">
         {{ text?.text }}
@@ -234,9 +234,8 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
       :key="index + 1"
       :value="index + 1"
       :disabled="state.activeItem !== index + 1"
-      content-class="pb-16"
     >
-      <v-list max-height="65vh">
+      <v-list max-height="75vh">
         <p class="pb-1 fw-bold">{{ (questionForm as any)?.question }}</p>
         <div
           v-for="(choice, indexChoice) in (questionForm as any)?.choices"
@@ -259,11 +258,9 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
             v-model="state.selectedChoicesInput[index][indexChoice]"
             :label="(questionForm as any)?.elaborateInput"
             :hint="(questionForm as any)?.elaborateText"
-            :rules="[validateEmail]"
             variant="outlined"
-            type="email"
-            required
-            maxlength="50"
+            type="text"
+            maxlength="100"
           ></v-text-field>
         </div>
 
@@ -313,7 +310,6 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
       v-if="showContactPage"
       :value="numberOfQuestions + 1"
       :disabled="state.activeItem !== numberOfQuestions + 1"
-      content-class="pb-16"
     >
       <div v-if="!state.isNegativeRating">
         <p v-if="text?.contactPositiveTitle" class="pb-5 fw-bold">

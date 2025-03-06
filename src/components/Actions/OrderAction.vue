@@ -233,10 +233,10 @@ function setSelectedOption() {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="auto"
+    height="85vh"
   >
-    <v-carousel-item :value="0" :disabled="!!state.activeItem" height="auto" content-class="pb-16">
-      <v-list max-height="65vh">
+    <v-carousel-item :value="0" :disabled="!!state.activeItem">
+      <v-list max-height="75vh">
         <h1>{{ texts?.title }}</h1>
         <p v-if="texts?.text" class="pb-1">
           {{ texts?.text }}
@@ -312,6 +312,7 @@ function setSelectedOption() {
             {{ texts?.buttonBack }}
           </v-btn>
           <v-btn
+            v-if="texts?.buttonOk"
             id="submit-button"
             variant="flat"
             class="checkpoint-button"
@@ -325,7 +326,7 @@ function setSelectedOption() {
       </v-list>
     </v-carousel-item>
 
-    <v-carousel-item :value="1" :disabled="!state.activeItem">
+    <v-carousel-item v-if="texts?.buttonOk" :value="1" :disabled="!state.activeItem">
       <div v-if="state.successPage" id="success-page">
         <h1 class="pb-0">{{ texts?.successTitle }}</h1>
         <v-list max-height="62vh">
