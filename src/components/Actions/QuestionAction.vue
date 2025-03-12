@@ -23,10 +23,7 @@ const state = reactive({
 const text = computed(() => store.selectedAction?.texts?.[store.chosenLang] as types.QuestionAction)
 
 const isTextFilled = computed(() => state.inputText.length > 0)
-const isEmailOrPhoneFilled = computed(
-  () =>
-    (state.inputEmail.length || state.inputPhone.length) && state.emailCorrect && state.phoneCorrect
-)
+const isEmailOrPhoneFilled = computed(() => state.inputPhone.length && state.phoneCorrect)
 
 const endpointUrl = `${__API_URL__}/createExtUserQuestion`
 
@@ -173,7 +170,7 @@ const backToMenuClick = () => {
         required
         maxlength="20"
       ></v-text-field>
-      <v-text-field
+      <!-- <v-text-field
         v-model="state.inputEmail"
         :label="text?.mailText"
         :hint="text?.typeEmail"
@@ -183,7 +180,7 @@ const backToMenuClick = () => {
         type="email"
         required
         maxlength="50"
-      ></v-text-field>
+      ></v-text-field> -->
       <div class="text-end">
         <v-btn
           id="back-button"
@@ -199,7 +196,6 @@ const backToMenuClick = () => {
           variant="flat"
           class="checkpoint-button"
           :loading="state.loadingBtn"
-          :disabled="!isEmailOrPhoneFilled"
           @click="pushData"
         >
           {{ text?.buttonOk }}

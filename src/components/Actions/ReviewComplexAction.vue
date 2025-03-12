@@ -182,7 +182,7 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="85vh"
+    height="75vh"
   >
     <v-carousel-item :value="0" :disabled="state.activeItem !== 0">
       <h1 class="pb-5">{{ text?.title }}</h1>
