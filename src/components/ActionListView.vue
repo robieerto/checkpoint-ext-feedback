@@ -38,7 +38,7 @@ const selectItem = (item: any) => {
       <v-list max-height="75vh" class="mt-0 py-0">
         <h1 class="pt-1">{{ texts?.title }}</h1>
         <h4 class="pb-0">
-          {{ store.checkpointName }}
+          {{ store?.checkpointData?.name }}
         </h4>
         <v-row class="m-0">
           <v-col
@@ -97,7 +97,7 @@ const selectItem = (item: any) => {
     <div v-else>
       <h1 class="pt-1">{{ texts?.title }}</h1>
       <h4 class="pb-0">
-        {{ store.checkpointName }}
+        {{ store?.checkpointData?.name }}
       </h4>
       <div v-for="(action, index) in store.selectedView?.actionsData" class="py-4" :key="index">
         <v-btn variant="flat" class="checkpoint-button w-100" @click="selectItem(action.type)">

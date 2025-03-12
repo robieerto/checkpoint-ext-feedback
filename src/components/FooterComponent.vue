@@ -6,7 +6,7 @@ import store from '@/store'
   <footer>
     <div class="footer">
       <p id="checkpoint-name" class="pb-0" style="display: none">
-        {{ store.checkpointName }}
+        {{ store?.checkpointData?.name }}
       </p>
       <p v-if="store.extUserActionId" class="opacity-text mb-1">{{ store.extUserActionId }}</p>
       <p class="opacity-text mb-0">powered by</p>

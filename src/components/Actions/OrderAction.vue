@@ -115,7 +115,7 @@ const pushData = () => {
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
-      checkpointId: store.checkpointId,
+      checkpointId: store.guestRoomId ?? store.checkpointId,
       extActionPath: store.selectedAction?.path,
       selectedOption: inputs.selectedOption,
       inputs: createPostInputs()
@@ -233,10 +233,10 @@ function setSelectedOption() {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="85vh"
+    height="75vh"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
-      <v-list max-height="75vh">
+      <v-list max-height="65vh">
         <h1>{{ texts?.title }}</h1>
         <p v-if="texts?.text" class="pb-1">
           {{ texts?.text }}

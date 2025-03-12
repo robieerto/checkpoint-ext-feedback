@@ -5,6 +5,8 @@ import axios from 'axios'
 import store from '@/store'
 import MainView from './MainView.vue'
 
+const oneWeekMs = 1000 * 60 * 60 * 24 * 7
+
 const route = useRoute()
 
 const state = reactive({
@@ -26,7 +28,7 @@ const getData = (query: LocationQuery) => {
       store.checkpointId = query.checkpointId
       store.selectedActionId = query.extActionId
 
-      store.checkpointName = response.data?.checkpointName
+      store.checkpointData = response.data?.checkpoint
       store.simpleActionData = response.data?.actionData
       store.viewsData = response.data?.viewsDataList
       store.actionsData = response.data?.actionsDataList
@@ -45,6 +47,24 @@ const getData = (query: LocationQuery) => {
       if (store.hasViewsData) {
         store.selectedView = store.viewsData.find((view: any) => view.id == query.extFeedbackId)
         store.languages = Object.keys(store.selectedView.texts)
+      }
+
+      if (store.checkpointData?.isRoom) {
+        localStorage.setItem('guestBuildingId', store.buildingId)
+        localStorage.setItem('guestRoomId', store.checkpointId)
+      }
+
+      var lastScanDuringStay = localStorage.getItem('lastScanDuringStay')
+      if (lastScanDuringStay && Date.now() - parseInt(lastScanDuringStay) > oneWeekMs) {
+        localStorage.removeItem('guestBuildingId')
+        localStorage.removeItem('guestRoomId')
+        localStorage.removeItem('lastScanDuringStay')
+      }
+
+      if (localStorage.getItem('guestBuildingId') === store.buildingId) {
+        localStorage.setItem('lastScanDuringStay', Date.now().toString())
+        store.guestRoomId = localStorage.getItem('guestRoomId')
+        console.log('Guest room ID usable')
       }
     })
     .catch(function (error) {

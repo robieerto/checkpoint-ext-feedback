@@ -46,7 +46,7 @@ function closeAction() {
         </v-btn>
       </div>
     </div>
-    <div v-else class="mb-6"></div>
+    <!-- <div v-else class="mb-6"></div> -->
     <ActionListView v-if="!store.selectedActionId" />
     <OccurrenceAction v-else-if="store.selectedAction?.type === 'occurrence'" />
     <OrderAction v-else-if="store.selectedAction?.type === 'order'" />

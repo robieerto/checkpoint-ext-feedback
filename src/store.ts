@@ -6,12 +6,13 @@ const store = reactive({
   checkpointId: null as any,
 
   // data
-  checkpointName: null as any,
+  checkpointData: null as any,
   buildingData: null as any,
   viewsData: null as any,
   actionsData: null as any,
   simpleActionData: null as any,
   languages: [] as string[],
+  guestRoomId: null as any,
 
   // app state
   chosenLang: '',

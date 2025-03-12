@@ -24,7 +24,7 @@ const pushData = () => {
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
-      checkpointId: store.checkpointId,
+      checkpointId: store.guestRoomId ?? store.checkpointId,
       extActionPath: store.selectedAction?.path
     })
     .then(function (response) {
@@ -83,7 +83,7 @@ const backToMenuClick = () => {
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
       <h1 class="pb-5">{{ text?.title }}</h1>
-      <h5 class="pb-1">{{ store.checkpointName }}</h5>
+      <h5 class="pb-1">{{ store?.checkpointData?.name }}</h5>
       <p class="pb-1">{{ text?.text }}</p>
       <div class="text-end">
         <v-btn

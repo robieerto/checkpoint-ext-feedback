@@ -52,7 +52,7 @@ const pushData = () => {
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
-      checkpointId: store.checkpointId,
+      checkpointId: store.guestRoomId ?? store.checkpointId,
       extActionPath: store.selectedAction?.path,
       score: state.inputScore,
       note: state.inputNote,
