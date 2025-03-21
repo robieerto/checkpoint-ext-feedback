@@ -4,6 +4,7 @@ const store = reactive({
   // query params
   buildingId: null as any,
   checkpointId: null as any,
+  extFeedbackId: null as any,
 
   // data
   checkpointData: null as any,

@@ -26,6 +26,7 @@ const getData = (query: LocationQuery) => {
       state.hasData = true
       store.buildingId = query.buildingId
       store.checkpointId = query.checkpointId
+      store.extFeedbackId = query.extFeedbackId
       store.selectedActionId = query.extActionId
 
       store.checkpointData = response.data?.checkpoint

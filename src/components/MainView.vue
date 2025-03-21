@@ -3,7 +3,9 @@ import { watch, computed, nextTick } from 'vue'
 
 import store from '@/store'
 
-const isDefaultSelectedView = computed(() => store.selectedView?.id === 'default')
+const isDefaultSelectedView = computed(
+  () => store.extFeedbackId && store.selectedView?.id === store.extFeedbackId
+)
 const showCloseButton = computed(
   () => !store.isOnlySimpleAction && (!isDefaultSelectedView.value || store.selectedActionId)
 )
@@ -33,7 +35,7 @@ watch(
 
 function closeAction() {
   store.selectedActionId = null
-  store.selectedView = store.viewsData?.find((view: any) => view.id === 'default')
+  store.selectedView = store.viewsData?.find((view: any) => view.id === store.extFeedbackId)
 }
 </script>
 
