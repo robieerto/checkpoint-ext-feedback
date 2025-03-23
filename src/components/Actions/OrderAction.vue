@@ -4,6 +4,7 @@ import axios from 'axios'
 
 import store from '@/store'
 import * as types from '@/types'
+import phone from 'phone'
 
 const endpointUrl = `${__API_URL__}/createExtUserOrder`
 
@@ -12,7 +13,9 @@ const state = reactive({
   successPage: false,
   loadingBtn: false,
   error: '',
-  showError: false
+  showError: false,
+  inputPhone: '',
+  phoneCorrect: true
 })
 
 const inputs = reactive({
@@ -55,6 +58,9 @@ const areAllOptionsDisabled = computed(() =>
   options?.value?.selection
     ? texts.value?.selectOptions?.every((_, index) => isOptionDisabled(index))
     : false
+)
+const isPhoneCorrect = computed(
+  () => state.phoneCorrect && (options.value?.phoneRequired ? !!state.inputPhone.length : true)
 )
 
 const createPostInputs = () => {
@@ -118,7 +124,9 @@ const pushData = () => {
       checkpointId: store.guestRoomId ?? store.checkpointId,
       extActionPath: store.selectedAction?.path,
       selectedOption: inputs.selectedOption,
-      inputs: createPostInputs()
+      inputs: createPostInputs(),
+      note: inputs.text,
+      phone: !state.inputPhone ? undefined : state.inputPhone
     })
     .then(function (response) {
       store.extUserActionId = response.data
@@ -197,6 +205,18 @@ watch(
   { immediate: true }
 )
 
+const validatePhone = () => {
+  const phoneNum = state.inputPhone
+  // First, try validating as a Slovak phone number
+  let phoneValidationResult = phone(phoneNum, { country: 'SK' })
+  // If not valid as Slovak, try validating as an international number
+  if (!phoneValidationResult.isValid) {
+    phoneValidationResult = phone(phoneNum)
+  }
+  state.phoneCorrect = phoneValidationResult.isValid || !state.inputPhone.length
+  return state.phoneCorrect || texts.value?.errorPhone
+}
+
 const previousPage = () => {
   if (state.activeItem > 0) {
     state.activeItem--
@@ -216,7 +236,7 @@ const backToMenuClick = () => {
 }
 
 function setSelectedOption() {
-  const defaultOption = store.selectedAction?.reservation?.times?.[0]
+  const defaultOption = store.selectedAction?.reservation?.[0]
   if (!store.selectedAction?.options?.selection && defaultOption) {
     return 0
   } else {
@@ -274,19 +294,7 @@ function setSelectedOption() {
             :disabled="isOptionDisabled(index)"
           ></v-radio>
         </v-radio-group>
-        <p v-if="texts?.stringInputText">
-          {{ texts?.stringInputText }}
-        </p>
-        <v-text-field
-          v-if="options?.inputText"
-          v-model="inputs.text"
-          :hint="texts?.typeText"
-          :label="noteFocused ? texts?.labelText : texts?.typeText"
-          class="pb-5"
-          variant="outlined"
-          :maxlength="100"
-          @update:focused="(e: any) => (noteFocused = e)"
-        ></v-text-field>
+
         <div v-if="options?.checkbox">
           <v-checkbox
             v-for="(option, index) in texts?.checkboxes"
@@ -299,6 +307,38 @@ function setSelectedOption() {
         <p v-if="texts?.bottomText" class="pb-1">
           {{ texts?.bottomText }}
         </p>
+
+        <div v-if="options?.noteInput">
+          <p>
+            {{ texts?.noteText }}
+          </p>
+          <v-text-field
+            v-model="inputs.text"
+            :hint="texts?.typeNote"
+            :label="texts?.noteInput"
+            class="pb-5"
+            variant="outlined"
+            :maxlength="100"
+            @update:focused="(e: any) => (noteFocused = e)"
+          ></v-text-field>
+        </div>
+
+        <div v-if="options?.phoneInput">
+          <p>
+            {{ texts?.phoneText }}
+          </p>
+          <v-text-field
+            v-model="state.inputPhone"
+            :label="texts?.phoneInput"
+            :hint="texts?.typePhone"
+            :rules="[validatePhone]"
+            class="pb-3"
+            variant="outlined"
+            type="tel"
+            required
+            maxlength="20"
+          ></v-text-field>
+        </div>
 
         <div class="text-end">
           <v-btn
@@ -317,7 +357,9 @@ function setSelectedOption() {
             variant="flat"
             class="checkpoint-button"
             :loading="state.loadingBtn"
-            :disabled="selectedOptionIsDisabled || !isOptionSelected || state.loadingBtn"
+            :disabled="
+              selectedOptionIsDisabled || !isOptionSelected || state.loadingBtn || !isPhoneCorrect
+            "
             @click="pushData"
           >
             {{ texts?.buttonOk }}

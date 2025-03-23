@@ -76,6 +76,13 @@ export interface OrderAction {
   successTexts?: string[]
   reservation?: string
   reservationFull?: string
+  phoneText?: string
+  phoneInput?: string
+  typePhone?: string
+  errorPhone: string
+  noteText?: string
+  noteInput?: string
+  typeNote?: string
 }
 
 export interface QuestionAction {

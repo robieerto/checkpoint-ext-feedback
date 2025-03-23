@@ -37,6 +37,13 @@ const selectItem = () => {
     <v-card-text v-if="texts?.listTexts">
       {{ texts?.listTexts?.[0] }}
     </v-card-text>
+    <div v-if="!listTextsExpanded">
+      <v-card-text class="v-card-link" v-for="(link, index) in texts?.listLinks" :key="index">
+        <a :href="link?.url" class="action-href" target="_blank" @click.stop>
+          {{ link?.text }}
+        </a>
+      </v-card-text>
+    </div>
     <v-expand-transition>
       <div v-show="isExpanded && listTextsExpanded">
         <v-card-text v-for="(listText, index) in listTextsExpanded" :key="index">
