@@ -83,6 +83,7 @@ export interface OrderAction {
   noteText?: string
   noteInput?: string
   typeNote?: string
+  numberInputText?: string
 }
 
 export interface QuestionAction {
@@ -138,4 +139,11 @@ export interface ReviewAction {
   errorEmail: string
   positiveQuestions?: []
   negativeQuestions?: []
+}
+
+export interface ReservationTime {
+  start: string
+  end: string
+  dateReserved: string
+  type: string
 }

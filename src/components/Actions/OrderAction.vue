@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 import store from '@/store'
 import * as types from '@/types'
 import phone from 'phone'
 
+const route = useRoute()
+
 const endpointUrl = `${__API_URL__}/createExtUserOrder`
+const getDataUrl = `${__API_URL__}/extFeedbackActionData`
+
+const { selectedAction } = store
 
 const state = reactive({
   activeItem: 0,
@@ -15,20 +21,47 @@ const state = reactive({
   error: '',
   showError: false,
   inputPhone: '',
-  phoneCorrect: true
+  phoneCorrect: true,
+  tab: null as any
 })
 
 const inputs = reactive({
   number: 1,
   text: '',
-  selectedOption: setSelectedOption() as number | null,
+  selectedOptionId: null as number | null,
   checkboxes: {} as any
 })
 
-const noteFocused = ref(false)
-const selectedOptionIsDisabled = ref(false)
+const options = selectedAction.options
+const reservation = selectedAction?.reservation
+const reservationTimes = reservation?.times as types.ReservationTime[]
+const isReservationExclusive = !!reservation?.exclusive
+const areMultipleTimeTypes = !!reservation?.multipleTimeTypes
 
-const texts = computed(() => store.selectedAction?.texts?.[store.chosenLang] as types.OrderAction)
+const reservationDate = (() => {
+  if (isReservationExclusive) {
+    const date = new Date()
+    if (reservation?.type === 'tomorrow') {
+      date.setDate(date.getDate() + 1)
+    }
+    return date.toLocaleDateString('sk-SK').replace(/\s/g, '')
+  } else {
+    return null
+  }
+})()
+
+const reservationTimesGroupedByType = reservationTimes?.reduce(
+  (acc, time, id) => {
+    if (!acc[time.type]) {
+      acc[time.type] = []
+    }
+    acc[time.type].push({ ...time, id })
+    return acc
+  },
+  {} as Record<string, (types.ReservationTime & { id: number })[]>
+)
+
+const texts = computed(() => selectedAction?.texts?.[store.chosenLang] as types.OrderAction)
 const reservationText = computed(() => {
   let text = texts.value?.reservationText!
   const textInputs = createTextInputs()
@@ -37,50 +70,41 @@ const reservationText = computed(() => {
   })
   return text
 })
-const reservation = computed(() => store.selectedAction?.reservation)
-const isReservationExclusive = computed(() => !!reservation.value?.exclusive)
-const reservationDate = computed(() => {
-  if (isReservationExclusive.value) {
-    const reservationDate = new Date()
-    if (reservation.value?.type === 'tomorrow') {
-      reservationDate.setDate(reservationDate.getDate() + 1)
-    }
-    return reservationDate.toLocaleDateString('sk-SK').replace(/\s/g, '')
-  } else {
-    return null
-  }
-})
-const options = computed(() => store.selectedAction.options)
+
 const isOptionSelected = computed(() =>
-  options?.value?.selection ? inputs.selectedOption !== null : true
+  options?.selection ? inputs.selectedOptionId !== null : true
 )
 const areAllOptionsDisabled = computed(() =>
-  options?.value?.selection
-    ? texts.value?.selectOptions?.every((_, index) => isOptionDisabled(index))
-    : false
+  options?.selection ? reservationTimes?.every((_, index) => isOptionDisabled(index)) : false
 )
 const isPhoneCorrect = computed(
-  () => state.phoneCorrect && (options.value?.phoneRequired ? !!state.inputPhone.length : true)
+  () => state.phoneCorrect && (options?.phoneRequired ? !!state.inputPhone.length : true)
 )
+
+const formatTimeRange = (index: number) => {
+  const time = reservationTimes?.[index]
+  return time?.start + (time?.end ? ` - ${time.end}` : '')
+}
 
 const createPostInputs = () => {
   const postInputs = []
-  if (options.value?.inputNumber) {
+  if (options?.selection) {
+    // postInputs.push(
+    //   selectedAction?.texts?.[store.buildingData?.language ?? 'sk']?.selectOptions?.[
+    //     inputs.selectedOption!
+    //   ]
+    // )
+    postInputs.push(formatTimeRange(inputs.selectedOptionId!))
+  }
+  if (options?.inputNumber) {
     postInputs.push(inputs.number.toString())
   }
-  if (options.value?.selection) {
-    postInputs.push(
-      store.selectedAction?.texts?.[store.buildingData?.language ?? 'sk']?.selectOptions?.[
-        inputs.selectedOption!
-      ]
-    )
-  }
-  if (options.value?.inputText) {
+  if (options?.inputText) {
     postInputs.push(inputs.text)
   }
-  if (options.value?.checkbox) {
+  if (options?.checkbox) {
     const buildingLanguageTexts =
-      store.selectedAction?.texts?.[store.buildingData?.language ?? 'sk']?.checkboxesTexts
+      selectedAction?.texts?.[store.buildingData?.language ?? 'sk']?.checkboxesTexts
 
     const checkedTexts = Object.keys(inputs.checkboxes)
       .filter((key) => inputs.checkboxes[key])
@@ -94,16 +118,16 @@ const createPostInputs = () => {
 
 const createTextInputs = () => {
   const textInputs = []
-  if (options.value?.inputNumber) {
+  if (options?.selection) {
+    textInputs.push(formatTimeRange(inputs.selectedOptionId!))
+  }
+  if (options?.inputNumber) {
     textInputs.push(inputs.number.toString())
   }
-  if (options.value?.selection) {
-    textInputs.push(texts.value?.selectOptions?.[inputs.selectedOption!])
-  }
-  if (options.value?.inputText) {
+  if (options?.inputText) {
     textInputs.push(inputs.text)
   }
-  if (options.value?.checkbox) {
+  if (options?.checkbox) {
     const buildingLanguageTexts = texts.value?.checkboxesTexts
 
     const checkedTexts = Object.keys(inputs.checkboxes)
@@ -116,28 +140,25 @@ const createTextInputs = () => {
   return textInputs
 }
 
-const pushData = () => {
+const pushData = async () => {
   state.loadingBtn = true
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.guestRoomId ?? store.checkpointId,
-      extActionPath: store.selectedAction?.path,
-      selectedOption: inputs.selectedOption,
+      extActionPath: selectedAction?.path,
+      selectedOption: inputs.selectedOptionId,
       inputs: createPostInputs(),
       note: inputs.text,
-      phone: !state.inputPhone ? undefined : state.inputPhone
+      phone: state.inputPhone ? state.inputPhone : undefined
     })
     .then(function (response) {
       store.extUserActionId = response.data
       state.successPage = true
       state.activeItem = 1
       createTextInputs()
-      if (isReservationExclusive.value) {
-        if (!reservation.value.dates) {
-          reservation.value.dates = []
-        }
-        reservation.value.dates[inputs.selectedOption!] = reservationDate.value
+      if (isReservationExclusive) {
+        reloadActionData()
       }
     })
     .catch(function (error) {
@@ -150,20 +171,27 @@ const pushData = () => {
     })
 }
 
-const validateInteger = (event: any) => {
-  const value = event.target.value
-  // Remove any non-digit characters
-  const integerValue = value.replace(/\D/g, '')
-  inputs.number = integerValue
+const reloadActionData = async () => {
+  axios
+    .get(getDataUrl, {
+      params: route.query
+    })
+    .then((response) => {
+      store.actionsData = response.data?.actionsDataList
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error)
+    })
 }
 
 const isOptionReserved = (index: number) =>
-  isReservationExclusive.value && reservation.value?.dates?.[index] === reservationDate.value
+  isReservationExclusive && reservationTimes?.[index]?.dateReserved === reservationDate
 
 const isOptionAfterStartTime = (index: number) => {
-  const optionStartTime = reservation.value?.times?.[index]?.start
-  if (optionStartTime) {
-    const hoursInAdvance = reservation.value?.hoursInAdvance ?? 0
+  const optionStartTime = reservationTimes?.[index]?.start
+  if (optionStartTime && reservation?.type === 'today') {
+    const hoursInAdvance = reservation?.hoursInAdvance ?? 0
     const currentDatePlusAdvance = new Date()
     currentDatePlusAdvance.setHours(currentDatePlusAdvance.getHours() + hoursInAdvance)
     const currentTimePlusAdvance = currentDatePlusAdvance.getTime()
@@ -179,7 +207,7 @@ const isOptionAfterStartTime = (index: number) => {
 }
 
 const isOptionDisabled = (index: number) => {
-  if (reservation.value) {
+  if (reservation) {
     return isOptionReserved(index) || isOptionAfterStartTime(index)
   } else {
     return false
@@ -195,24 +223,9 @@ watch(
   }
 )
 
-watch(
-  () => inputs.selectedOption,
-  () => {
-    if (inputs.selectedOption !== null && isOptionDisabled(inputs.selectedOption)) {
-      selectedOptionIsDisabled.value = true
-    }
-  },
-  { immediate: true }
-)
-
 const validatePhone = () => {
   const phoneNum = state.inputPhone
-  // First, try validating as a Slovak phone number
-  let phoneValidationResult = phone(phoneNum, { country: 'SK' })
-  // If not valid as Slovak, try validating as an international number
-  if (!phoneValidationResult.isValid) {
-    phoneValidationResult = phone(phoneNum)
-  }
+  let phoneValidationResult = phone(phoneNum, { validateMobilePrefix: false })
   state.phoneCorrect = phoneValidationResult.isValid || !state.inputPhone.length
   return state.phoneCorrect || texts.value?.errorPhone
 }
@@ -228,20 +241,11 @@ const previousPage = () => {
 }
 
 const ctaClick = () => {
-  store.selectedActionId = store.selectedAction?.upsellId
+  store.selectedActionId = selectedAction?.upsellId
 }
 
 const backToMenuClick = () => {
   store.selectedActionId = null
-}
-
-function setSelectedOption() {
-  const defaultOption = store.selectedAction?.reservation?.[0]
-  if (!store.selectedAction?.options?.selection && defaultOption) {
-    return 0
-  } else {
-    return null
-  }
 }
 </script>
 
@@ -249,14 +253,14 @@ function setSelectedOption() {
   <v-carousel
     v-model="state.activeItem"
     id="order-action"
-    :data-action-id="store.selectedAction?.id"
+    :data-action-id="selectedAction?.id"
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
     height="75vh"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
-      <v-list max-height="65vh">
+      <v-list max-height="65vh" style="overflow-x: hidden">
         <h1>{{ texts?.title }}</h1>
         <p v-if="texts?.text" class="pb-1">
           {{ texts?.text }}
@@ -267,33 +271,54 @@ function setSelectedOption() {
           </p>
         </div>
 
-        <v-text-field
-          v-if="options?.inputNumber"
-          v-model="inputs.number"
-          :label="texts?.inputText"
-          :hint="texts?.typeNumberText"
-          class="pb-5"
-          variant="outlined"
-          type="number"
-          @input="validateInteger"
-          @blur="() => !inputs.number && (inputs.number = 1)"
-          maxlength="20"
-        ></v-text-field>
-        <p v-if="texts?.selectionText">
+        <p v-if="texts?.selectionText" class="mb-0">
           {{ texts?.selectionText }}
         </p>
+
         <span v-if="areAllOptionsDisabled" class="error font-weight-bold">{{
           texts?.reservationFull
         }}</span>
-        <v-radio-group v-if="options?.selection" v-model="inputs.selectedOption" color="#705d0d">
-          <v-radio
-            v-for="(option, index) in texts?.selectOptions"
-            :label="option"
-            :value="index"
-            :key="index"
-            :disabled="isOptionDisabled(index)"
-          ></v-radio>
-        </v-radio-group>
+
+        <div v-if="areMultipleTimeTypes">
+          <v-tabs v-model="state.tab" align-tabs="center" fixed-tabs>
+            <v-tab
+              v-for="(_, type) in reservationTimesGroupedByType"
+              :key="type"
+              :value="type"
+              readonly
+              >{{ type }}</v-tab
+            >
+          </v-tabs>
+
+          <v-row v-if="options?.selection">
+            <v-col v-for="(typeGroup, type) in reservationTimesGroupedByType" :key="type">
+              <v-radio-group v-model="inputs.selectedOptionId" color="#705d0d">
+                <v-radio
+                  v-for="option in typeGroup"
+                  :label="formatTimeRange(option.id)"
+                  :value="option.id"
+                  :key="option.id"
+                  :disabled="isOptionDisabled(option.id)"
+                  @click="() => (state.tab = type)"
+                ></v-radio>
+              </v-radio-group>
+            </v-col>
+          </v-row>
+        </div>
+
+        <div v-else>
+          <div v-if="options?.selection">
+            <v-radio-group v-model="inputs.selectedOptionId" color="#705d0d">
+              <v-radio
+                v-for="(_, index) in reservationTimes"
+                :label="formatTimeRange(index)"
+                :value="index"
+                :key="index"
+                :disabled="isOptionDisabled(index)"
+              ></v-radio>
+            </v-radio-group>
+          </div>
+        </div>
 
         <div v-if="options?.checkbox">
           <v-checkbox
@@ -302,6 +327,24 @@ function setSelectedOption() {
             :key="index"
             :label="option"
           ></v-checkbox>
+        </div>
+
+        <div v-if="options?.inputNumber">
+          <p>
+            {{ texts?.numberInputText }}
+          </p>
+          <v-number-input
+            v-if="options?.inputNumber"
+            v-model="inputs.number"
+            :label="texts?.inputText"
+            :hint="texts?.typeNumberText"
+            class="pb-2"
+            controlVariant="split"
+            variant="outlined"
+            :min="1"
+            :max="50"
+            @blur="() => !inputs.number && (inputs.number = 1)"
+          ></v-number-input>
         </div>
 
         <p v-if="texts?.bottomText" class="pb-1">
@@ -316,10 +359,9 @@ function setSelectedOption() {
             v-model="inputs.text"
             :hint="texts?.typeNote"
             :label="texts?.noteInput"
-            class="pb-5"
+            class="pb-2"
             variant="outlined"
             :maxlength="100"
-            @update:focused="(e: any) => (noteFocused = e)"
           ></v-text-field>
         </div>
 
@@ -357,9 +399,7 @@ function setSelectedOption() {
             variant="flat"
             class="checkpoint-button"
             :loading="state.loadingBtn"
-            :disabled="
-              selectedOptionIsDisabled || !isOptionSelected || state.loadingBtn || !isPhoneCorrect
-            "
+            :disabled="!isOptionSelected || state.loadingBtn || !isPhoneCorrect"
             @click="pushData"
           >
             {{ texts?.buttonOk }}

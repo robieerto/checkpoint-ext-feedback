@@ -43,7 +43,14 @@ function closeAction() {
   <div id="main-view">
     <div v-if="showCloseButton" class="panel-container">
       <div class="panel-content">
-        <v-btn class="close-button" density="default" @click="closeAction" icon flat>
+        <v-btn
+          class="close-button"
+          density="default"
+          @click="closeAction"
+          style="--v-btn-size: 1.3rem"
+          icon
+          flat
+        >
           <v-icon color="text">mdi-close</v-icon>
         </v-btn>
       </div>

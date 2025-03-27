@@ -93,3 +93,19 @@ body {
 .v-btn {
   pointer-events: auto;
 }
+
+.v-tab.v-tab.v-btn {
+  border-radius: 24px !important;
+}
+
+.v-tab.v-tab.v-btn .v-btn__content {
+  text-transform: none !important;
+}
+
+div.v-input__control > div > div.v-field__append-inner > div > button {
+  padding-inline: 15px;
+}
+
+div.v-input__control > div > div.v-field__prepend-inner > div > button {
+  padding-inline: 15px;
+}
