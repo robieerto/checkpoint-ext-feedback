@@ -13,16 +13,19 @@ const store = reactive({
   actionsData: null as any,
   simpleActionData: null as any,
   languages: [] as string[],
-  guestRoomId: null as any,
 
   // app state
-  chosenLang: '',
   hasViewsData: false,
   isOnlySimpleAction: false,
   selectedView: null as any,
   selectedAction: null as any,
   selectedActionId: null as any,
-  extUserActionId: null as any
+  extUserActionId: null as any,
+
+  // user
+  chosenLang: '',
+  userRoomId: null as any,
+  userPhone: localStorage.getItem('userPhone') ?? ''
 })
 
 export default store

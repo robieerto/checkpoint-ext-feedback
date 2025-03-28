@@ -24,7 +24,7 @@ const pushData = () => {
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
-      checkpointId: store.guestRoomId ?? store.checkpointId,
+      checkpointId: store.userRoomId ?? store.checkpointId,
       extActionPath: store.selectedAction?.path
     })
     .then(function (response) {

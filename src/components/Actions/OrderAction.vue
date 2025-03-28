@@ -3,9 +3,9 @@ import { computed, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
+import { validatePhone } from '@/helpers'
 import store from '@/store'
 import * as types from '@/types'
-import phone from 'phone'
 
 const route = useRoute()
 
@@ -20,7 +20,7 @@ const state = reactive({
   loadingBtn: false,
   error: '',
   showError: false,
-  inputPhone: '',
+  inputPhone: store.userPhone,
   phoneCorrect: true,
   tab: null as any
 })
@@ -145,12 +145,12 @@ const pushData = async () => {
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
-      checkpointId: store.guestRoomId ?? store.checkpointId,
+      checkpointId: store.userRoomId ?? store.checkpointId,
       extActionPath: selectedAction?.path,
       selectedOption: inputs.selectedOptionId,
       inputs: createPostInputs(),
       note: inputs.text,
-      phone: state.inputPhone ? state.inputPhone : undefined
+      phone: state.inputPhone || undefined
     })
     .then(function (response) {
       store.extUserActionId = response.data
@@ -159,6 +159,10 @@ const pushData = async () => {
       createTextInputs()
       if (isReservationExclusive) {
         reloadActionData()
+      }
+      if (state.inputPhone) {
+        store.userPhone = state.inputPhone
+        localStorage.setItem('userPhone', store.userPhone)
       }
     })
     .catch(function (error) {
@@ -222,13 +226,6 @@ watch(
     }
   }
 )
-
-const validatePhone = () => {
-  const phoneNum = state.inputPhone
-  let phoneValidationResult = phone(phoneNum, { validateMobilePrefix: false })
-  state.phoneCorrect = phoneValidationResult.isValid || !state.inputPhone.length
-  return state.phoneCorrect || texts.value?.errorPhone
-}
 
 const previousPage = () => {
   if (state.activeItem > 0) {
@@ -373,7 +370,7 @@ const backToMenuClick = () => {
             v-model="state.inputPhone"
             :label="texts?.phoneInput"
             :hint="texts?.typePhone"
-            :rules="[validatePhone]"
+            :rules="[validatePhone(state.inputPhone) || texts.errorPhone]"
             class="pb-3"
             variant="outlined"
             type="tel"

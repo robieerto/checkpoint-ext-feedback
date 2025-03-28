@@ -16,12 +16,13 @@ const changeButtonLang = () => {
   }
 }
 
-changeButtonLang()
-
 const changeLang = () => {
   store.chosenLang = state.buttonLang
+  localStorage.setItem('userLanguage', store.chosenLang)
   changeButtonLang()
 }
+
+changeButtonLang()
 </script>
 
 <template>

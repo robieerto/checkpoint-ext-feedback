@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { reactive, computed } from 'vue'
 import axios from 'axios'
-import { phone } from 'phone'
 
+import { validatePhone } from '@/helpers'
 import store from '@/store'
 import * as types from '@/types'
 
@@ -12,7 +12,7 @@ const state = reactive({
   loadingBtn: false,
   inputText: '',
   inputEmail: '',
-  inputPhone: '',
+  inputPhone: store.userPhone,
   error: '',
   showError: false,
   inputTextError: false,
@@ -23,7 +23,7 @@ const state = reactive({
 const text = computed(() => store.selectedAction?.texts?.[store.chosenLang] as types.QuestionAction)
 
 const isTextFilled = computed(() => state.inputText.length > 0)
-const isEmailOrPhoneFilled = computed(() => state.inputPhone.length && state.phoneCorrect)
+// const isEmailOrPhoneFilled = computed(() => state.inputPhone.length && state.phoneCorrect)
 
 const endpointUrl = `${__API_URL__}/createExtUserQuestion`
 
@@ -32,7 +32,7 @@ const pushData = () => {
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
-      checkpointId: store.guestRoomId ?? store.checkpointId,
+      checkpointId: store.userRoomId ?? store.checkpointId,
       extActionPath: store.selectedAction?.path,
       text: state.inputText,
       email: state.inputEmail,
@@ -42,6 +42,10 @@ const pushData = () => {
       store.extUserActionId = response.data
       state.successPage = true
       state.activeItem++
+      if (state.inputPhone) {
+        store.userPhone = state.inputPhone
+        localStorage.setItem('userPhone', store.userPhone)
+      }
     })
     .catch(function (error) {
       state.error = error.response.data
@@ -51,25 +55,6 @@ const pushData = () => {
     .finally(() => {
       state.loadingBtn = false
     })
-}
-
-const validateEmail = () => {
-  const email = state.inputEmail
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  state.emailCorrect = emailPattern.test(email) || !email.length
-  return state.emailCorrect || text.value?.errorEmail
-}
-
-const validatePhone = () => {
-  const phoneNum = state.inputPhone
-  // First, try validating as a Slovak phone number
-  let phoneValidationResult = phone(phoneNum, { country: 'SK' })
-  // If not valid as Slovak, try validating as an international number
-  if (!phoneValidationResult.isValid) {
-    phoneValidationResult = phone(phoneNum)
-  }
-  state.phoneCorrect = phoneValidationResult.isValid || !state.inputPhone.length
-  return state.phoneCorrect || text.value?.errorPhone
 }
 
 const previousPage = () => {
@@ -163,7 +148,7 @@ const backToMenuClick = () => {
         v-model="state.inputPhone"
         :label="text?.phoneText"
         :hint="text?.typePhone"
-        :rules="[validatePhone]"
+        :rules="[validatePhone(state.inputPhone) || text.errorPhone]"
         class="py-3"
         variant="outlined"
         type="tel"

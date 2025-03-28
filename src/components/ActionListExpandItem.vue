@@ -64,12 +64,12 @@ const selectItem = () => {
         density="default"
         @click="() => {}"
       ></v-btn>
-      <v-card-title>{{ texts?.listBottomText }}</v-card-title>
+      <v-card-title class="px-0">{{ texts?.listBottomText }}</v-card-title>
       <v-spacer></v-spacer>
       <v-btn
         v-show="texts?.listCTAButton"
         variant="flat"
-        class="action-list checkpoint-button mr-2"
+        class="action-list checkpoint-button"
         @click="selectItem"
       >
         {{ texts?.listCTAButton }}

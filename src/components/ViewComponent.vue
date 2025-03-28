@@ -34,7 +34,14 @@ const getData = (query: LocationQuery) => {
       store.viewsData = response.data?.viewsDataList
       store.actionsData = response.data?.actionsDataList
       store.buildingData = response.data?.building
-      store.chosenLang = response.data?.building?.language ?? 'sk'
+
+      const userLanguage = localStorage.getItem('userLanguage')
+      if (userLanguage) {
+        store.chosenLang = userLanguage
+      } else {
+        store.chosenLang = response.data?.building?.language ?? 'sk'
+        localStorage.setItem('userLanguage', store.chosenLang)
+      }
 
       store.hasViewsData = !!store.viewsData
       store.isOnlySimpleAction = !!store.simpleActionData && !store.hasViewsData
@@ -51,21 +58,20 @@ const getData = (query: LocationQuery) => {
       }
 
       if (store.checkpointData?.isRoom) {
-        localStorage.setItem('guestBuildingId', store.buildingId)
-        localStorage.setItem('guestRoomId', store.checkpointId)
+        localStorage.setItem('userBuildingId', store.buildingId)
+        localStorage.setItem('userRoomId', store.checkpointId)
       }
 
       var lastScanDuringStay = localStorage.getItem('lastScanDuringStay')
       if (lastScanDuringStay && Date.now() - parseInt(lastScanDuringStay) > oneWeekMs) {
-        localStorage.removeItem('guestBuildingId')
-        localStorage.removeItem('guestRoomId')
+        localStorage.removeItem('userBuildingId')
+        localStorage.removeItem('userRoomId')
         localStorage.removeItem('lastScanDuringStay')
       }
 
-      if (localStorage.getItem('guestBuildingId') === store.buildingId) {
+      if (localStorage.getItem('userBuildingId') === store.buildingId) {
         localStorage.setItem('lastScanDuringStay', Date.now().toString())
-        store.guestRoomId = localStorage.getItem('guestRoomId')
-        console.log('Guest room ID usable')
+        store.userRoomId = localStorage.getItem('userRoomId')
       }
     })
     .catch(function (error) {
