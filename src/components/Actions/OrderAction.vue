@@ -339,7 +339,7 @@ const backToMenuClick = () => {
             controlVariant="split"
             variant="outlined"
             :min="1"
-            :max="50"
+            :max="30"
             @blur="() => !inputs.number && (inputs.number = 1)"
           ></v-number-input>
         </div>

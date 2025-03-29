@@ -109,3 +109,16 @@ div.v-input__control > div > div.v-field__append-inner > div > button {
 div.v-input__control > div > div.v-field__prepend-inner > div > button {
   padding-inline: 15px;
 }
+
+.v-card-actions {
+  gap: 0 !important;
+}
+
+.v-card-item,
+.v-card-text {
+  white-space: pre-wrap;
+  overflow-wrap: normal;
+  word-wrap: normal;
+  word-break: keep-all;
+  hyphens: none;
+}

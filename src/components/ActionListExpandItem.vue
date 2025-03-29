@@ -58,13 +58,14 @@ const selectItem = () => {
     </v-expand-transition>
     <v-card-actions>
       <v-btn
+        v-if="listTextsExpanded"
         :icon="isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
         class="action-expand"
         color="#8E8E93"
         density="default"
         @click="() => {}"
       ></v-btn>
-      <v-card-title class="px-0">{{ texts?.listBottomText }}</v-card-title>
+      <v-card-title :class="listTextsExpanded && 'px-0'">{{ texts?.listBottomText }}</v-card-title>
       <v-spacer></v-spacer>
       <v-btn
         v-show="texts?.listCTAButton"
