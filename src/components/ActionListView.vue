@@ -22,14 +22,10 @@ watch(
 const selectItem = (item: any) => {
   if (item?.type) {
     if (item?.type === 'link') {
-      const url = item.url
-      if (item.url.startsWith('sms:')) {
-        const bodyIndex = url.indexOf('&body=')
-        if (bodyIndex !== -1) {
-          const mainPart = url.substring(0, bodyIndex)
-          const body = url.substring(bodyIndex + 6)
-          item.url = `${mainPart}&body=${store?.checkpointData?.name}:%0D%0A${body}`
-        }
+      let url = item.url
+      if (url.startsWith('sms:')) {
+        const smsBody = item.texts[store.chosenLang]?.smsBody
+        url += `?&body=${store?.checkpointData?.name}:%0D%0A${smsBody}`
       }
       window.open(url, '_blank')
     } else {
