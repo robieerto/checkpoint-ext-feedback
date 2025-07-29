@@ -84,6 +84,15 @@ export interface OrderAction {
   noteInput?: string
   typeNote?: string
   numberInputText?: string
+  emailText?: string
+  emailInput?: string
+  typeEmail?: string
+  errorEmail: string
+  noteText2?: string
+  noteInput2?: string
+  typeNote2?: string
+  errorNote: string
+  errorNote2: string
 }
 
 export interface QuestionAction {

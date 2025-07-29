@@ -35,14 +35,6 @@ const getData = (query: LocationQuery) => {
       store.actionsData = response.data?.actionsDataList
       store.buildingData = response.data?.building
 
-      const userLanguage = localStorage.getItem('userLanguage')
-      if (userLanguage) {
-        store.chosenLang = userLanguage
-      } else {
-        store.chosenLang = response.data?.building?.language ?? 'sk'
-        localStorage.setItem('userLanguage', store.chosenLang)
-      }
-
       store.hasViewsData = !!store.viewsData
       store.isOnlySimpleAction = !!store.simpleActionData && !store.hasViewsData
 
@@ -54,7 +46,15 @@ const getData = (query: LocationQuery) => {
 
       if (store.hasViewsData) {
         store.selectedView = store.viewsData.find((view: any) => view.id == query.extFeedbackId)
-        store.languages = Object.keys(store.selectedView.texts)
+        store.languages = Object.keys(store.selectedView.texts) //.sort((a, b) => a.localeCompare(b))
+      }
+
+      const userLanguage = localStorage.getItem('userLanguage')
+      if (userLanguage && store.languages.includes(userLanguage)) {
+        store.chosenLang = userLanguage
+      } else {
+        store.chosenLang = response.data?.building?.language ?? 'sk'
+        localStorage.setItem('userLanguage', store.chosenLang)
       }
 
       if (store.checkpointData?.isRoom) {

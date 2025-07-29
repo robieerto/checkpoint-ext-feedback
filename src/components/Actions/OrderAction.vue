@@ -3,7 +3,7 @@ import { computed, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
-import { validatePhone } from '@/helpers'
+import { validatePhone, validateEmail } from '@/helpers'
 import store from '@/store'
 import * as types from '@/types'
 
@@ -20,14 +20,17 @@ const state = reactive({
   loadingBtn: false,
   error: '',
   showError: false,
-  inputPhone: store.userPhone,
+  inputPhone: store.userPhone || '',
+  inputEmail: store.userEmail || '',
   phoneCorrect: true,
+  emailCorrect: true,
   tab: null as any
 })
 
 const inputs = reactive({
   number: 1,
   text: '',
+  text2: '',
   selectedOptionId: null as number | null,
   checkboxes: {} as any
 })
@@ -36,10 +39,11 @@ const options = selectedAction.options
 const reservation = selectedAction?.reservation
 const reservationTimes = reservation?.times as types.ReservationTime[]
 const isReservationExclusive = !!reservation?.exclusive
+const isReservationWithCapacity = !!reservation?.capacity
 const areMultipleTimeTypes = !!reservation?.multipleTimeTypes
 
 const reservationDate = (() => {
-  if (isReservationExclusive) {
+  if (isReservationExclusive || isReservationWithCapacity) {
     const date = new Date()
     if (reservation?.type === 'tomorrow') {
       date.setDate(date.getDate() + 1)
@@ -74,11 +78,34 @@ const reservationText = computed(() => {
 const isOptionSelected = computed(() =>
   options?.selection ? inputs.selectedOptionId !== null : true
 )
-const areAllOptionsDisabled = computed(() =>
-  options?.selection ? reservationTimes?.every((_, index) => isOptionDisabled(index)) : false
-)
+const areAllOptionsDisabled = computed(() => {
+  if (options?.selection) {
+    return reservationTimes?.every((_, index) => isOptionDisabled(index))
+  } else {
+    return false
+  }
+})
+const isFullCapacity = computed(() => {
+  if (isReservationWithCapacity && reservationDate === reservation?.dateReserved) {
+    return !reservation?.freeCapacity
+  }
+  return false
+})
+const freeCapacity = computed(() => {
+  if (isReservationWithCapacity) {
+    if (reservationDate === reservation?.dateReserved) {
+      return reservation?.freeCapacity
+    } else {
+      return reservation?.capacity
+    }
+  }
+  return 30
+})
 const isPhoneCorrect = computed(
   () => state.phoneCorrect && (options?.phoneRequired ? !!state.inputPhone.length : true)
+)
+const isEmailCorrect = computed(
+  () => state.emailCorrect && (options?.emailRequired ? !!state.inputEmail.length : true)
 )
 
 const formatTimeRange = (index: number) => {
@@ -101,6 +128,9 @@ const createPostInputs = () => {
   }
   if (options?.inputText) {
     postInputs.push(inputs.text)
+  }
+  if (options?.inputText2) {
+    postInputs.push(inputs.text2)
   }
   if (options?.checkbox) {
     const buildingLanguageTexts =
@@ -127,6 +157,9 @@ const createTextInputs = () => {
   if (options?.inputText) {
     textInputs.push(inputs.text)
   }
+  if (options?.inputText2) {
+    textInputs.push(inputs.text2)
+  }
   if (options?.checkbox) {
     const buildingLanguageTexts = texts.value?.checkboxesTexts
 
@@ -142,27 +175,34 @@ const createTextInputs = () => {
 
 const pushData = async () => {
   state.loadingBtn = true
+  const note = inputs.text2.length ? `${inputs.text}, ${inputs.text2}` : inputs.text
   axios
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.userRoomId ?? store.checkpointId,
       extActionPath: selectedAction?.path,
       selectedOption: inputs.selectedOptionId,
+      selectedNumber: isReservationWithCapacity ? inputs.number : undefined,
       inputs: createPostInputs(),
-      note: inputs.text,
-      phone: state.inputPhone || undefined
+      note: note,
+      phone: state.inputPhone || undefined,
+      email: state.inputEmail || undefined
     })
     .then(function (response) {
       store.extUserActionId = response.data
       state.successPage = true
       state.activeItem = 1
       createTextInputs()
-      if (isReservationExclusive) {
+      if (isReservationExclusive || isReservationWithCapacity) {
         reloadActionData()
       }
       if (state.inputPhone) {
         store.userPhone = state.inputPhone
         localStorage.setItem('userPhone', store.userPhone)
+      }
+      if (state.inputEmail) {
+        store.userEmail = state.inputEmail
+        localStorage.setItem('userEmail', store.userEmail)
       }
     })
     .catch(function (error) {
@@ -272,9 +312,9 @@ const backToMenuClick = () => {
           {{ texts?.selectionText }}
         </p>
 
-        <span v-if="areAllOptionsDisabled" class="error font-weight-bold">{{
-          texts?.reservationFull
-        }}</span>
+        <p v-if="areAllOptionsDisabled || isFullCapacity" class="error font-weight-bold">
+          {{ texts?.reservationFull }}
+        </p>
 
         <div v-if="areMultipleTimeTypes">
           <v-tabs v-model="state.tab" align-tabs="center" fixed-tabs>
@@ -339,7 +379,7 @@ const backToMenuClick = () => {
             controlVariant="split"
             variant="outlined"
             :min="1"
-            :max="30"
+            :max="freeCapacity"
             @blur="() => !inputs.number && (inputs.number = 1)"
           ></v-number-input>
         </div>
@@ -356,9 +396,44 @@ const backToMenuClick = () => {
             v-model="inputs.text"
             :hint="texts?.typeNote"
             :label="texts?.noteInput"
+            :rules="[!!inputs.text.length || texts.errorNote]"
             class="pb-2"
             variant="outlined"
             :maxlength="100"
+            :required="!!options?.noteRequired"
+          ></v-text-field>
+        </div>
+
+        <div v-if="options?.noteInput2">
+          <p>
+            {{ texts?.noteText2 }}
+          </p>
+          <v-text-field
+            v-model="inputs.text2"
+            :hint="texts?.typeNote2"
+            :label="texts?.noteInput2"
+            :rules="[!!inputs.text2.length || texts.errorNote2]"
+            class="pb-2"
+            variant="outlined"
+            :maxlength="100"
+            :required="!!options?.noteRequired2"
+          ></v-text-field>
+        </div>
+
+        <div v-if="options?.emailInput">
+          <p>
+            {{ texts?.emailText }}
+          </p>
+          <v-text-field
+            v-model="state.inputEmail"
+            :label="texts?.emailInput"
+            :hint="texts?.typeEmail"
+            :rules="[validateEmail(state.inputEmail) || texts.errorEmail]"
+            class="pb-3"
+            variant="outlined"
+            type="email"
+            required
+            maxlength="50"
           ></v-text-field>
         </div>
 
@@ -396,7 +471,15 @@ const backToMenuClick = () => {
             variant="flat"
             class="checkpoint-button"
             :loading="state.loadingBtn"
-            :disabled="!isOptionSelected || state.loadingBtn || !isPhoneCorrect"
+            :disabled="
+              isFullCapacity ||
+              !isOptionSelected ||
+              state.loadingBtn ||
+              !isPhoneCorrect ||
+              !isEmailCorrect ||
+              (options?.noteRequired && !inputs.text) ||
+              (options?.noteRequired2 && !inputs.text2)
+            "
             @click="pushData"
           >
             {{ texts?.buttonOk }}

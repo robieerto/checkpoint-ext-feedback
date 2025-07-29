@@ -48,14 +48,14 @@ const selectItem = (item: any) => {
         <v-row class="m-0">
           <v-col
             v-for="(item, index) in selectedViewListItems"
-            :cols="item.type !== 'info' ? 6 : 12"
+            :cols="item?.type !== 'info' ? 6 : 12"
             class="pa-0"
             :key="index"
           >
             <v-card
-              v-if="item.type !== 'info'"
-              :id="item.id"
-              :data-action-id="item?.type ? item.id : ''"
+              v-if="item?.type !== 'info'"
+              :id="item?.id"
+              :data-action-id="item?.type ? item?.id : ''"
               :class="'action-menu mb-4 px-0 pt-1 pb-0' + (index % 2 == 0 ? ' mr-2' : ' ml-2')"
               height="170"
               :hover="true"

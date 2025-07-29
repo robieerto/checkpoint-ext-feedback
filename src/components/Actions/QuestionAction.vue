@@ -11,7 +11,7 @@ const state = reactive({
   successPage: false,
   loadingBtn: false,
   inputText: '',
-  inputEmail: '',
+  inputEmail: store.userEmail,
   inputPhone: store.userPhone,
   error: '',
   showError: false,
@@ -45,6 +45,10 @@ const pushData = () => {
       if (state.inputPhone) {
         store.userPhone = state.inputPhone
         localStorage.setItem('userPhone', store.userPhone)
+      }
+      if (state.inputEmail) {
+        store.userEmail = state.inputEmail
+        localStorage.setItem('userEmail', store.userEmail)
       }
     })
     .catch(function (error) {

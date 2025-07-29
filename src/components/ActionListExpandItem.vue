@@ -25,7 +25,7 @@ const selectItem = () => {
 
 <template>
   <v-card
-    class="action-expand mx-auto mb-4 py-2"
+    :class="['action-expand mx-auto mb-4 py-2', item.type === 'text' && 'pb-5']"
     :data-view-id="store.selectedView?.id"
     :data-action-id="item.id"
     @click="isExpanded = !isExpanded"
@@ -56,7 +56,7 @@ const selectItem = () => {
         </v-card-text>
       </div>
     </v-expand-transition>
-    <v-card-actions>
+    <v-card-actions v-if="item.type !== 'text'">
       <v-btn
         v-if="listTextsExpanded"
         :icon="isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"

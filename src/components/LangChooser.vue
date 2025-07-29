@@ -3,36 +3,67 @@ import { reactive } from 'vue'
 import store from '@/store'
 
 const state = reactive({
-  buttonLang: ''
+  buttonLang: '',
+  filteredLangs: [...store.languages],
+  speedDial: store.languages.length > 2,
+  changingSpeedDial: false
 })
 
-const changeButtonLang = () => {
-  if (store.languages.length <= 1) {
-    return
-  } else if (store.languages.length <= 2) {
-    state.buttonLang = store.languages.find((lang) => lang !== store.chosenLang)!
+const changeLang = (newLang: string) => {
+  if (state.speedDial) {
+    state.changingSpeedDial = true
+    store.chosenLang = newLang
+    state.buttonLang = store.chosenLang
+    state.filteredLangs = store.languages.filter((lang) => lang !== newLang)
+    setTimeout(() => {
+      state.changingSpeedDial = false
+    }, 10)
   } else {
-    state.buttonLang = 'XX'
+    if (store.languages.length <= 1) {
+      return
+    } else if (store.languages.length <= 2) {
+      store.chosenLang = newLang
+      state.buttonLang = store.languages.find((lang) => lang !== newLang)!
+    }
   }
-}
-
-const changeLang = () => {
-  store.chosenLang = state.buttonLang
   localStorage.setItem('userLanguage', store.chosenLang)
-  changeButtonLang()
 }
-
-changeButtonLang()
+changeLang(store.chosenLang)
 </script>
 
 <template>
   <div class="fab-container">
     <p id="active-language" style="display: none; visibility: hidden">{{ store.chosenLang }}</p>
     <div class="fab">
-      <div class="fab-content">
-        <v-btn v-if="state.buttonLang !== ''" @click="changeLang" class="checkpoint-lang-button">{{
-          state.buttonLang
-        }}</v-btn>
+      <div v-if="!state.speedDial" class="fab-content">
+        <v-btn
+          v-if="state.buttonLang !== ''"
+          @click="() => changeLang(state.buttonLang)"
+          class="checkpoint-lang-button"
+          >{{ state.buttonLang }}</v-btn
+        >
+      </div>
+      <div v-else>
+        <v-speed-dial
+          v-if="!state.changingSpeedDial"
+          location="bottom center"
+          direction="up"
+          transition="fade-transition"
+        >
+          <template v-slot:activator="{ props: activatorProps }">
+            <v-btn v-bind="activatorProps" class="checkpoint-lang-button">{{
+              state.buttonLang
+            }}</v-btn>
+          </template>
+
+          <v-btn
+            v-for="lang in state.filteredLangs"
+            :key="lang"
+            @click="() => changeLang(lang)"
+            class="checkpoint-lang-button"
+            >{{ lang }}</v-btn
+          >
+        </v-speed-dial>
       </div>
     </div>
   </div>
