@@ -60,7 +60,7 @@ changeLang(store.chosenLang)
             v-for="lang in state.filteredLangs"
             :key="lang"
             @click="() => changeLang(lang)"
-            class="checkpoint-lang-button"
+            class="checkpoint-lang-secondary-button"
             >{{ lang }}</v-btn
           >
         </v-speed-dial>
