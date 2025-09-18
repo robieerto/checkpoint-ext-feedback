@@ -114,7 +114,7 @@ const backToMenuClick = () => {
           :hint="text?.typeQuestionText"
           variant="outlined"
           type="text"
-          maxlength="100"
+          maxlength="1000"
         ></v-text-field>
         <span v-if="state.inputTextError" class="error">*{{ text?.requiredText }}</span>
       </div>

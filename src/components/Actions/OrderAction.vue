@@ -399,7 +399,7 @@ const backToMenuClick = () => {
             :rules="[!!inputs.text.length || texts.errorNote]"
             class="pb-2"
             variant="outlined"
-            :maxlength="100"
+            :maxlength="1000"
             :required="!!options?.noteRequired"
           ></v-text-field>
         </div>
@@ -415,7 +415,7 @@ const backToMenuClick = () => {
             :rules="[!!inputs.text2.length || texts.errorNote2]"
             class="pb-2"
             variant="outlined"
-            :maxlength="100"
+            :maxlength="1000"
             :required="!!options?.noteRequired2"
           ></v-text-field>
         </div>

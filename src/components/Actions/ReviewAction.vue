@@ -117,7 +117,7 @@ const backToMenuClick = () => {
         class="py-5"
         variant="outlined"
         type="text"
-        :maxlength="100"
+        :maxlength="1000"
       ></v-text-field>
       <div class="text-end">
         <v-btn

@@ -202,7 +202,7 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
         class="py-5"
         variant="outlined"
         type="text"
-        maxlength="100"
+        maxlength="1000"
       ></v-text-field>
       <div v-else class="py-3"></div>
       <div class="text-end">
@@ -260,7 +260,7 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
             :hint="(questionForm as any)?.elaborateText"
             variant="outlined"
             type="text"
-            maxlength="100"
+            maxlength="1000"
           ></v-text-field>
         </div>
 
@@ -271,7 +271,7 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
           class="py-5"
           variant="outlined"
           type="text"
-          maxlength="100"
+          maxlength="1000"
         ></v-text-field>
         <div class="text-end">
           <v-btn
