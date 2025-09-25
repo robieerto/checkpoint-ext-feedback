@@ -22,8 +22,6 @@ const state = reactive({
   showError: false,
   inputPhone: store.userPhone || '',
   inputEmail: store.userEmail || '',
-  phoneCorrect: true,
-  emailCorrect: true,
   tab: null as any
 })
 
@@ -102,10 +100,12 @@ const freeCapacity = computed(() => {
   return 30
 })
 const isPhoneCorrect = computed(
-  () => state.phoneCorrect && (options?.phoneRequired ? !!state.inputPhone.length : true)
+  () =>
+    validatePhone(state.inputPhone) && (options?.phoneRequired ? !!state.inputPhone.length : true)
 )
 const isEmailCorrect = computed(
-  () => state.emailCorrect && (options?.emailRequired ? !!state.inputEmail.length : true)
+  () =>
+    validateEmail(state.inputEmail) && (options?.emailRequired ? !!state.inputEmail.length : true)
 )
 
 const formatTimeRange = (index: number) => {
@@ -428,7 +428,7 @@ const backToMenuClick = () => {
             v-model="state.inputEmail"
             :label="texts?.emailInput"
             :hint="texts?.typeEmail"
-            :rules="[validateEmail(state.inputEmail) || texts.errorEmail]"
+            :rules="[isEmailCorrect || texts.errorEmail]"
             class="pb-3"
             variant="outlined"
             type="email"
