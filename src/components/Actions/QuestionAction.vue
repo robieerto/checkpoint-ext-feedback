@@ -15,15 +15,13 @@ const state = reactive({
   inputPhone: store.userPhone,
   error: '',
   showError: false,
-  inputTextError: false,
-  emailCorrect: true,
-  phoneCorrect: true
+  inputTextError: false
 })
 
 const text = computed(() => store.selectedAction?.texts?.[store.chosenLang] as types.QuestionAction)
 
 const isTextFilled = computed(() => state.inputText.length > 0)
-// const isEmailOrPhoneFilled = computed(() => state.inputPhone.length && state.phoneCorrect)
+const isPhoneCorrect = computed(() => validatePhone(state.inputPhone))
 
 const endpointUrl = `${__API_URL__}/createExtUserQuestion`
 
@@ -186,6 +184,7 @@ const backToMenuClick = () => {
           class="checkpoint-button"
           :loading="state.loadingBtn"
           @click="pushData"
+          :disabled="!isPhoneCorrect"
         >
           {{ text?.buttonOk }}
         </v-btn>
