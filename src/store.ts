@@ -26,7 +26,13 @@ const store = reactive({
   chosenLang: '',
   userRoomId: null as any,
   userPhone: localStorage.getItem('userPhone') ?? '',
-  userEmail: localStorage.getItem('userEmail') ?? ''
+  userEmail: localStorage.getItem('userEmail') ?? '',
+
+  // notifications
+  notificationToken: localStorage.getItem('notificationToken') ?? null as string | null,
+  guestID: localStorage.getItem('guestID') ?? null as string | null,
+  buildingID: null as string | null
 })
 
+export { store }
 export default store

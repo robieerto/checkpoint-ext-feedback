@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:prod": "vite --mode production",
+    "dev:prod": "vite --mode development.local",
     "build": "run-p type-check \"build-only {@}\" --",
     "deploy": "npm run build && firebase deploy",
     "preview": "vite preview",
@@ -19,6 +19,7 @@
     "@popperjs/core": "^2.11.8",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
+    "firebase": "^12.4.0",
     "phone": "^3.1.58",
     "roboto-fontface": "^0.10.0",
     "vue": "^3.4.21",

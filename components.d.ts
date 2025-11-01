@@ -13,6 +13,7 @@ declare module 'vue' {
     FooterComponent: typeof import('./src/components/FooterComponent.vue')['default']
     LangChooser: typeof import('./src/components/LangChooser.vue')['default']
     MainView: typeof import('./src/components/MainView.vue')['default']
+    NotificationPermission: typeof import('./src/components/NotificationPermission.vue')['default']
     OccurrenceAction: typeof import('./src/components/Actions/OccurrenceAction.vue')['default']
     OrderAction: typeof import('./src/components/Actions/OrderAction.vue')['default']
     QuestionAction: typeof import('./src/components/Actions/QuestionAction.vue')['default']

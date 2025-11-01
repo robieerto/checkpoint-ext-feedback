@@ -1,6 +1,5 @@
 import './assets/main.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import '@mdi/font/css/materialdesignicons.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -22,3 +21,15 @@ const vuetify = createVuetify({
 })
 
 createApp(App).use(vuetify).use(router).mount('#app')
+
+// Register Firebase Cloud Messaging Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      console.log('Service Worker registered successfully:', registration)
+    })
+    .catch((error) => {
+      console.error('Service Worker registration failed:', error)
+    })
+}

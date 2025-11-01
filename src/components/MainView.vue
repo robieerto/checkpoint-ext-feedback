@@ -2,6 +2,7 @@
 import { watch, computed, nextTick } from 'vue'
 
 import store from '@/store'
+import NotificationPermission from './NotificationPermission.vue'
 
 const isDefaultSelectedView = computed(
   () => store.extFeedbackId && store.selectedView?.id === store.extFeedbackId
@@ -56,6 +57,10 @@ function closeAction() {
       </div>
     </div>
     <!-- <div v-else class="mb-6"></div> -->
+
+    <!-- Notification permission prompt -->
+    <NotificationPermission v-if="store.buildingID === 'testB1' && !store.selectedActionId" />
+
     <ActionListView v-if="!store.selectedActionId" />
     <OccurrenceAction v-else-if="store.selectedAction?.type === 'occurrence'" />
     <OrderAction v-else-if="store.selectedAction?.type === 'order'" />

@@ -35,6 +35,9 @@ const getData = (query: LocationQuery) => {
       store.actionsData = response.data?.actionsDataList
       store.buildingData = response.data?.building
 
+      // Set buildingID for notifications
+      store.buildingID = query.buildingId as string
+
       store.hasViewsData = !!store.viewsData
       store.isOnlySimpleAction = !!store.simpleActionData && !store.hasViewsData
 

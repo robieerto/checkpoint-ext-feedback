@@ -2,6 +2,50 @@
   "hosting": {
     "site": "checkpoint-ext-feedback",
     "public": "dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/api/addFCMToken",
+        "function": {
+          "functionId": "addFCMToken",
+          "region": "europe-west3"
+        }
+      },
+      {
+        "source": "/api/extFeedbackActionData",
+        "function": {
+          "functionId": "extFeedbackActionData",
+          "region": "europe-west3"
+        }
+      },
+      {
+        "source": "/api/createExtUserOrder",
+        "function": {
+          "functionId": "createExtUserOrder",
+          "region": "europe-west3"
+        }
+      },
+      {
+        "source": "/api/createOccurrenceExt",
+        "function": {
+          "functionId": "createOccurrenceExt",
+          "region": "europe-west3"
+        }
+      },
+      {
+        "source": "/api/createExtUserQuestion",
+        "function": {
+          "functionId": "createExtUserQuestion",
+          "region": "europe-west3"
+        }
+      },
+      {
+        "source": "/api/createExtUserReview",
+        "function": {
+          "functionId": "createExtUserReview",
+          "region": "europe-west3"
+        }
+      }
+    ]
   }
 }

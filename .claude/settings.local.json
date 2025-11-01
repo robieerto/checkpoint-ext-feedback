@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/Projects/Checkpoint/checkpoint_cloud_functions/test-client/**)",
+      "Read(//d/Projects/Checkpoint/checkpoint_cloud_functions/http/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

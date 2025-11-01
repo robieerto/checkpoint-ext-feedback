@@ -37,7 +37,21 @@ export default defineConfig(({ mode }) => {
       }
     },
     server: {
+      host: '0.0.0.0',
       port: 4173
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          // Ensure service worker is copied to dist
+          assetFileNames: (assetInfo) => {
+            if (assetInfo.name === 'firebase-messaging-sw.js') {
+              return '[name][extname]'
+            }
+            return 'assets/[name]-[hash][extname]'
+          }
+        }
+      }
     }
   }
 })
