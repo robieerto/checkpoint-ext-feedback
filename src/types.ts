@@ -27,6 +27,41 @@ export interface Texts {
   buttonCTA: string
 }
 
+/**
+ * Base interface for common fields across all action language types
+ */
+export interface BaseActionLanguage {
+  // Core navigation
+  buttonOk: string
+  buttonBack: string
+  buttonBackMenu: string
+  buttonCTA?: string
+
+  // Success state
+  successTitle: string
+  successText: string
+  successTexts?: string[]
+  successText2?: string
+
+  // Cancel state (optional)
+  cancelTitle?: string
+  cancelText?: string
+
+  // List view (for menu display)
+  listTitle?: string
+  listText?: string
+  listTexts?: string[]
+  listBottomText?: string
+  listCTAButton?: string
+  listLinks?: Array<{
+    text: string
+    url: string
+  }>
+
+  // Optional description
+  description?: string
+}
+
 export interface Building {
   name: string
   language: string
@@ -34,120 +69,141 @@ export interface Building {
   googleUrl?: string
 }
 
-export interface OccurenceAction {
-  description?: string
-  buttonBack: string
-  buttonBackMenu: string
-  buttonCTA: string
-  buttonOk: string
-  cancelText: string
-  cancelTitle: string
-  successText: string
-  successText2: string
-  successTitle: string
-  text: string
+export interface OccurenceAction extends BaseActionLanguage {
   title: string
+  text: string
 }
 
-export interface OrderAction {
-  description?: string
-  buttonBack: string
-  buttonBackMenu: string
-  buttonCTA: string
-  buttonOk: string
-  cancelText: string
-  inputText: string
-  successText: string
-  ctaText?: string
-  successTitle: string
-  text: string
-  texts: [string]
+export interface OrderAction extends BaseActionLanguage {
+  // Form fields
   title: string
-  typeText?: string
-  typeNumberText?: string
-  bottomText: string
-  selectOptions?: string[]
-  checkboxes?: string[]
-  checkboxesTexts?: string[]
-  selectionText?: string
-  stringInputText?: string
-  labelText?: string
-  reservationText?: string
-  successTexts?: string[]
+  text: string
+  texts?: string[]
+  bottomText?: string
+  inputText?: string
+
+  // CTA
+  ctaText?: string
+
+  // Reservation
   reservation?: string
+  reservationText?: string
   reservationFull?: string
+
+  // Phone input
   phoneText?: string
   phoneInput?: string
   typePhone?: string
   errorPhone: string
-  noteText?: string
-  noteInput?: string
-  typeNote?: string
-  numberInputText?: string
+
+  // Email input
   emailText?: string
   emailInput?: string
   typeEmail?: string
   errorEmail: string
+
+  // Note input
+  noteText?: string
+  noteInput?: string
+  typeNote?: string
+  errorNote: string
+
+  // Second note
   noteText2?: string
   noteInput2?: string
   typeNote2?: string
-  errorNote: string
   errorNote2: string
+
+  // Number input
+  numberInputText?: string
+  typeNumberText?: string
+
+  // String input
+  stringInputText?: string
+  labelText?: string
+
+  // Selection
+  selectionText?: string
+  selectOptions?: string[]
+
+  // Checkboxes
+  checkboxes?: string[]
+  checkboxesTexts?: string[]
 }
 
-export interface QuestionAction {
-  description?: string
-  buttonBack: string
-  buttonBackMenu: string
-  buttonCTA: string
-  buttonOk: string
-  buttonNext: string
-  cancelText: string
-  cancelTitle: string
-  inputQuestionText: string
-  mailText: string
-  phoneText: string
-  secondText: string
-  secondTitle: string
-  successText: string
-  successText2: string
-  successTitle: string
-  text: string
+export interface QuestionAction extends BaseActionLanguage {
   title: string
-  typeEmail: string
-  typePhone: string
+  text: string
+  secondTitle: string
+  secondText: string
+  buttonNext: string
+
+  // Question input
+  inputQuestionText: string
   typeQuestionText: string
   requiredText: string
-  errorEmail: string
+
+  // Contact fields
+  phoneText: string
+  typePhone: string
   errorPhone: string
+
+  mailText: string
+  typeEmail: string
+  errorEmail: string
 }
 
-export interface ReviewAction {
-  description?: string
-  buttonBack: string
-  buttonNext: string
-  buttonBackMenu: string
-  buttonCTA: string
-  buttonOk: string
-  cancelText: string
-  cancelTitle: string
-  inputText: string
-  successText: string
-  successTitle: string
-  text: string
+/**
+ * Structure for questionnaire items in reviews
+ */
+export interface ReviewQuestionItem {
+  question: string
+  answers: string[]
+  allowOther?: boolean
+  otherText?: string
+}
+
+export interface ReviewAction extends BaseActionLanguage {
   title: string
-  typeText: string
+  text: string
+  buttonNext: string
+
+  // Rating
   requiredScore: string
-  textQuestion?: string
+
+  // Input
+  inputText: string
+  typeText: string
+
+  // Email (optional)
+  mailText?: string
+  typeEmail?: string
+  errorEmail: string
+
+  // Contact based on rating
   contactPositiveTitle?: string
   contactPositiveText?: string
   contactNegativeTitle?: string
   contactNegativeText?: string
-  mailText?: string
-  typeEmail?: string
-  errorEmail: string
-  positiveQuestions?: []
-  negativeQuestions?: []
+
+  // Questionnaire
+  textQuestion?: string
+  positiveQuestions?: ReviewQuestionItem[]
+  negativeQuestions?: ReviewQuestionItem[]
+}
+
+/**
+ * Link action for external navigation and information display
+ * Only uses list view fields from BaseActionLanguage (no form fields)
+ */
+export interface LinkAction extends BaseActionLanguage {
+  // Link actions only use inherited list view fields:
+  // - listTitle
+  // - listText
+  // - listTexts
+  // - listBottomText
+  // - listCTAButton
+  // - listLinks
 }
 
 export interface ReservationTime {
