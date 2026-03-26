@@ -51,3 +51,7 @@ To search the help text of gcloud commands, run:
 I got "This app is blocked
 
 This app tried to access sensitive info in your Google Account. To keep your account safe, Google blocked this access." In the browser
+
+---
+
+Do we need it to get our task done?
