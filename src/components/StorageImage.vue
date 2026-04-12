@@ -2,6 +2,8 @@
 import { ref, watch } from 'vue'
 import { thumbnailUrl, gsToHttps } from '@/helpers/firebase-storage'
 
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps<{
   gsUrl: string
 }>()
