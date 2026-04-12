@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import store from '@/store'
-import { gsToHttps } from '@/helpers/firebase-storage'
+import StorageImage from '@/components/StorageImage.vue'
 
 interface CheckpointHeaderProps {
   title?: string
@@ -126,9 +126,9 @@ const handleImageClick = () => {
       :class="{ clickable: hasWifiTag }"
       @click="handleImageClick"
     >
-      <v-img
+      <StorageImage
         v-if="imageUrl"
-        :src="gsToHttps(imageUrl)"
+        :gs-url="imageUrl"
         height="173"
         cover
         class="checkpoint-header-image"
@@ -151,7 +151,7 @@ const handleImageClick = () => {
             <strong>{{ tag }}</strong>
           </v-chip>
         </div>
-      </v-img>
+      </StorageImage>
 
       <!-- Fallback if no image -->
       <div v-else class="checkpoint-header-image-placeholder">
