@@ -52,5 +52,7 @@ export function thumbnailUrl(gsUrl: string): string {
   const filename = gsUrl.slice(slashIdx + 1)
   const dotIdx = filename.lastIndexOf('.')
   if (dotIdx === -1) return gsToHttps(gsUrl)
+  const stem = filename.slice(0, dotIdx)
+  if (stem.endsWith('_800w')) return gsToHttps(gsUrl)
   return gsToHttps(gsUrl.slice(0, slashIdx + 1 + dotIdx) + '_800w.jpg')
 }
