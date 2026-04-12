@@ -48,7 +48,9 @@ export function gsToHttps(gsUrl: string): string {
  * Falls back to the original URL if the path has no extension.
  */
 export function thumbnailUrl(gsUrl: string): string {
-  const lastDot = gsUrl.lastIndexOf('.')
-  if (lastDot === -1) return gsToHttps(gsUrl)
-  return gsToHttps(gsUrl.slice(0, lastDot) + '_800w.jpg')
+  const slashIdx = gsUrl.lastIndexOf('/')
+  const filename = gsUrl.slice(slashIdx + 1)
+  const dotIdx = filename.lastIndexOf('.')
+  if (dotIdx === -1) return gsToHttps(gsUrl)
+  return gsToHttps(gsUrl.slice(0, slashIdx + 1 + dotIdx) + '_800w.jpg')
 }
