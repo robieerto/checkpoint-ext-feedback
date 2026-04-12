@@ -41,3 +41,14 @@ export function gsToHttps(gsUrl: string): string {
 
   return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`
 }
+
+/**
+ * Returns the HTTPS URL of the 800w thumbnail for a guest portal gs:// image URL.
+ * Thumbnail is stored at the same path with `_800w.jpg` replacing the original extension.
+ * Falls back to the original URL if the path has no extension.
+ */
+export function thumbnailUrl(gsUrl: string): string {
+  const lastDot = gsUrl.lastIndexOf('.')
+  if (lastDot === -1) return gsToHttps(gsUrl)
+  return gsToHttps(gsUrl.slice(0, lastDot) + '_800w.jpg')
+}
