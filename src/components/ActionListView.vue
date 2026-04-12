@@ -4,7 +4,7 @@ import { computed, watch, ref } from 'vue'
 import store from '@/store'
 import CheckpointHeader from './CheckpointHeader.vue'
 import { trackAnalyticsContentViewed } from '@/helpers/analytics'
-import { gsToHttps } from '@/helpers/firebase-storage'
+import StorageImage from '@/components/StorageImage.vue'
 
 const texts = computed(() => store.selectedView?.texts?.[store.chosenLang])
 const selectedViewListItems = ref([] as any[])
@@ -139,19 +139,19 @@ const getIconForType = (type: string, iconType?: string): string => {
               @click="selectItem(item)"
             >
               <!-- Card Image -->
-              <v-img
+              <StorageImage
                 v-if="item?.listImage"
-                :src="gsToHttps(item.listImage)"
+                :gs-url="item.listImage"
                 height="96"
                 cover
                 class="tile-card-image"
               >
-                <template v-slot:placeholder>
+                <template #placeholder>
                   <div class="card-image-loading">
                     <div class="card-skeleton-shimmer"></div>
                   </div>
                 </template>
-              </v-img>
+              </StorageImage>
               <div v-else class="tile-card-placeholder"></div>
 
               <!-- Card Content -->
@@ -234,19 +234,19 @@ const getIconForType = (type: string, iconType?: string): string => {
             @click="item?.type !== 'text' && toggleCardExpansion(index)"
           >
             <!-- Card Image -->
-            <v-img
+            <StorageImage
               v-if="item?.listImage"
-              :src="gsToHttps(item.listImage)"
+              :gs-url="item.listImage"
               :height="expandedCardIndex === index ? '221' : '115'"
               cover
               class="expansion-card-image"
             >
-              <template v-slot:placeholder>
+              <template #placeholder>
                 <div class="card-image-loading">
                   <div class="card-skeleton-shimmer"></div>
                 </div>
               </template>
-            </v-img>
+            </StorageImage>
 
             <!-- Card Content -->
             <v-card-text class="expansion-card-content pa-3">
