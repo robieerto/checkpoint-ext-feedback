@@ -1,0 +1,83 @@
+juraj@juraj-GP65:~/development/checkpoint/checkpoint-guest-portal$npm run build
+
+> checkpoint-ext-feedback@0.0.0 build
+> run-p type-check "build-only {@}" --
+
+
+> checkpoint-ext-feedback@0.0.0 type-check
+> vue-tsc --build --force
+
+
+> checkpoint-ext-feedback@0.0.0 build-only
+> vite build
+
+failed to load config from /home/juraj/development/checkpoint/checkpoint-guest-portal/vite.config.ts
+error during build:
+TypeError: localStorage.getItem is not a function
+    at getTimelineLayersStateFromStorage (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/@vue/devtools-kit/dist/index.js:2272:30)
+    at initStateFactory (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/@vue/devtools-kit/dist/index.js:2565:26)
+    at file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/@vue/devtools-kit/dist/index.js:2569:68
+    at ModuleJob.run (node:internal/modules/esm/module_job:430:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:655:26)
+    at async loadConfigFromBundledFile (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/chunks/dep-CevzF2vT.js:66876:15)
+    at async loadConfigFromFile (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/chunks/dep-CevzF2vT.js:66717:24)
+    at async resolveConfig (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/chunks/dep-CevzF2vT.js:66317:24)
+    at async build (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/chunks/dep-CevzF2vT.js:65405:18)
+    at async CAC.<anonymous> (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/cli.js:829:5)
+ERROR: "build-only" exited with 1.
+
+---
+
+still the same error. Try to run it yourself
+
+---
+
+Can we easily fix the chunk siz warnings? It should speed up the page loading, no?
+
+---
+
+they are scanning the QR code to open the page. And I think the longest time takes the response from the cloud function, since the cold start is quite slow. Can we measure what takes the most time?
+
+---
+
+You need the parameters to see anything - https://guest.ofrules.com/?extFeedbackId=default&buildingId=hotel-roklina&REDACTED
+
+---
+
+sure. Are the jpg images too big? We can make a cloud function which will make them smaller, but not sure how to do a good solution for finding the thumbnails without explicitly specifying their paths. On the cloud function cold start - we should take a look why it takes so long, it definitely should not take that long. We have sentry connected to cloud functions (and also should have for guest portal), so we can investigate further
+
+---
+
+let's optimize the getExternalUserActionData.ts. Can we also add sentry performance monitoring so we can monitor it?
+
+---
+
+1
+
+---
+
+revrt to use the await, it is important
+
+---
+
+Right now we are using the Sentry monitoring for all of the functions. We should be monitoring their performance. How does the setup work? Why do we need the addition span for the getExternalUserActionData function?
+
+---
+
+sure, go ahead
+
+---
+
+try again
+
+---
+
+Nice. Let's now move onto the image size. There already is a function for generating thumbnails - generateThumbnails in the workers. Can we extend it for the guest portal images and also instruct the guest portal to use thumbnail if available, or fallback to original image when not
+
+---
+
+yes, make them bigger, but would it be better to alter the path in some other way, so the guest portal FE can more easily get the path to the thumbnal?
+
+---
+
+let's go with the C to tay unified

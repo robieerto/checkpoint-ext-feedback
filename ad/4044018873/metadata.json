@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.3",
+  "checkpoint_id": "ad4044018873",
+  "strategy": "manual-commit",
+  "branch": "redesign",
+  "checkpoints_count": 13,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/ad/4044018873/0/metadata.json",
+      "transcript": "/ad/4044018873/0/full.jsonl",
+      "content_hash": "/ad/4044018873/0/content_hash.txt",
+      "prompt": "/ad/4044018873/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 1567,
+    "cache_creation_tokens": 896860,
+    "cache_read_tokens": 13069233,
+    "output_tokens": 72035,
+    "api_call_count": 168
+  }
+}
