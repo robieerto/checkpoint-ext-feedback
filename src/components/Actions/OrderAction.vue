@@ -26,6 +26,10 @@ const isReservationWithCapacity = !!reservation?.capacity
 const areMultipleTimeTypes = !!reservation?.multipleTimeTypes
 
 const texts = computed(() => selectedAction?.texts?.[store.chosenLang] as types.OrderAction)
+
+const localeMap: Record<string, string> = { sk: 'sk-SK', en: 'en-GB', cz: 'cs-CZ', cs: 'cs-CZ' }
+const dateLocale = computed(() => localeMap[store.chosenLang] || 'sk-SK')
+
 const reservationText = computed(() => {
   let text = texts.value?.reservationText!
   const textInputs = createTextInputs()
@@ -45,7 +49,7 @@ const generateAvailableDates = () => {
   for (let i = 0; i <= daysInAdvance; i++) {
     const date = new Date()
     date.setDate(date.getDate() + i)
-    const dateStr = date.toLocaleDateString('sk-SK').replace(/\s/g, '')
+    const dateStr = date.toLocaleDateString(dateLocale.value).replace(/\s/g, '')
     const label = i === 0 ? texts.value?.today : i === 1 ? texts.value?.tomorrow : dateStr
     dates.push({ label: label!, dateStr, i })
   }
@@ -53,7 +57,7 @@ const generateAvailableDates = () => {
   return dates
 }
 
-const availableDates = generateAvailableDates()
+const availableDates = computed(() => generateAvailableDates())
 
 // For new array-based structure: group times by available dates
 // For old structure: group by type field (backward compatibility)
@@ -72,7 +76,7 @@ const reservationTimesGroupedByType =
             (types.ReservationTime & { id: number; currentDate?: string })[]
           > = {}
 
-          availableDates.forEach(({ label, dateStr }) => {
+          availableDates.value.forEach(({ label, dateStr }) => {
             grouped[label] = reservationTimes.map((time, id) => ({
               ...time,
               id,
@@ -353,7 +357,7 @@ const createPostInputs = () => {
   }
   if (areMultipleTimeTypes && inputs.selectedDate) {
     postInputs.push(inputs.selectedDate)
-    const selectedDayIdx = availableDates.find((d) => d.dateStr === inputs.selectedDate)?.i
+    const selectedDayIdx = availableDates.value.find((d) => d.dateStr === inputs.selectedDate)?.i
     if (selectedDayIdx !== undefined) {
       postInputs.push(
         selectedDayIdx === 0
@@ -393,7 +397,7 @@ const createTextInputs = () => {
   }
   if (areMultipleTimeTypes && inputs.selectedDate) {
     textInputs.push(inputs.selectedDate)
-    textInputs.push(availableDates.find((d) => d.dateStr === inputs.selectedDate)?.label)
+    textInputs.push(availableDates.value.find((d) => d.dateStr === inputs.selectedDate)?.label)
   }
   return textInputs
 }
@@ -423,7 +427,7 @@ const pushData = async () => {
       email: state.inputEmail || undefined
     })
     .then(function (response) {
-      store.extUserActionId = response.data?.data
+      store.extUserActionId = response.data
       trackAnalyticsActionCompleted('order', selectedAction?.id)
       state.successPage = true
       state.activeItem = 1
