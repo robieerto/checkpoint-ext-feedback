@@ -171,8 +171,8 @@ const handleImageClick = () => {
       <Transition name="wifi-slide">
         <div v-if="showWifiPanel && hasWifiTag" class="wifi-info-panel">
           <div class="wifi-info-content">
-            <div class="wifi-network-name">{{ currentLangWifi.name }}</div>
-            <div class="wifi-password">{{ currentLangWifi.password }}</div>
+            <div class="wifi-network-name">{{ currentLangWifi?.name }}</div>
+            <div class="wifi-password">{{ currentLangWifi?.password }}</div>
           </div>
         </div>
       </Transition>

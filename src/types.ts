@@ -32,14 +32,14 @@ export interface Texts {
  */
 export interface BaseActionLanguage {
   // Core navigation
-  buttonOk: string
-  buttonBack: string
-  buttonBackMenu: string
+  buttonOk?: string
+  buttonBack?: string
+  buttonBackMenu?: string
   buttonCTA?: string
 
   // Success state
-  successTitle: string
-  successText: string
+  successTitle?: string
+  successText?: string
   successTexts?: string[]
   successText2?: string
 

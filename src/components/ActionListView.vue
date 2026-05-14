@@ -9,6 +9,7 @@ import StorageImage from '@/components/StorageImage.vue'
 const texts = computed(() => store.selectedView?.texts?.[store.chosenLang])
 const selectedViewListItems = ref([] as any[])
 const expandedCardIndex = ref<number | null>(null)
+const showInfoItem = ref<any>(null)
 
 watch(
   () => store.selectedView,
@@ -34,7 +35,7 @@ const selectItem = (item: any) => {
         const smsBody = item.texts[store.chosenLang]?.smsBody
         url += `?&body=${store?.checkpointData?.name}:%0D%0A${smsBody}`
       }
-      window.open(url, '_blank')
+      window.open(url, '_blank', 'noopener,noreferrer')
     } else if (item?.type === 'review') {
       store.selectedActionId = 'review'
     } else {
@@ -46,8 +47,8 @@ const selectItem = (item: any) => {
 }
 
 const selectItemSecondary = (item: any) => {
-  let url = item.urlSecondary
-  window.open(url, '_blank')
+  const url = item.urlSecondary
+  if (url) window.open(url, '_blank', 'noopener,noreferrer')
 }
 
 const toggleCardExpansion = (index: number) => {
@@ -193,12 +194,11 @@ const getIconForType = (type: string, iconType?: string): string => {
                 <!-- Optional Info Button -->
                 <v-btn
                   v-if="item?.texts?.[store.chosenLang]?.listInfoButton"
-                  class="tile-cta-button mt-2"
+                  class="tile-cta-button tile-info-button mt-2"
                   size="small"
                   variant="text"
                   :ripple="false"
-                  @click.stop="store.selectedActionId = 'info-' + item?.id"
-                  style="background-color: rgb(76, 175, 80) !important"
+                  @click.stop="showInfoItem = item"
                 >
                   {{ item?.texts?.[store.chosenLang]?.listInfoButton }}
                 </v-btn>
@@ -332,6 +332,7 @@ const getIconForType = (type: string, iconType?: string): string => {
                   :href="link?.url"
                   class="expansion-link"
                   target="_blank"
+                  rel="noopener noreferrer"
                   @click.stop
                 >
                   {{ link?.text }}
@@ -356,7 +357,7 @@ const getIconForType = (type: string, iconType?: string): string => {
         </div>
       </v-list>
     </div>
-    <!-- <div v-else>
+    <div v-else>
       <h1 class="pt-1">{{ texts?.title }}</h1>
       <h4 class="pb-0">
         {{ store?.checkpointData?.name }}
@@ -366,12 +367,40 @@ const getIconForType = (type: string, iconType?: string): string => {
           {{ action.texts?.[store.chosenLang]?.title }}
         </v-btn>
       </div>
-    </div> -->
+    </div>
   </div>
+
+  <!-- Info Item Dialog -->
+  <v-dialog v-model="showInfoItem" max-width="480">
+    <v-card class="pa-4">
+      <v-card-title class="px-0">{{ showInfoItem?.texts?.[store.chosenLang]?.listTitle }}</v-card-title>
+      <v-card-text class="px-0">{{ showInfoItem?.texts?.[store.chosenLang]?.listText }}</v-card-text>
+      <div v-if="showInfoItem?.texts?.[store.chosenLang]?.listLinks?.length" class="mt-2">
+        <a
+          v-for="(link, i) in showInfoItem?.texts?.[store.chosenLang]?.listLinks"
+          :key="i"
+          :href="link?.url"
+          class="d-block mb-1"
+          target="_blank"
+          rel="noopener noreferrer"
+          @click.stop
+        >{{ link?.text }}</a>
+      </div>
+      <v-card-actions class="px-0 justify-end">
+        <v-btn variant="flat" class="checkpoint-button" @click="showInfoItem = null">
+          {{ store.selectedView?.texts?.[store.chosenLang]?.buttonBack ?? 'Close' }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <style scoped>
 .action-list-container {
   padding-bottom: 80px;
+}
+
+.tile-info-button {
+  background-color: var(--v-theme-success, rgb(76, 175, 80)) !important;
 }
 </style>
