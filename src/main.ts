@@ -27,8 +27,7 @@ app.use(vuetify).use(router)
 
 Sentry.init({
   app,
-  dsn: 'https://fb0bf3c1e778ac0afe4d4e88afda6541@o4506955265146880.ingest.us.sentry.io/4509988686921728',
-  sendDefaultPii: true,
+  dsn: import.meta.env.VITE_SENTRY_DSN,
   enableLogs: true
 })
 
