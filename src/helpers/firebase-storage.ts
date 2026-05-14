@@ -28,6 +28,16 @@ export async function getStorageUrl(gsUrl: string): Promise<string> {
  * @param gsUrl - Firebase Storage URL in format: gs://bucket-name/path/to/file
  * @returns HTTPS URL
  */
+const STORAGE_BASE_URL = import.meta.env.DEV
+  ? 'http://127.0.0.1:9199'
+  : 'https://firebasestorage.googleapis.com'
+
+/**
+ * Convert gs:// URL to https:// URL without authentication (for public files).
+ * In development, points to the local Storage emulator (port 9199).
+ * @param gsUrl - Firebase Storage URL in format: gs://bucket-name/path/to/file
+ * @returns HTTPS URL
+ */
 export function gsToHttps(gsUrl: string): string {
   // Extract bucket and path from gs:// URL
   const match = gsUrl.match(/^gs:\/\/([^/]+)\/(.+)$/)
@@ -39,7 +49,7 @@ export function gsToHttps(gsUrl: string): string {
   const [, bucket, path] = match
   const encodedPath = path.split('/').map(encodeURIComponent).join('%2F')
 
-  return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`
+  return `${STORAGE_BASE_URL}/v0/b/${bucket}/o/${encodedPath}?alt=media`
 }
 
 /**

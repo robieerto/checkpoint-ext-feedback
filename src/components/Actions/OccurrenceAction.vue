@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import axios from 'axios'
+import api from '@/services/api'
 
 import store from '@/store'
 import * as types from '@/types'
@@ -22,7 +22,7 @@ const endpointUrl = `${__API_URL__}/createOccurrenceExt`
 
 const pushData = () => {
   state.loadingBtn = true
-  axios
+  api
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.userRoomId ?? store.checkpointId,

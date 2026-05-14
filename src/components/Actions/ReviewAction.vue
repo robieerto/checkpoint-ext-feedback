@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, computed } from 'vue'
-import axios from 'axios'
+import api from '@/services/api'
 
 import store from '@/store'
 import * as types from '@/types'
@@ -29,7 +29,7 @@ const pushData = () => {
     return
   }
   state.loadingBtn = true
-  axios
+  api
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.userRoomId ?? store.checkpointId,

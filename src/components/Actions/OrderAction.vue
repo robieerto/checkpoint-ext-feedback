@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import api from '@/services/api'
 
 import { validatePhone, validateEmail } from '@/helpers'
 import store from '@/store'
@@ -409,7 +409,7 @@ const pushData = async () => {
       inputs.selectedOptionId !== null &&
       reservationTimes[inputs.selectedOptionId]?.capacity !== undefined)
 
-  axios
+  api
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.userRoomId ?? store.checkpointId,
@@ -452,7 +452,7 @@ const pushData = async () => {
 }
 
 const reloadActionData = async () => {
-  axios
+  api
     .get(getDataUrl, {
       params: route.query
     })

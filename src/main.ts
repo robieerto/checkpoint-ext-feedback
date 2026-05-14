@@ -23,7 +23,7 @@ const vuetify = createVuetify({
 })
 
 const app = createApp(App)
-app.use(vuetify).use(router).mount('#app')
+app.use(vuetify).use(router)
 
 Sentry.init({
   app,
@@ -31,6 +31,8 @@ Sentry.init({
   sendDefaultPii: true,
   enableLogs: true
 })
+
+app.mount('#app')
 
 // Register Firebase Cloud Messaging Service Worker
 if ('serviceWorker' in navigator) {
