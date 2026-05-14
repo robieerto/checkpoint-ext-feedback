@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import { useRoute, type LocationQuery } from 'vue-router'
-import axios from 'axios'
+import api from '@/services/api'
 import store from '@/store'
 import MainView from './MainView.vue'
 import { trackAnalyticsQrScanned } from '@/helpers/analytics'
@@ -19,7 +19,7 @@ const state = reactive({
 const endpointUrl = `${__API_URL__}/extFeedbackActionData`
 
 const getData = (query: LocationQuery) => {
-  axios
+  api
     .get(endpointUrl, {
       params: query
     })
@@ -36,6 +36,7 @@ const getData = (query: LocationQuery) => {
       store.actionsData = response.data?.actionsDataList
       store.buildingData = response.data?.building
       store.notificationsEnabledForBuilding = response.data?.building?.configuration?.notifications
+      store.feedbackAction = response.data?.feedbackAction ?? null
 
       trackAnalyticsQrScanned(query.buildingId, query.checkpointId, query.extFeedbackId)
 
