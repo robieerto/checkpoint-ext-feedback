@@ -35,11 +35,8 @@ const pushData = () => {
       state.activeItem = 1
     })
     .catch(function (error) {
-      // state.error = error.response.data
-      // state.showError = true
-      state.successPage = true
-      state.activeItem = 1
-      console.log(error)
+      state.error = error.response?.data ?? 'Error'
+      state.showError = true
     })
     .finally(() => {
       state.loadingBtn = false
