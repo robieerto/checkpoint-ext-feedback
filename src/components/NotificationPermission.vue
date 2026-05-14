@@ -92,7 +92,7 @@ const notificationTexts: Record<string, any> = {
     success: 'Notifications enabled successfully',
     error: 'Failed to enable notifications'
   },
-  cs: {
+  cz: {
     title: 'Povolit upozornění',
     message:
       '💌Nechte se během svého pobytu rozmazlovat — dostanete tipy, nabídky a malá překvapení, která váš pobyt učiní výjimečným.',
@@ -121,7 +121,7 @@ const notificationTextsOrderSuccess: Record<string, any> = {
     success: 'Notifications enabled successfully',
     error: 'Failed to enable notifications'
   },
-  cs: {
+  cz: {
     title: 'Povolit upozornění',
     message:
       '💌Budeme vám moci připomenout vaši rezervaci nebo vás informovat o dostupnosti služeb.',
@@ -181,7 +181,8 @@ const checkAndShowPrompt = () => {
     if (props.trigger === 'main') {
       // Show prompt after 4 seconds for main page
       setTimeout(() => {
-        if (!checkIfDismissed(props.trigger)) {
+        const currentPermission = getNotificationPermission()
+        if (currentPermission === 'default' && !checkIfDismissed(props.trigger)) {
           showNotificationPrompt.value = true
         }
       }, 4000)
