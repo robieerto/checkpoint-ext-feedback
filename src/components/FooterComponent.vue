@@ -21,9 +21,7 @@ const label = computed(() => buttonLabels[store.chosenLang] ?? buttonLabels['en'
       <v-btn
         v-if="store.feedbackButtonEnabled"
         variant="outlined"
-        density="compact"
-        size="small"
-        class="feedback-btn mb-1"
+        class="feedback-btn mt-2 mb-1"
         color="#003c69"
         prepend-icon="mdi-comment-text"
         @click="store.feedbackModalOpen = true"
@@ -50,9 +48,8 @@ const label = computed(() => buttonLabels[store.chosenLang] ?? buttonLabels['en'
 }
 
 .feedback-btn {
-  display: block;
-  margin: 0 auto;
   border-radius: 100px !important;
   text-transform: none !important;
+  letter-spacing: 0 !important;
 }
 </style>

@@ -8,7 +8,8 @@ const texts: Record<string, Record<string, string>> = {
     title: 'How is this app working for you?',
     text: "Tell us what's working well or what could be better.",
     inputText: 'Your feedback',
-    typeText: 'At least 4 characters',
+    typeText: 'At least 3 characters',
+    disclaimer: 'Your feedback goes directly to the ofrules app developers.',
     buttonOk: 'Send',
     buttonBack: 'Cancel',
     successTitle: 'Thank you!',
@@ -19,7 +20,8 @@ const texts: Record<string, Record<string, string>> = {
     title: 'Ako funguje táto appka?',
     text: 'Napíšte nám, čo funguje dobre alebo čo by sa dalo zlepšiť.',
     inputText: 'Vaša spätná väzba',
-    typeText: 'Aspoň 4 znaky',
+    typeText: 'Aspoň 3 znaky',
+    disclaimer: 'Vaša spätná väzba ide priamo vývojárom aplikácie ofrules.',
     buttonOk: 'Odoslať',
     buttonBack: 'Zrušiť',
     successTitle: 'Ďakujeme!',
@@ -30,7 +32,8 @@ const texts: Record<string, Record<string, string>> = {
     title: 'Jak funguje tato appka?',
     text: 'Napište nám, co funguje dobře nebo co by šlo zlepšit.',
     inputText: 'Vaše zpětná vazba',
-    typeText: 'Alespoň 4 znaky',
+    typeText: 'Alespoň 3 znaky',
+    disclaimer: 'Vaše zpětná vazba jde přímo vývojářům aplikace ofrules.',
     buttonOk: 'Odeslat',
     buttonBack: 'Zrušit',
     successTitle: 'Děkujeme!',
@@ -48,7 +51,7 @@ const state = reactive({
 })
 
 const text = computed(() => texts[store.chosenLang] ?? texts['en'])
-const isNoteValid = computed(() => state.inputNote.trim().length > 3)
+const isNoteValid = computed(() => state.inputNote.trim().length >= 3)
 
 const endpointUrl = `${__API_URL__}/createGuestFeedback`
 
@@ -95,13 +98,14 @@ const resetState = () => {
           v-model="state.inputNote"
           :label="text.inputText"
           :hint="text.typeText"
-          class="py-3"
+          class="pt-3 pb-1"
           variant="outlined"
           type="text"
           :maxlength="1000"
         ></v-text-field>
+        <p class="disclaimer-text mb-3">{{ text.disclaimer }}</p>
         <v-card-actions class="px-0 justify-end">
-          <v-btn variant="text" class="checkpoint-secondary-button" @click="closeDialog">
+          <v-btn variant="text" class="checkpoint-secondary-button cancel-btn" @click="closeDialog">
             {{ text.buttonBack }}
           </v-btn>
           <v-btn
@@ -128,3 +132,15 @@ const resetState = () => {
   </v-dialog>
   <v-snackbar v-model="state.showError" rounded="pill">{{ state.error }}</v-snackbar>
 </template>
+
+<style scoped>
+.disclaimer-text {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  line-height: 1.4;
+}
+
+.cancel-btn {
+  background-color: #fff8ee !important;
+}
+</style>
