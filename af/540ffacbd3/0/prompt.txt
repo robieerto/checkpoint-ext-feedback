@@ -1,0 +1,36 @@
+Help me run the app in this direcotry: juraj@juraj-GP65:~/development/checkpoint/checkpoint-guest-portal$npm run dev
+
+> checkpoint-guest-portal@0.0.0 dev
+> vite --mode development
+
+failed to load config from /home/juraj/development/checkpoint/checkpoint-guest-portal/vite.config.ts
+error when starting dev server:
+TypeError: localStorage.getItem is not a function
+    at getTimelineLayersStateFromStorage (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/@vue/devtools-kit/dist/index.js:2272:30)
+    at initStateFactory (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/@vue/devtools-kit/dist/index.js:2565:26)
+    at file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/@vue/devtools-kit/dist/index.js:2569:68
+    at ModuleJob.run (node:internal/modules/esm/module_job:430:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:655:26)
+    at async loadConfigFromBundledFile (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/chunks/dep-CevzF2vT.js:66876:15)
+    at async loadConfigFromFile (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/chunks/dep-CevzF2vT.js:66717:24)
+    at async resolveConfig (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/chunks/dep-CevzF2vT.js:66317:24)
+    at async _createServer (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/chunks/dep-CevzF2vT.js:62918:18)
+    at async CAC.<anonymous> (file:///home/juraj/development/checkpoint/checkpoint-guest-portal/node_modules/vite/dist/node/cli.js:736:20)
+ Why is there these errors?
+
+---
+
+[vite] connecting... client:495:9
+[vite] connected. client:618:15
+[@sentry/vue]: Misconfigured SDK. Vue app is already mounted. Make sure to call `app.mount()` after `Sentry.init()`. integration.ts:65:17
+Service Worker registered successfully: 
+ServiceWorkerRegistration { installing: null, waiting: null, active: ServiceWorker, navigationPreload: NavigationPreloadManager, scope: "http://localhost:4173/", updateViaCache: "imports", onupdatefound: null, pushManager: PushManager, cookies: CookieStoreManager }
+console.ts:39:14
+Source map error: No sources are declared in this source map.
+Resource URL: http://localhost:4173/node_modules/.vite/deps/vue.js?v=979ab1ca
+Source Map URL: vue.js.map
+Source map error: No sources are declared in this source map.
+Resource URL: http://localhost:4173/node_modules/.vite/deps/chunk-HKJ2B2AA.js?v=979ab1ca
+Source Map URL: chunk-HKJ2B2AA.js.map
+
+​

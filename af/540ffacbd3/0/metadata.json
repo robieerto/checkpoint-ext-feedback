@@ -1,0 +1,38 @@
+{
+  "cli_version": "0.5.3",
+  "checkpoint_id": "af540ffacbd3",
+  "session_id": "36c4f8d8-7a37-49e6-ac93-c0f712848c60",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-19T14:17:29.521573646Z",
+  "branch": "feature/eng-95-guest-portal-add-persistent-feedback-button",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".claude/settings.local.json",
+    ".env.development"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "7873842b024b",
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 17207,
+    "cache_read_tokens": 240997,
+    "output_tokens": 2025,
+    "api_call_count": 9
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-19T14:17:29.407797532Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 67,
+    "human_modified": 2,
+    "human_removed": 0,
+    "total_committed": 67,
+    "total_lines_changed": 80,
+    "agent_percentage": 0,
+    "metric_version": 2
+  }
+}
