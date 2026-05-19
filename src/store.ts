@@ -13,7 +13,7 @@ const store = reactive({
   actionsData: null as any,
   simpleActionData: null as any,
   languages: [] as string[],
-  feedbackAction: null as any,
+  feedbackButtonEnabled: false,
 
   // app state
   hasViewsData: false,

@@ -36,7 +36,7 @@ const getData = (query: LocationQuery) => {
       store.actionsData = response.data?.actionsDataList
       store.buildingData = response.data?.building
       store.notificationsEnabledForBuilding = response.data?.building?.configuration?.notifications
-      store.feedbackAction = response.data?.feedbackAction ?? null
+      store.feedbackButtonEnabled = response.data?.feedbackButtonEnabled ?? false
 
       trackAnalyticsQrScanned(query.buildingId, query.checkpointId, query.extFeedbackId)
 
@@ -114,7 +114,8 @@ setTimeout(() => {
     </div>
     <ErrorCheckpoint v-if="state.errorCheckpoint" :query="route.query" />
     <MainView v-if="!state.loading && state.hasData" />
-    <LangChooser v-if="!state.loading && state.hasData" />
+    <!-- <LangChooser v-if="!state.loading && state.hasData" /> -->
+    <NoParamsView v-if="!state.loading && !state.hasData && !state.errorCheckpoint" />
   </main>
 </template>
 

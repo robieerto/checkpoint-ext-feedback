@@ -1,5 +1,14 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import store from '@/store'
+
+const buttonLabels: Record<string, string> = {
+  sk: 'Ako funguje táto appka?',
+  cz: 'Jak funguje tato appka?',
+  en: 'How is this app?',
+}
+
+const label = computed(() => buttonLabels[store.chosenLang] ?? buttonLabels['en'])
 </script>
 
 <template>
@@ -10,14 +19,16 @@ import store from '@/store'
       </p>
       <p v-if="store.extUserActionId" class="opacity-text mb-1">{{ store.extUserActionId }}</p>
       <v-btn
-        v-if="store.feedbackAction"
-        variant="text"
+        v-if="store.feedbackButtonEnabled"
+        variant="outlined"
         density="compact"
         size="small"
         class="feedback-btn mb-1"
+        color="#003c69"
+        prepend-icon="mdi-comment-text"
         @click="store.feedbackModalOpen = true"
       >
-        {{ store.feedbackAction?.texts?.[store.chosenLang]?.listTitle ?? 'Feedback' }}
+        {{ label }}
       </v-btn>
       <p class="opacity-text mb-0">powered by</p>
       <a href="https://www.ofrules.com" rel="noopener noreferrer">www.ofrules.com</a>
@@ -41,6 +52,7 @@ import store from '@/store'
 .feedback-btn {
   display: block;
   margin: 0 auto;
-  opacity: 0.7;
+  border-radius: 100px !important;
+  text-transform: none !important;
 }
 </style>

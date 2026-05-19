@@ -3,6 +3,42 @@ import { reactive, computed } from 'vue'
 import api from '@/services/api'
 import store from '@/store'
 
+const texts: Record<string, Record<string, string>> = {
+  en: {
+    title: 'How is this app working for you?',
+    text: "Tell us what's working well or what could be better.",
+    inputText: 'Your feedback',
+    typeText: 'At least 4 characters',
+    buttonOk: 'Send',
+    buttonBack: 'Cancel',
+    successTitle: 'Thank you!',
+    successText: 'Your feedback helps us improve.',
+    buttonBackMenu: 'Back to menu',
+  },
+  sk: {
+    title: 'Ako funguje táto appka?',
+    text: 'Napíšte nám, čo funguje dobre alebo čo by sa dalo zlepšiť.',
+    inputText: 'Vaša spätná väzba',
+    typeText: 'Aspoň 4 znaky',
+    buttonOk: 'Odoslať',
+    buttonBack: 'Zrušiť',
+    successTitle: 'Ďakujeme!',
+    successText: 'Vaša spätná väzba nám pomáha sa zlepšovať.',
+    buttonBackMenu: 'Späť do menu',
+  },
+  cz: {
+    title: 'Jak funguje tato appka?',
+    text: 'Napište nám, co funguje dobře nebo co by šlo zlepšit.',
+    inputText: 'Vaše zpětná vazba',
+    typeText: 'Alespoň 4 znaky',
+    buttonOk: 'Odeslat',
+    buttonBack: 'Zrušit',
+    successTitle: 'Děkujeme!',
+    successText: 'Vaše zpětná vazba nám pomáhá se zlepšovat.',
+    buttonBackMenu: 'Zpět do menu',
+  },
+}
+
 const state = reactive({
   activeItem: 0,
   loadingBtn: false,
@@ -11,7 +47,7 @@ const state = reactive({
   showError: false
 })
 
-const text = computed(() => store.feedbackAction?.texts?.[store.chosenLang])
+const text = computed(() => texts[store.chosenLang] ?? texts['en'])
 const isNoteValid = computed(() => state.inputNote.trim().length > 3)
 
 const endpointUrl = `${__API_URL__}/createGuestFeedback`
@@ -53,12 +89,12 @@ const resetState = () => {
     <v-card class="pa-4">
       <!-- Step 0: Feedback form -->
       <div v-if="state.activeItem === 0">
-        <v-card-title class="pb-2 px-0">{{ text?.title }}</v-card-title>
-        <v-card-text class="px-0 pb-1">{{ text?.text }}</v-card-text>
+        <v-card-title class="pb-2 px-0">{{ text.title }}</v-card-title>
+        <v-card-text class="px-0 pb-1">{{ text.text }}</v-card-text>
         <v-text-field
           v-model="state.inputNote"
-          :label="text?.inputText"
-          :hint="text?.typeText"
+          :label="text.inputText"
+          :hint="text.typeText"
           class="py-3"
           variant="outlined"
           type="text"
@@ -66,7 +102,7 @@ const resetState = () => {
         ></v-text-field>
         <v-card-actions class="px-0 justify-end">
           <v-btn variant="text" class="checkpoint-secondary-button" @click="closeDialog">
-            {{ text?.buttonBack }}
+            {{ text.buttonBack }}
           </v-btn>
           <v-btn
             variant="flat"
@@ -75,17 +111,17 @@ const resetState = () => {
             :disabled="!isNoteValid"
             @click="pushData"
           >
-            <strong>{{ text?.buttonOk }}</strong>
+            <strong>{{ text.buttonOk }}</strong>
           </v-btn>
         </v-card-actions>
       </div>
 
       <!-- Step 1: Success -->
       <div v-else class="text-center py-6">
-        <h2 class="pb-4">{{ text?.successTitle }}</h2>
-        <p class="pb-6">{{ text?.successText }}</p>
+        <h2 class="pb-4">{{ text.successTitle }}</h2>
+        <p class="pb-6">{{ text.successText }}</p>
         <v-btn variant="flat" class="checkpoint-button" @click="closeDialog">
-          {{ text?.buttonBackMenu }}
+          {{ text.buttonBackMenu }}
         </v-btn>
       </div>
     </v-card>
