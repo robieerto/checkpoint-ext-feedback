@@ -1,6 +1,6 @@
 import { getToken, onMessage, deleteToken, type MessagePayload } from 'firebase/messaging'
 import { getMessagingInstance, VAPID_KEY } from './firebase-config'
-import axios from 'axios'
+import api from '@/services/api'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -81,7 +81,7 @@ export async function registerToken(
       params.append('guestID', guestID)
     }
 
-    const response = await axios.post<AddTokenResponse>(
+    const response = await api.post<AddTokenResponse>(
       `${API_URL}/addFCMToken?${params.toString()}`,
       { token },
       {
@@ -114,7 +114,7 @@ export async function unregisterToken(
   try {
     const params = new URLSearchParams({ buildingID, guestID })
 
-    const response = await axios.post<RemoveTokenResponse>(
+    const response = await api.post<RemoveTokenResponse>(
       `${API_URL}/removeFCMToken?${params.toString()}`,
       { token },
       {

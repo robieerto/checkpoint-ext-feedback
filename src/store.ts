@@ -29,8 +29,10 @@ const store = reactive({
   userEmail: localStorage.getItem('userEmail') ?? '',
 
   // notifications
-  notificationToken: localStorage.getItem('notificationToken') ?? null as string | null,
-  guestID: localStorage.getItem('guestID') ?? null as string | null,
+  notificationsEnabledForBuilding: false,
+  showOrderSuccessNotification: false,
+  notificationToken: localStorage.getItem('notificationToken') ?? (null as string | null),
+  guestID: localStorage.getItem('guestID') ?? (null as string | null),
   buildingID: null as string | null
 })
 

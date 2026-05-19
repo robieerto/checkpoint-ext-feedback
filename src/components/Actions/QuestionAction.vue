@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, computed } from 'vue'
-import axios from 'axios'
+import api from '@/services/api'
 
 import { validatePhone } from '@/helpers'
 import store from '@/store'
@@ -28,7 +28,7 @@ const endpointUrl = `${__API_URL__}/createExtUserQuestion`
 
 const pushData = () => {
   state.loadingBtn = true
-  axios
+  api
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.userRoomId ?? store.checkpointId,
@@ -100,7 +100,7 @@ const backToMenuClick = () => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="75vh"
+    class="question-carousel"
   >
     <v-carousel-item :value="0" :disabled="state.activeItem !== 0">
       <h1 class="pb-5">{{ text?.title }}</h1>
@@ -188,7 +188,7 @@ const backToMenuClick = () => {
           @click="pushData"
           :disabled="!isPhoneCorrect"
         >
-          {{ text?.buttonOk }}
+          <strong>{{ text?.buttonOk }}</strong>
         </v-btn>
       </div>
     </v-carousel-item>
@@ -226,3 +226,22 @@ const backToMenuClick = () => {
   </v-carousel>
   <v-snackbar v-model="state.showError" rounded="pill">{{ state.error }}</v-snackbar>
 </template>
+
+<style scoped>
+.question-carousel {
+  padding-bottom: 80px;
+  height: auto !important;
+}
+
+.question-carousel :deep(.v-carousel__controls) {
+  display: none;
+}
+
+.question-carousel :deep(.v-window__container) {
+  height: auto !important;
+}
+
+.question-carousel :deep(.v-window-item) {
+  height: auto !important;
+}
+</style>

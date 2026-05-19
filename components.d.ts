@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     ActionListExpandItem: typeof import('./src/components/ActionListExpandItem.vue')['default']
     ActionListView: typeof import('./src/components/ActionListView.vue')['default']
+    CheckpointHeader: typeof import('./src/components/CheckpointHeader.vue')['default']
     ErrorCheckpoint: typeof import('./src/components/ErrorCheckpoint.vue')['default']
     FooterComponent: typeof import('./src/components/FooterComponent.vue')['default']
     LangChooser: typeof import('./src/components/LangChooser.vue')['default']
@@ -21,6 +22,7 @@ declare module 'vue' {
     ReviewComplexAction: typeof import('./src/components/Actions/ReviewComplexAction.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    StorageImage: typeof import('./src/components/StorageImage.vue')['default']
     ViewComponent: typeof import('./src/components/ViewComponent.vue')['default']
   }
 }

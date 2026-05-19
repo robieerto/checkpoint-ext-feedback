@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import axios from 'axios'
+import api from '@/services/api'
 
 import store from '@/store'
 import * as types from '@/types'
@@ -22,7 +22,7 @@ const endpointUrl = `${__API_URL__}/createOccurrenceExt`
 
 const pushData = () => {
   state.loadingBtn = true
-  axios
+  api
     .post(endpointUrl, {
       buildingId: store.buildingId,
       checkpointId: store.userRoomId ?? store.checkpointId,
@@ -35,9 +35,8 @@ const pushData = () => {
       state.activeItem = 1
     })
     .catch(function (error) {
-      state.error = error.response.data
+      state.error = error.response?.data ?? 'Error'
       state.showError = true
-      console.log(error)
     })
     .finally(() => {
       state.loadingBtn = false
@@ -81,7 +80,7 @@ const backToMenuClick = () => {
     :show-arrows="false"
     :hide-delimiter-background="true"
     color="#705D0D"
-    height="420px"
+    class="occurrence-carousel"
   >
     <v-carousel-item :value="0" :disabled="!!state.activeItem">
       <h1 class="pb-5">{{ text?.title }}</h1>
@@ -104,7 +103,7 @@ const backToMenuClick = () => {
           :loading="state.loadingBtn"
           @click="pushData"
         >
-          {{ text?.buttonOk }}
+          <strong>{{ text?.buttonOk }}</strong>
         </v-btn>
       </div>
     </v-carousel-item>
@@ -142,3 +141,22 @@ const backToMenuClick = () => {
   </v-carousel>
   <v-snackbar v-model="state.showError" rounded="pill">{{ state.error }}</v-snackbar>
 </template>
+
+<style scoped>
+.occurrence-carousel {
+  padding-bottom: 80px;
+  height: auto !important;
+}
+
+.occurrence-carousel :deep(.v-carousel__controls) {
+  display: none;
+}
+
+.occurrence-carousel :deep(.v-window__container) {
+  height: auto !important;
+}
+
+.occurrence-carousel :deep(.v-window-item) {
+  height: auto !important;
+}
+</style>

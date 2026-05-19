@@ -1,0 +1,68 @@
+import { getStorage, ref, getDownloadURL } from 'firebase/storage'
+import { firebaseApp } from '@/services/firebase-config'
+
+const storage = getStorage(firebaseApp)
+
+/**
+ * Get download URL for a Firebase Storage file
+ * @param gsUrl - Firebase Storage URL in format: gs://bucket-name/path/to/file
+ * @returns Promise with the download URL
+ */
+export async function getStorageUrl(gsUrl: string): Promise<string> {
+  try {
+    // Extract the path from gs:// URL
+    const path = gsUrl.replace(/^gs:\/\/[^/]+\//, '')
+
+    const storageRef = ref(storage, path)
+    const url = await getDownloadURL(storageRef)
+
+    return url
+  } catch (error) {
+    console.error('Error getting storage URL:', error)
+    throw error
+  }
+}
+
+/**
+ * Convert gs:// URL to https:// URL without authentication (for public files)
+ * @param gsUrl - Firebase Storage URL in format: gs://bucket-name/path/to/file
+ * @returns HTTPS URL
+ */
+const STORAGE_BASE_URL = import.meta.env.DEV
+  ? 'http://127.0.0.1:9199'
+  : 'https://firebasestorage.googleapis.com'
+
+/**
+ * Convert gs:// URL to https:// URL without authentication (for public files).
+ * In development, points to the local Storage emulator (port 9199).
+ * @param gsUrl - Firebase Storage URL in format: gs://bucket-name/path/to/file
+ * @returns HTTPS URL
+ */
+export function gsToHttps(gsUrl: string): string {
+  // Extract bucket and path from gs:// URL
+  const match = gsUrl.match(/^gs:\/\/([^/]+)\/(.+)$/)
+
+  if (!match) {
+    return gsUrl
+  }
+
+  const [, bucket, path] = match
+  const encodedPath = path.split('/').map(encodeURIComponent).join('%2F')
+
+  return `${STORAGE_BASE_URL}/v0/b/${bucket}/o/${encodedPath}?alt=media`
+}
+
+/**
+ * Returns the HTTPS URL of the 800w thumbnail for a guest portal gs:// image URL.
+ * Thumbnail is stored at the same path with `_800w.jpg` replacing the original extension.
+ * Falls back to the original URL if the path has no extension.
+ */
+export function thumbnailUrl(gsUrl: string): string {
+  const slashIdx = gsUrl.lastIndexOf('/')
+  const filename = gsUrl.slice(slashIdx + 1)
+  const dotIdx = filename.lastIndexOf('.')
+  if (dotIdx === -1) return gsToHttps(gsUrl)
+  const stem = filename.slice(0, dotIdx)
+  if (stem.endsWith('_800w')) return gsToHttps(gsUrl)
+  return gsToHttps(gsUrl.slice(0, slashIdx + 1 + dotIdx) + '_800w.jpg')
+}
