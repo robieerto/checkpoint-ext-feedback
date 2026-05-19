@@ -5,12 +5,7 @@ import ofrLogo from '@/assets/ofrules-logo.png'
 <template>
   <div class="no-params-view">
     <img :src="ofrLogo" alt="ofrules" class="logo" />
-    <a
-      href="https://www.ofrules.com"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="site-link"
-    >
+    <a href="https://www.ofrules.com" target="_blank" rel="noopener noreferrer" class="visit-btn">
       www.ofrules.com
     </a>
   </div>
@@ -23,16 +18,22 @@ import ofrLogo from '@/assets/ofrules-logo.png'
   align-items: center;
   justify-content: center;
   min-height: 80vh;
-  gap: 20px;
+  gap: 40px;
 }
 
 .logo {
-  max-width: 240px;
+  max-width: 320px;
   width: 100%;
 }
 
-.site-link {
-  font-size: 16px;
-  color: var(--color-primary) !important;
+.visit-btn {
+  display: inline-block;
+  background-color: #003c69;
+  color: #ffffff !important;
+  border-radius: 100px;
+  padding: 10px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
 }
 </style>
