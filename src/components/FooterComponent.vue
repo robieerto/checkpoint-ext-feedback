@@ -3,9 +3,9 @@ import { computed } from 'vue'
 import store from '@/store'
 
 const buttonLabels: Record<string, string> = {
-  sk: 'Ako funguje táto appka?',
+  sk: 'Ako sa Vám páči táto aplikácia?',
   cz: 'Jak funguje tato appka?',
-  en: 'How is this app?',
+  en: 'How do you like this app? Let us know!',
 }
 
 const label = computed(() => buttonLabels[store.chosenLang] ?? buttonLabels['en'])

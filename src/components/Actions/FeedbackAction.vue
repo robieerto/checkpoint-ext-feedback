@@ -5,7 +5,7 @@ import store from '@/store'
 
 const texts: Record<string, Record<string, string>> = {
   en: {
-    title: 'How is this app working for you?',
+    title: 'How do you like this app? Let us know!',
     text: "Tell us what's working well or what could be better.",
     inputText: 'Your feedback',
     typeText: 'At least 3 characters',
@@ -17,8 +17,8 @@ const texts: Record<string, Record<string, string>> = {
     buttonBackMenu: 'Back to menu',
   },
   sk: {
-    title: 'Ako funguje táto appka?',
-    text: 'Napíšte nám, čo funguje dobre alebo čo by sa dalo zlepšiť.',
+    title: 'Ako sa Vám páči táto aplikácia?',
+    text: 'Chýba Vám tu niečo? Napíšte nám, čo funguje dobre alebo čo by sa dalo zlepšiť.',
     inputText: 'Vaša spätná väzba',
     typeText: 'Aspoň 3 znaky',
     disclaimer: 'Vaša spätná väzba ide priamo vývojárom aplikácie ofrules.',
