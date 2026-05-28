@@ -19,7 +19,7 @@ const label = computed(() => buttonLabels[store.chosenLang] ?? buttonLabels['en'
       </p>
       <p v-if="store.extUserActionId" class="opacity-text mb-1">{{ store.extUserActionId }}</p>
       <v-btn
-        v-if="store.feedbackButtonEnabled"
+        v-if="store.platformFeedbackEnabled"
         variant="outlined"
         class="feedback-btn mt-2 mb-1"
         color="#003c69"
