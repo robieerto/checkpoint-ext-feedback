@@ -4,7 +4,7 @@ import ofrLogo from '@/assets/ofrules-logo.png'
 
 <template>
   <div class="no-params-view">
-    <img :src="ofrLogo" alt="ofrules" class="logo" width="680" height="197" fetchpriority="high" />
+    <img :src="ofrLogo" alt="ofrules" class="logo" fetchpriority="high" />
     <a href="https://www.ofrules.com" rel="noopener noreferrer" class="visit-btn">
       Go to our website
     </a>
@@ -24,6 +24,8 @@ import ofrLogo from '@/assets/ofrules-logo.png'
 .logo {
   max-width: 480px;
   width: 100%;
+  height: auto;
+  aspect-ratio: 680 / 197;
 }
 
 .visit-btn {
