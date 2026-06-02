@@ -4,12 +4,11 @@ import { defineConfig, loadEnv } from 'vite'
 import type { PreRenderedAsset } from 'rollup'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import vuetify from 'vite-plugin-vuetify'
 import Components from 'unplugin-vue-components/vite'
 import ViteFonts from 'unplugin-fonts/vite'
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), 'VITE')
   return {
     define: {
@@ -18,15 +17,17 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vue(),
       vueJsx(),
+      vuetify({ autoImport: true }),
       Components(),
       ViteFonts({
         google: {
           families: [
             {
               name: 'Roboto',
-              styles: 'wght@100;300;400;500;700;900'
+              styles: 'wght@100;300;400;500;700;900',
             }
-          ]
+          ],
+          display: 'swap',
         }
       })
     ],
@@ -49,7 +50,6 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-          // Ensure service worker is copied to dist
           assetFileNames: (assetInfo: PreRenderedAsset) => {
             if (assetInfo.name === 'firebase-messaging-sw.js') {
               return '[name][extname]'
