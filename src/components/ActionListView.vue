@@ -42,6 +42,7 @@ const selectItem = (item: any) => {
       store.selectedActionId = item.id
     }
   } else if (item?.viewType) {
+    store.viewHistory.push(store.selectedView)
     store.selectedView = item
   }
 }
@@ -49,6 +50,13 @@ const selectItem = (item: any) => {
 const selectItemSecondary = (item: any) => {
   const url = item.urlSecondary
   if (url) window.open(url, '_blank', 'noopener,noreferrer')
+}
+
+const navigateBack = () => {
+  if (store.viewHistory.length > 0) {
+    store.selectedView = store.viewHistory.pop()
+    expandedCardIndex.value = null
+  }
 }
 
 const toggleCardExpansion = (index: number) => {
@@ -99,7 +107,7 @@ const getIconForType = (type: string, iconType?: string): string => {
         />
 
         <!-- Action Cards Grid -->
-        <v-row class="m-0">
+        <v-row class="ma-0">
           <v-col
             v-for="(item, index) in selectedViewListItems"
             :cols="item?.viewType !== 'simple' ? 6 : 12"
@@ -222,7 +230,18 @@ const getIconForType = (type: string, iconType?: string): string => {
     <!-- Expansion View - Figma "Čo robiť v okolí" Design -->
     <div v-else-if="store.selectedView?.viewType === 'expansion'" id="action-list-view">
       <v-list class="mt-0 py-0 expansion-view">
-        <h1 class="pt-1 expansion-title">{{ texts?.title }}</h1>
+        <div class="expansion-header">
+          <v-btn
+            v-if="store.viewHistory.length > 0"
+            variant="text"
+            prepend-icon="mdi-chevron-left"
+            class="expansion-back-button pa-0"
+            @click="navigateBack"
+          >
+            {{ texts?.buttonBack ?? 'Back' }}
+          </v-btn>
+          <h1 class="pt-1 expansion-title">{{ texts?.title }}</h1>
+        </div>
 
         <div v-for="(item, index) in selectedViewListItems" :key="index">
           <!-- Expansion Card with Image -->

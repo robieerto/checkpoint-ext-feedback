@@ -191,7 +191,7 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
       <p class="pb-1">
         {{ text?.text }}
       </p>
-      <p v-if="text?.textQuestion" class="fw-bold">{{ text?.textQuestion }}</p>
+      <p v-if="text?.textQuestion" class="font-weight-bold">{{ text?.textQuestion }}</p>
       <div class="text-center py-2">
         <v-rating v-model="state.inputScore" density="default" hover></v-rating>
       </div>
@@ -238,7 +238,7 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
       :disabled="state.activeItem !== index + 1"
     >
       <v-list>
-        <p class="pb-1 fw-bold">{{ (questionForm as any)?.question }}</p>
+        <p class="pb-1 font-weight-bold">{{ (questionForm as any)?.question }}</p>
         <div
           v-for="(choice, indexChoice) in (questionForm as any)?.choices"
           :key="indexChoice"
