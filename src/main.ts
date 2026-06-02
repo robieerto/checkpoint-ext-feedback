@@ -9,9 +9,39 @@ import * as Sentry from '@sentry/vue'
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
+import { aliases as defaultAliases, mdi } from 'vuetify/iconsets/mdi-svg'
+import {
+  mdiAlertCircle,
+  mdiBellOutline,
+  mdiCheckCircle,
+  mdiChevronDown,
+  mdiChevronLeft,
+  mdiChevronUp,
+  mdiClose,
+  mdiCommentText,
+  mdiHelpCircle,
+  mdiInformationOutline,
+} from '@mdi/js'
 
 const vuetify = createVuetify({
   components: { VNumberInput },
+  icons: {
+    defaultSet: 'mdi',
+    aliases: {
+      ...defaultAliases,
+      alertCircle: mdiAlertCircle,
+      bellOutline: mdiBellOutline,
+      checkCircle: mdiCheckCircle,
+      chevronDown: mdiChevronDown,
+      chevronLeft: mdiChevronLeft,
+      chevronUp: mdiChevronUp,
+      close: mdiClose,
+      commentText: mdiCommentText,
+      helpCircle: mdiHelpCircle,
+      informationOutline: mdiInformationOutline,
+    },
+    sets: { mdi },
+  },
 })
 
 const app = createApp(App)

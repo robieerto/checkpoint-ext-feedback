@@ -15,7 +15,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@mdi/font": "^7.4.47",
+    "@mdi/js": "^7.4.47",
     "@popperjs/core": "^2.11.8",
     "@sentry/vue": "^10.32.1",
     "axios": "^1.8.4",
