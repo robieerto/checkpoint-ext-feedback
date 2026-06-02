@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vue(),
       vueJsx(),
-      vuetify({ autoImport: true }),
+      vuetify({ autoImport: true, styles: { configFile: 'src/styles/vuetify.scss' } }),
       Components(),
       ViteFonts({
         google: {

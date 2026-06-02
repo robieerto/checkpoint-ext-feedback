@@ -6,7 +6,6 @@ import App from './App.vue'
 import router from './router'
 import * as Sentry from '@sentry/vue'
 
-import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import { aliases as defaultAliases, mdi } from 'vuetify/iconsets/mdi-svg'
