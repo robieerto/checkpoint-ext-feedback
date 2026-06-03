@@ -37,10 +37,10 @@ All texts hardcoded in a `const texts` map inside the component. `store.feedback
 
 | Field | EN | SK | CZ |
 |---|---|---|---|
-| `title` | "How is this app working for you?" | "Ako funguje táto appka?" | "Jak funguje tato appka?" |
-| `text` | "Tell us what's working well or what could be better." | "Napíšte nám, čo funguje dobre alebo čo by sa dalo zlepšiť." | "Napište nám, co funguje dobře nebo co by šlo zlepšit." |
+| `title` | "How do you like this app? Let us know!" | "Ako sa Vám páči táto aplikácia?" | "Jak funguje tato appka?" |
+| `text` | "Tell us what's working well or what could be better." | "Chýba Vám tu niečo? Napíšte nám, čo funguje dobre alebo čo by sa dalo zlepšiť." | "Napište nám, co funguje dobře nebo co by šlo zlepšit." |
 | `inputText` | "Your feedback" | "Vaša spätná väzba" | "Vaše zpětná vazba" |
-| `typeText` | "At least 4 characters" | "Aspoň 4 znaky" | "Alespoň 4 znaky" |
+| `typeText` | "At least 3 characters" | "Aspoň 3 znaky" | "Alespoň 3 znaky" |
 | `buttonOk` | "Send" | "Odoslať" | "Odeslat" |
 | `buttonBack` | "Cancel" | "Zrušiť" | "Zrušit" |
 | `successTitle` | "Thank you!" | "Ďakujeme!" | "Děkujeme!" |

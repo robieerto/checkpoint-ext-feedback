@@ -59,6 +59,13 @@
           "functionId": "createExtUserReview",
           "region": "europe-west3"
         }
+      },
+      {
+        "source": "/api/createGuestFeedback",
+        "function": {
+          "functionId": "createGuestFeedback",
+          "region": "europe-west3"
+        }
       }
     ]
   }

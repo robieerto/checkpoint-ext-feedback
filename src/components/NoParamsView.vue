@@ -1,12 +1,22 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import ofrLogo from '@/assets/ofrules-logo.png'
+import store from '@/store'
+
+const texts: Record<string, string> = {
+  en: 'Go to our website',
+  sk: 'Prejsť na našu webstránku',
+  cz: 'Přejít na náš web',
+}
+
+const linkText = computed(() => texts[store.chosenLang] ?? texts['en'])
 </script>
 
 <template>
   <div class="no-params-view">
     <img :src="ofrLogo" alt="ofrules" class="logo" fetchpriority="high" />
     <a href="https://www.ofrules.com" rel="noopener noreferrer" class="visit-btn">
-      Go to our website
+      {{ linkText }}
     </a>
   </div>
 </template>
@@ -17,7 +27,8 @@ import ofrLogo from '@/assets/ofrules-logo.png'
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 80vh;
+  min-height: 100vh;
+  background-color: #ffffff;
   gap: 40px;
 }
 

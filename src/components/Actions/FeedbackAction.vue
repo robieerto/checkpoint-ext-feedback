@@ -69,7 +69,8 @@ const pushData = () => {
       state.activeItem = 1
     })
     .catch((error: any) => {
-      state.error = error.response?.data ?? 'Error'
+      const errorData = error.response?.data
+      state.error = typeof errorData === 'string' ? errorData : (errorData?.message ?? 'Error')
       state.showError = true
     })
     .finally(() => {

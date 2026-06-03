@@ -114,7 +114,6 @@ setTimeout(() => {
     </div>
     <ErrorCheckpoint v-if="state.errorCheckpoint" :query="route.query" />
     <MainView v-if="!state.loading && state.hasData" />
-    <!-- <LangChooser v-if="!state.loading && state.hasData" /> -->
     <NoParamsView v-if="!state.loading && !state.hasData && !state.errorCheckpoint" />
   </main>
 </template>
