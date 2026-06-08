@@ -63,7 +63,10 @@ const pushData = () => {
       buildingId: store.buildingId,
       note: state.inputNote.trim(),
       viewId: store.selectedView?.id ?? undefined,
-      actionId: store.selectedAction?.id ?? undefined
+      actionId: store.selectedAction?.id ?? undefined,
+      checkpointId: store.checkpointId ?? undefined,
+      checkpointName: store.checkpointData?.name ?? undefined,
+      extFeedbackId: store.extFeedbackId ?? undefined,
     })
     .then(() => {
       state.activeItem = 1
