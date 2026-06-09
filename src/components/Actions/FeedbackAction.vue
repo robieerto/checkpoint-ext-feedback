@@ -53,7 +53,7 @@ const state = reactive({
 const text = computed(() => texts[store.chosenLang] ?? texts['en'])
 const isNoteValid = computed(() => state.inputNote.trim().length >= 3)
 
-const endpointUrl = `${__API_URL__}/createGuestFeedback`
+const endpointUrl = `${__API_URL__}/createPlatformFeedback`
 
 const pushData = () => {
   state.loadingBtn = true
