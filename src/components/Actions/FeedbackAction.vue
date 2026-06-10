@@ -72,7 +72,8 @@ const pushData = () => {
       state.activeItem = 1
     })
     .catch((error: any) => {
-      state.error = error.response?.data ?? 'Error'
+      const responseData = error.response?.data
+      state.error = typeof responseData === 'string' ? responseData : (responseData?.message ?? responseData?.error ?? 'Error')
       state.showError = true
     })
     .finally(() => {
@@ -87,6 +88,9 @@ const closeDialog = () => {
 const resetState = () => {
   state.activeItem = 0
   state.inputNote = ''
+  state.error = ''
+  state.showError = false
+  state.loadingBtn = false
 }
 </script>
 

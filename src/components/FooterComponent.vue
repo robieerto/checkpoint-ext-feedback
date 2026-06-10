@@ -12,7 +12,10 @@ const label = computed(() => buttonLabels[store.chosenLang] ?? buttonLabels['en'
 
 const footerEl = ref<HTMLElement>()
 const observer = new ResizeObserver(([entry]) => {
-  document.documentElement.style.setProperty('--footer-height', `${entry.borderBoxSize[0].blockSize}px`)
+  if (entry) {
+    const height = entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect?.height ?? 0
+    document.documentElement.style.setProperty('--footer-height', `${height}px`)
+  }
 })
 onMounted(() => { if (footerEl.value) observer.observe(footerEl.value) })
 onUnmounted(() => observer.disconnect())

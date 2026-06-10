@@ -1,12 +1,22 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import ofrLogo from '@/assets/ofrules-logo.png'
+import store from '@/store'
+
+const labels: Record<string, string> = {
+  en: 'Go to our website',
+  sk: 'Prejsť na našu webstránku',
+  cz: 'Přejít na náš web',
+}
+
+const label = computed(() => labels[store.chosenLang] ?? labels['en'])
 </script>
 
 <template>
   <div class="no-params-view">
     <img :src="ofrLogo" alt="ofrules" class="logo" />
     <a href="https://www.ofrules.com" rel="noopener noreferrer" class="visit-btn">
-      Go to our website
+      {{ label }}
     </a>
   </div>
 </template>

@@ -38,7 +38,7 @@ const pushData = () => {
       note: state.inputNote
     })
     .then(function (response) {
-      store.extUserActionId = response.data.data
+      store.extUserActionId = response.data?.data
       trackAnalyticsActionCompleted('review', store.selectedAction?.id, { score: state.inputScore })
       if (state.inputScore < 4) {
         state.successPage = false
