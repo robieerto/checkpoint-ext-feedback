@@ -1,0 +1,9 @@
+Can you deploy this project as a preview (staging?)
+
+---
+
+Check the PR https://github.com/ofrules/checkpoint-guest-portal/pull/5. Is there renaiming to the `platformFeedback`? If so, can we move it to current branch? So we can see the feedback button?
+
+---
+
+Then why I don't see feedback button for https://ofrules-guests--staging-9vk79x6x.web.app/?extFeedbackId=default&buildingId=hotel-alexander&REDACTED? You just uploaded current code to the staging.
