@@ -398,7 +398,6 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
 
 <style lang="scss">
 .review-complex-carousel {
-  padding-bottom: 80px;
   height: auto !important;
 
   :deep(.v-carousel__controls) {

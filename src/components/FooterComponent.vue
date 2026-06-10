@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import store from '@/store'
 
 const buttonLabels: Record<string, string> = {
@@ -9,11 +9,18 @@ const buttonLabels: Record<string, string> = {
 }
 
 const label = computed(() => buttonLabels[store.chosenLang] ?? buttonLabels['en'])
+
+const footerEl = ref<HTMLElement>()
+const observer = new ResizeObserver(([entry]) => {
+  document.documentElement.style.setProperty('--footer-height', `${entry.borderBoxSize[0].blockSize}px`)
+})
+onMounted(() => { if (footerEl.value) observer.observe(footerEl.value) })
+onUnmounted(() => observer.disconnect())
 </script>
 
 <template>
   <footer>
-    <div class="footer">
+    <div class="footer" ref="footerEl">
       <p id="checkpoint-name" class="pb-0" style="display: none">
         {{ store?.checkpointData?.name }}
       </p>

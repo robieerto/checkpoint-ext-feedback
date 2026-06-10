@@ -922,7 +922,6 @@ const backToMenuClick = () => {
 
 <style scoped>
 .order-carousel {
-  padding-bottom: 80px;
   height: auto !important;
 }
 

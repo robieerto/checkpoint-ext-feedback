@@ -229,7 +229,6 @@ const backToMenuClick = () => {
 
 <style scoped>
 .question-carousel {
-  padding-bottom: 80px;
   height: auto !important;
 }
 

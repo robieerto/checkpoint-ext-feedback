@@ -144,7 +144,6 @@ const backToMenuClick = () => {
 
 <style scoped>
 .occurrence-carousel {
-  padding-bottom: 80px;
   height: auto !important;
 }
 

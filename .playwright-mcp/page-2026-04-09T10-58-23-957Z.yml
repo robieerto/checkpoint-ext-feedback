@@ -1,0 +1,9 @@
+- generic [ref=e2]:
+  - main [ref=e3]:
+    - progressbar [ref=e5]:
+      - img [ref=e6]
+  - contentinfo:
+    - generic [ref=e9]:
+      - paragraph [ref=e10]: powered by
+      - link "www.ofrules.com" [ref=e11] [cursor=pointer]:
+        - /url: https://www.ofrules.com

@@ -44,7 +44,11 @@
       "Bash(npm install:*)",
       "Bash(rtk grep:*)",
       "Bash(rtk ls:*)",
-      "Bash(npm link:*)"
+      "Bash(npm link:*)",
+      "Bash(firebase projects:list)",
+      "Bash(firebase hosting:channel:deploy *)",
+      "mcp__plugin_firebase_firebase__firestore_get_document",
+      "Bash(rtk proxy *)"
     ],
     "deny": [],
     "ask": []

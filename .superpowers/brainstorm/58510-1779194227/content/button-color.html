@@ -1,0 +1,66 @@
+<h2>Feedback Button — Color & Icon</h2>
+<p class="subtitle">All use the app's existing colors and <code>mdi-comment-text</code> icon. Which feels right?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f9f9f9;border-radius:8px;padding:16px 12px;font-family:Roboto,sans-serif;min-height:150px;">
+        <div style="background:#d3e4ff;border-radius:10px;height:40px;margin-bottom:8px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#003c69;font-weight:600">🛎 Room service</div>
+        <div style="background:#d3e4ff;border-radius:10px;height:40px;margin-bottom:8px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#003c69;font-weight:600">🍽 Restaurant</div>
+        <div style="border-top:1px solid #eee;margin-top:10px;padding-top:8px;text-align:center;">
+          <div style="font-size:10px;color:#bbb;margin-bottom:6px">powered by ofrules.com</div>
+          <div style="display:inline-flex;align-items:center;gap:6px;background:#efe2bb;border-radius:100px;padding:4px 14px;cursor:pointer">
+            <svg style="width:14px;height:14px;fill:#003c69" viewBox="0 0 24 24"><path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9Z"/></svg>
+            <span style="font-size:12px;color:#003c69;font-weight:500">How is this app?</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Warm gold chip</h3>
+      <p>Uses <code>#efe2bb</code> (same as language buttons). Warm, distinct from blue tiles, on-brand.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f9f9f9;border-radius:8px;padding:16px 12px;font-family:Roboto,sans-serif;min-height:150px;">
+        <div style="background:#d3e4ff;border-radius:10px;height:40px;margin-bottom:8px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#003c69;font-weight:600">🛎 Room service</div>
+        <div style="background:#d3e4ff;border-radius:10px;height:40px;margin-bottom:8px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#003c69;font-weight:600">🍽 Restaurant</div>
+        <div style="border-top:1px solid #eee;margin-top:10px;padding-top:8px;text-align:center;">
+          <div style="font-size:10px;color:#bbb;margin-bottom:6px">powered by ofrules.com</div>
+          <div style="display:inline-flex;align-items:center;gap:6px;background:#003c69;border-radius:100px;padding:4px 14px;cursor:pointer">
+            <svg style="width:14px;height:14px;fill:#ffffff" viewBox="0 0 24 24"><path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9Z"/></svg>
+            <span style="font-size:12px;color:#ffffff;font-weight:500">How is this app?</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Filled primary (inverted)</h3>
+      <p>Navy fill with white text/icon. Highest contrast, clearly separate from tile cards, uses the primary color.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f9f9f9;border-radius:8px;padding:16px 12px;font-family:Roboto,sans-serif;min-height:150px;">
+        <div style="background:#d3e4ff;border-radius:10px;height:40px;margin-bottom:8px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#003c69;font-weight:600">🛎 Room service</div>
+        <div style="background:#d3e4ff;border-radius:10px;height:40px;margin-bottom:8px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#003c69;font-weight:600">🍽 Restaurant</div>
+        <div style="border-top:1px solid #eee;margin-top:10px;padding-top:8px;text-align:center;">
+          <div style="font-size:10px;color:#bbb;margin-bottom:6px">powered by ofrules.com</div>
+          <div style="display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid #003c69;border-radius:100px;padding:4px 14px;cursor:pointer">
+            <svg style="width:14px;height:14px;fill:#003c69" viewBox="0 0 24 24"><path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9Z"/></svg>
+            <span style="font-size:12px;color:#003c69;font-weight:500">How is this app?</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Outlined</h3>
+      <p>Transparent background, navy border and text. Subtle but distinct — clearly different from filled tile cards.</p>
+    </div>
+  </div>
+
+</div>

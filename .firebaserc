@@ -1,5 +1,30 @@
 {
   "projects": {
-    "default": "ofrules-guests"
+    "default": "ofrules-guests",
+    "staging": "ofrules-checkpoint-staging",
+    "uat": "checkpoint-a9"
+  },
+  "targets": {
+    "ofrules-guests": {
+      "hosting": {
+        "production": [
+          "ofrules-guests"
+        ]
+      }
+    },
+    "ofrules-checkpoint-staging": {
+      "hosting": {
+        "staging": [
+          "checkpoint-guest-portal-staging"
+        ]
+      }
+    },
+    "checkpoint-a9": {
+      "hosting": {
+        "uat": [
+          "checkpoint-guest-portal-uat"
+        ]
+      }
+    }
   }
 }

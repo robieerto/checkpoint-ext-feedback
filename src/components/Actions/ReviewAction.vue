@@ -180,7 +180,6 @@ const backToMenuClick = () => {
 
 <style lang="scss">
 .review-carousel {
-  padding-bottom: 80px;
   height: auto !important;
 
   :deep(.v-carousel__controls) {
