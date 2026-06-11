@@ -38,8 +38,8 @@ coverage
 !.env.example
 
 # Local tool artifacts
-.claude/settings.local.json
-.claude/*.local.json
+.claude/
 .superpowers/
 .playwright-mcp/
 .entire/
+docs/superpowers/
