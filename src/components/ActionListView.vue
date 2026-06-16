@@ -396,10 +396,6 @@ const getIconForType = (type: string, iconType?: string): string => {
 </template>
 
 <style scoped>
-.action-list-container {
-  padding-bottom: 80px;
-}
-
 .tile-info-button {
   background-color: var(--v-theme-success, rgb(76, 175, 80)) !important;
 }

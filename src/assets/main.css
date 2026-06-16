@@ -12,6 +12,11 @@ body {
   padding: 0 2rem;
   font-weight: normal;
   grid-template-columns: 1fr 1fr;
+  min-height: 100dvh;
+}
+
+main {
+  padding-bottom: var(--footer-height, 0px);
 }
 
 .checkpoint-button {

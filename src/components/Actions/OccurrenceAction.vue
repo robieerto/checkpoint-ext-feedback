@@ -29,7 +29,7 @@ const pushData = () => {
       extActionPath: store.selectedAction?.path
     })
     .then(function (response) {
-      store.extUserActionId = response.data
+      store.extUserActionId = response.data?.data
       trackAnalyticsActionCompleted('occurrence', store.selectedAction?.id)
       state.successPage = true
       state.activeItem = 1
@@ -144,7 +144,6 @@ const backToMenuClick = () => {
 
 <style scoped>
 .occurrence-carousel {
-  padding-bottom: 80px;
   height: auto !important;
 }
 

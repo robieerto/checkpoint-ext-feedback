@@ -13,6 +13,7 @@ const store = reactive({
   actionsData: null as any,
   simpleActionData: null as any,
   languages: [] as string[],
+  platformFeedbackEnabled: false,
 
   // app state
   hasViewsData: false,
@@ -21,6 +22,7 @@ const store = reactive({
   selectedAction: null as any,
   selectedActionId: null as any,
   extUserActionId: null as any,
+  feedbackModalOpen: false,
 
   // user
   chosenLang: '',

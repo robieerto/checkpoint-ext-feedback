@@ -61,7 +61,7 @@ const pushData = () => {
       email: state.inputEmail !== '' ? state.inputEmail : undefined
     })
     .then(function (response) {
-      store.extUserActionId = response.data
+      store.extUserActionId = response.data?.data
       trackAnalyticsActionCompleted('review', store.selectedAction?.id, { score: state.inputScore })
       if (state.inputScore < 4) {
         state.successPage = false
@@ -398,7 +398,6 @@ const choiceChoosen = (indexQuestion: number, indexChoice: number) => {
 
 <style lang="scss">
 .review-complex-carousel {
-  padding-bottom: 80px;
   height: auto !important;
 
   :deep(.v-carousel__controls) {

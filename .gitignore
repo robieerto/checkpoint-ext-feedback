@@ -36,3 +36,10 @@ coverage
 .env
 .env.*
 !.env.example
+
+# Local tool artifacts
+.claude/
+.superpowers/
+.playwright-mcp/
+.entire/
+docs/superpowers/

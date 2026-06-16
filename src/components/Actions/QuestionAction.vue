@@ -38,7 +38,7 @@ const pushData = () => {
       phone: state.inputPhone
     })
     .then(function (response) {
-      store.extUserActionId = response.data
+      store.extUserActionId = response.data?.data
       trackAnalyticsActionCompleted('question', store.selectedAction?.id)
       state.successPage = true
       state.activeItem++
@@ -229,7 +229,6 @@ const backToMenuClick = () => {
 
 <style scoped>
 .question-carousel {
-  padding-bottom: 80px;
   height: auto !important;
 }
 

@@ -2,7 +2,11 @@
   "hosting": {
     "site": "ofrules-guests",
     "public": "dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
       {
         "source": "/api/addFCMToken",
@@ -43,6 +47,13 @@
         "source": "/api/createExtUserReview",
         "function": {
           "functionId": "createExtUserReview",
+          "region": "europe-west3"
+        }
+      },
+      {
+        "source": "/api/createPlatformFeedback",
+        "function": {
+          "functionId": "createPlatformFeedback",
           "region": "europe-west3"
         }
       }
