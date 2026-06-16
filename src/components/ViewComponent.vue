@@ -36,7 +36,7 @@ const getData = (query: LocationQuery) => {
       store.actionsData = response.data?.actionsDataList
       store.buildingData = response.data?.building
       store.notificationsEnabledForBuilding = response.data?.building?.configuration?.notifications
-      store.platformFeedbackEnabled = response.data?.feedbackButtonEnabled ?? false
+      store.platformFeedbackEnabled = response.data?.building?.configuration?.isPlatformFeedbackEnabled ?? false
 
       trackAnalyticsQrScanned(query.buildingId, query.checkpointId, query.extFeedbackId)
 
