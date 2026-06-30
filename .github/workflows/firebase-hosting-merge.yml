@@ -1,3 +1,5 @@
+# Requires FIREBASE_SERVICE_ACCOUNT_OFRULES_GUESTS secret — owner of ofrules-guests project
+# must run: firebase init hosting:github --project ofrules-guests
 name: Deploy to Production on merge
 
 on:
