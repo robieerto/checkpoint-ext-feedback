@@ -66,7 +66,7 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OFRULES_CHECKPOINT_STAGING }}
           projectId: ofrules-checkpoint-staging
           target: staging
-          channelId: pr-${{ github.event.pull_request.number || inputs.pr_number }}
+          channelId: ${{ github.event.pull_request.number || inputs.pr_number }}
           expires: 7d
 
       # The action's own PR-comment logic reads github.context.issue, which
@@ -125,7 +125,7 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CHECKPOINT_A9 }}
           projectId: checkpoint-a9
           target: production
-          channelId: pr-${{ github.event.pull_request.number || inputs.pr_number }}
+          channelId: ${{ github.event.pull_request.number || inputs.pr_number }}
           expires: 7d
 
       - if: github.event_name == 'workflow_dispatch'

@@ -99,7 +99,7 @@ jobs:
         run: |
           echo "$STAGING_CREDS" > /tmp/staging-sa.json
           GOOGLE_APPLICATION_CREDENTIALS=/tmp/staging-sa.json \
-            firebase hosting:channel:delete "pr-${{ steps.pr_number.outputs.number }}" \
+            firebase hosting:channel:delete "${{ steps.pr_number.outputs.number }}" \
             --project ofrules-checkpoint-staging --target staging --force || true
           rm -f /tmp/staging-sa.json
         env:
@@ -109,7 +109,7 @@ jobs:
         run: |
           echo "$PROD_CREDS" > /tmp/prod-sa.json
           GOOGLE_APPLICATION_CREDENTIALS=/tmp/prod-sa.json \
-            firebase hosting:channel:delete "pr-${{ steps.pr_number.outputs.number }}" \
+            firebase hosting:channel:delete "${{ steps.pr_number.outputs.number }}" \
             --project checkpoint-a9 --target production --force || true
           rm -f /tmp/prod-sa.json
         env:
