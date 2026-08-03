@@ -28,7 +28,8 @@ app.use(vuetify).use(router)
 Sentry.init({
   app,
   dsn: import.meta.env.VITE_SENTRY_DSN,
-  enableLogs: true
+  enableLogs: true,
+  environment: import.meta.env.MODE
 })
 
 app.mount('#app')
