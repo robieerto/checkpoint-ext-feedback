@@ -1,14 +1,16 @@
 import { initializeApp } from 'firebase/app'
 import { getMessaging, type Messaging } from 'firebase/messaging'
 
-// Firebase configuration for checkpoint-a9 project
+// Driven by build-time env vars so staging builds connect to
+// ofrules-checkpoint-staging instead of always hitting production
+// regardless of which Hosting project actually serves the build.
 const firebaseConfig = {
-  apiKey: 'AIzaSyB7JZkNlZdjo8XWIUE5aWs5XsNkgDuY7BI',
-  authDomain: 'checkpoint-a9.firebaseapp.com',
-  projectId: 'checkpoint-a9',
-  storageBucket: 'checkpoint-a9.appspot.com',
-  messagingSenderId: '860517143126',
-  appId: '1:860517143126:web:0671e8e40a29ef469be1f7',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
 // VAPID key for web push (from cloud functions test client)

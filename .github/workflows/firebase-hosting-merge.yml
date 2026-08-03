@@ -3,11 +3,12 @@ name: Deploy to Production on merge
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
@@ -18,8 +19,17 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run build
+      - run: npx vue-tsc --build --force
+
+      - run: npx vite build
         env:
+          VITE_API_URL: /api
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
           VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
@@ -29,3 +39,78 @@ jobs:
           channelId: live
           projectId: checkpoint-a9
           target: production
+
+  deploy_staging_persistent:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx vue-tsc --build --force
+
+      - run: npx vite build --mode staging
+        env:
+          VITE_API_URL: /api
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+
+      # Persistent (channelId: live), not an ephemeral preview channel —
+      # main always reflects the latest merged staging build.
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OFRULES_CHECKPOINT_STAGING }}
+          channelId: live
+          projectId: ofrules-checkpoint-staging
+          target: staging
+
+  cleanup_pr_preview_channels:
+    needs: [build_and_deploy, deploy_staging_persistent]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # A merge commit's message contains "(#123)" for both a squash merge
+      # and a merge commit; a fast-forward/rebase merge won't, so this is
+      # best-effort — no PR number found just means nothing to clean up.
+      - id: pr_number
+        run: |
+          number=$(echo "${{ github.event.head_commit.message }}" | grep -oP '(?<=\(#)\d+(?=\)$)' | head -1)
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+      - if: steps.pr_number.outputs.number != ''
+        run: npm install -g firebase-tools
+
+      - if: steps.pr_number.outputs.number != ''
+        run: |
+          echo "$STAGING_CREDS" > /tmp/staging-sa.json
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/staging-sa.json \
+            firebase hosting:channel:delete "pr-${{ steps.pr_number.outputs.number }}" \
+            --project ofrules-checkpoint-staging --target staging --force || true
+          rm -f /tmp/staging-sa.json
+        env:
+          STAGING_CREDS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OFRULES_CHECKPOINT_STAGING }}
+
+      - if: steps.pr_number.outputs.number != ''
+        run: |
+          echo "$PROD_CREDS" > /tmp/prod-sa.json
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/prod-sa.json \
+            firebase hosting:channel:delete "pr-${{ steps.pr_number.outputs.number }}" \
+            --project checkpoint-a9 --target production --force || true
+          rm -f /tmp/prod-sa.json
+        env:
+          PROD_CREDS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CHECKPOINT_A9 }}
