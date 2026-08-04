@@ -114,3 +114,17 @@ jobs:
           rm -f /tmp/prod-sa.json
         env:
           PROD_CREDS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CHECKPOINT_A9 }}
+
+  notify_dashboard:
+    needs: [build_and_deploy, deploy_staging_persistent, cleanup_pr_preview_channels]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      # Runs after preview-channel cleanup so the dashboard's open-PR list
+      # reflects the just-merged PR's channel being gone, not just the new
+      # main deploy. Requires CHECKPOINT_META_DISPATCH_TOKEN (see
+      # firebase-hosting-pull-request.yml for details).
+      - name: Trigger deploy-status dashboard refresh
+        run: gh workflow run refresh-deploy-status.yml --repo ofrules/checkpoint-meta
+        env:
+          GH_TOKEN: ${{ secrets.CHECKPOINT_META_DISPATCH_TOKEN }}
