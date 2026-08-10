@@ -68,13 +68,26 @@ jobs:
           target: staging
           channelId: ${{ github.event.pull_request.number || inputs.pr_number }}
           expires: 7d
+          disableComment: "true"
 
-      # The action's own PR-comment logic reads github.context.issue, which
-      # is empty on workflow_dispatch — it silently no-ops there, so a
-      # manual redeploy needs its own explicit comment.
+      # disableComment: true above — we post our own comment on both event
+      # paths (the action's built-in one can't be customized, and its
+      # PR-comment logic reads github.context.issue, which is empty on
+      # workflow_dispatch anyway) so every preview comment links back to
+      # the deploy-status dashboard.
+      - if: github.event_name == 'pull_request'
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" --body "🔥 Staging preview deployed: ${{ steps.deploy.outputs.details_url }}
+
+          📊 [Deploy status dashboard](https://ofrules-checkpoint-dashboard.firebaseapp.com/)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - if: github.event_name == 'workflow_dispatch'
         run: |
-          gh pr comment "${{ inputs.pr_number }}" --body "🔄 Staging preview manually refreshed: ${{ steps.deploy.outputs.details_url }}"
+          gh pr comment "${{ inputs.pr_number }}" --body "🔄 Staging preview manually refreshed: ${{ steps.deploy.outputs.details_url }}
+
+          📊 [Deploy status dashboard](https://ofrules-checkpoint-dashboard.firebaseapp.com/)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -127,10 +140,23 @@ jobs:
           target: production
           channelId: ${{ github.event.pull_request.number || inputs.pr_number }}
           expires: 7d
+          disableComment: "true"
+
+      # See the staging job above for why we post our own comment on both
+      # event paths instead of relying on the action's built-in one.
+      - if: github.event_name == 'pull_request'
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" --body "🔥 Production-data preview deployed: ${{ steps.deploy.outputs.details_url }}
+
+          📊 [Deploy status dashboard](https://ofrules-checkpoint-dashboard.firebaseapp.com/)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - if: github.event_name == 'workflow_dispatch'
         run: |
-          gh pr comment "${{ inputs.pr_number }}" --body "🔄 Production-data preview manually refreshed: ${{ steps.deploy.outputs.details_url }}"
+          gh pr comment "${{ inputs.pr_number }}" --body "🔄 Production-data preview manually refreshed: ${{ steps.deploy.outputs.details_url }}
+
+          📊 [Deploy status dashboard](https://ofrules-checkpoint-dashboard.firebaseapp.com/)"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
