@@ -1,0 +1,152 @@
+name: Deploy to Production on merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx vue-tsc --build --force
+
+      - run: npx vite build
+        env:
+          VITE_API_URL: /api
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CHECKPOINT_A9 }}
+          channelId: live
+          projectId: checkpoint-a9
+          target: production
+
+      # if: always() so a failed deploy notifies too, not just successes.
+      # Requires a SLACK_BOT_TOKEN secret (chat:write scope, bot invited to
+      # #deploys) — see checkpoint-meta's CI/CD plan doc for setup notes.
+      - name: Notify Slack
+        if: always()
+        uses: slackapi/slack-github-action@v4.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            "channel": "deploys",
+            "text": "checkpoint-guest-portal production deploy ${{ job.status }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} *checkpoint-guest-portal* production deploy *${{ job.status }}*\n<https://github.com/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`> by ${{ github.actor }}  ·  <https://ofrules-checkpoint-dashboard.firebaseapp.com/|dashboard>"
+                }
+              }
+            ]
+
+  deploy_staging_persistent:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx vue-tsc --build --force
+
+      - run: npx vite build --mode staging
+        env:
+          VITE_API_URL: /api
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+
+      # Persistent (channelId: live), not an ephemeral preview channel —
+      # main always reflects the latest merged staging build.
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OFRULES_CHECKPOINT_STAGING }}
+          channelId: live
+          projectId: ofrules-checkpoint-staging
+          target: staging
+
+  cleanup_pr_preview_channels:
+    needs: [build_and_deploy, deploy_staging_persistent]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # A merge commit's message contains "(#123)" for both a squash merge
+      # and a merge commit; a fast-forward/rebase merge won't, so this is
+      # best-effort — no PR number found just means nothing to clean up.
+      - id: pr_number
+        run: |
+          number=$(echo "${{ github.event.head_commit.message }}" | grep -oP '(?<=\(#)\d+(?=\)$)' | head -1)
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+      - if: steps.pr_number.outputs.number != ''
+        run: npm install -g firebase-tools
+
+      - if: steps.pr_number.outputs.number != ''
+        run: |
+          echo "$STAGING_CREDS" > /tmp/staging-sa.json
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/staging-sa.json \
+            firebase hosting:channel:delete "${{ steps.pr_number.outputs.number }}" \
+            --project ofrules-checkpoint-staging --target staging --force || true
+          rm -f /tmp/staging-sa.json
+        env:
+          STAGING_CREDS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OFRULES_CHECKPOINT_STAGING }}
+
+      - if: steps.pr_number.outputs.number != ''
+        run: |
+          echo "$PROD_CREDS" > /tmp/prod-sa.json
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/prod-sa.json \
+            firebase hosting:channel:delete "${{ steps.pr_number.outputs.number }}" \
+            --project checkpoint-a9 --target production --force || true
+          rm -f /tmp/prod-sa.json
+        env:
+          PROD_CREDS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CHECKPOINT_A9 }}
+
+  notify_dashboard:
+    needs: [build_and_deploy, deploy_staging_persistent, cleanup_pr_preview_channels]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      # Runs after preview-channel cleanup so the dashboard's open-PR list
+      # reflects the just-merged PR's channel being gone, not just the new
+      # main deploy. Requires CHECKPOINT_META_DISPATCH_TOKEN (see
+      # firebase-hosting-pull-request.yml for details).
+      - name: Trigger deploy-status dashboard refresh
+        run: gh workflow run refresh-deploy-status.yml --repo ofrules/checkpoint-meta
+        env:
+          GH_TOKEN: ${{ secrets.CHECKPOINT_META_DISPATCH_TOKEN }}

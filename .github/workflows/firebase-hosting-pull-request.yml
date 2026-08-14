@@ -1,0 +1,177 @@
+name: PR Preview
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to (re)deploy previews for"
+        required: true
+        type: number
+      target:
+        description: "Which preview(s) to redeploy"
+        required: false
+        type: choice
+        options:
+          - both
+          - staging
+          - production
+        default: both
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  build_and_preview_staging:
+    if: >
+      github.event_name == 'workflow_dispatch' && (inputs.target == 'both' || inputs.target == 'staging') ||
+      github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/head', inputs.pr_number) || github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # npm run build -- --mode X doesn't forward the flag correctly through
+      # this repo's "run-p type-check \"build-only {@}\"" script (vite ends
+      # up receiving "X" as a bare positional arg, not "--mode X") — calling
+      # the underlying commands directly sidesteps that.
+      - run: npx vue-tsc --build --force
+
+      - run: npx vite build --mode staging
+        env:
+          VITE_API_URL: /api
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+
+      - id: deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OFRULES_CHECKPOINT_STAGING }}
+          projectId: ofrules-checkpoint-staging
+          target: staging
+          channelId: ${{ github.event.pull_request.number || inputs.pr_number }}
+          expires: 7d
+          disableComment: "true"
+
+      # disableComment: true above — we post our own comment on both event
+      # paths (the action's built-in one can't be customized, and its
+      # PR-comment logic reads github.context.issue, which is empty on
+      # workflow_dispatch anyway) so every preview comment links back to
+      # the deploy-status dashboard.
+      - if: github.event_name == 'pull_request'
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" --body "🔥 Staging preview deployed: ${{ steps.deploy.outputs.details_url }}
+
+          📊 [Deploy status dashboard](https://ofrules-checkpoint-dashboard.firebaseapp.com/)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: github.event_name == 'workflow_dispatch'
+        run: |
+          gh pr comment "${{ inputs.pr_number }}" --body "🔄 Staging preview manually refreshed: ${{ steps.deploy.outputs.details_url }}
+
+          📊 [Deploy status dashboard](https://ofrules-checkpoint-dashboard.firebaseapp.com/)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_and_preview_production:
+    if: >
+      github.event_name == 'workflow_dispatch' && (inputs.target == 'both' || inputs.target == 'production') ||
+      github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/head', inputs.pr_number) || github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # --mode preview only changes import.meta.env.MODE (what Sentry's
+      # environment tag reads) — VITE_FIREBASE_* below are injected
+      # directly as env vars, not through a mode-specific .env file, so
+      # this still builds against real checkpoint-a9 config. Without this,
+      # Sentry events from PR-preview traffic would be indistinguishable
+      # from real production users (Vite defaults MODE to "production").
+      - run: npx vue-tsc --build --force
+
+      - run: npx vite build --mode preview
+        env:
+          VITE_API_URL: /api
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+
+      # Preview channel on the production project (checkpoint-a9), inside
+      # the existing production site — not a persistent deploy (no
+      # channelId: live), so nothing here ever touches the live site.
+      - id: deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CHECKPOINT_A9 }}
+          projectId: checkpoint-a9
+          target: production
+          channelId: ${{ github.event.pull_request.number || inputs.pr_number }}
+          expires: 7d
+          disableComment: "true"
+
+      # See the staging job above for why we post our own comment on both
+      # event paths instead of relying on the action's built-in one.
+      - if: github.event_name == 'pull_request'
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" --body "🔥 Production-data preview deployed: ${{ steps.deploy.outputs.details_url }}
+
+          📊 [Deploy status dashboard](https://ofrules-checkpoint-dashboard.firebaseapp.com/)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: github.event_name == 'workflow_dispatch'
+        run: |
+          gh pr comment "${{ inputs.pr_number }}" --body "🔄 Production-data preview manually refreshed: ${{ steps.deploy.outputs.details_url }}
+
+          📊 [Deploy status dashboard](https://ofrules-checkpoint-dashboard.firebaseapp.com/)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify_dashboard:
+    needs: [build_and_preview_staging, build_and_preview_production]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      # Fire-and-forget: the deploy-status dashboard (ofrules/checkpoint-meta)
+      # polls Firebase Hosting + GitHub itself on refresh, so this just makes
+      # that refresh happen automatically instead of only on manual dispatch.
+      # Requires a CHECKPOINT_META_DISPATCH_TOKEN secret (PAT with `workflow`
+      # scope on ofrules/checkpoint-meta) — the default GITHUB_TOKEN can't
+      # trigger workflows in a different repo.
+      - name: Trigger deploy-status dashboard refresh
+        run: gh workflow run refresh-deploy-status.yml --repo ofrules/checkpoint-meta
+        env:
+          GH_TOKEN: ${{ secrets.CHECKPOINT_META_DISPATCH_TOKEN }}
